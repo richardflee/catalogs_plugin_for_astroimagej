@@ -6,6 +6,7 @@ package com.github.richardflee.astroimagej.catalog_ui;
 
 import java.awt.*;
 import java.awt.Component;
+
 import javax.swing.*;
 import javax.swing.GroupLayout;
 import javax.swing.LayoutStyle;
@@ -16,11 +17,27 @@ import javax.swing.border.*;
  * @author Richard Lee
  */
 public class CatalogFormUI extends JDialog {
+		private static final long serialVersionUID = 1L;
+	
 	public CatalogFormUI(Window owner) {
 		super(owner);
 		initComponents();
 		
-		saveButton.addActionListener(e -> dispose());
+		simbadButton.addActionListener(e -> System.out.println("Simbad"));
+		
+		saveQueryButton.addActionListener(e -> System.out.println("save query"));
+		
+		catalogQueryButton.addActionListener(e -> System.out.println("catalog query"));
+		
+		updateButton.addActionListener(e -> System.out.println("update"));
+		
+		saveRaDecButton.addActionListener(e -> System.out.println("save radec"));
+		
+		importRaDecButton.addActionListener(e -> System.out.println("import radec"));
+		
+		clearButton.addActionListener(e -> System.out.println("clear.."));
+		
+		closeButton.addActionListener(e -> dispose());
 	
 	}
 
@@ -48,8 +65,6 @@ public class CatalogFormUI extends JDialog {
 		label11 = new JLabel();
 		filterCombo = new JComboBox<>();
 		label12 = new JLabel();
-		simbadButton = new JButton();
-		catalogButton = new JButton();
 		panel2 = new JPanel();
 		panel3 = new JPanel();
 		idLabel = new JLabel();
@@ -67,7 +82,6 @@ public class CatalogFormUI extends JDialog {
 		simbadMagVLabel = new JLabel();
 		simbadMagRLabel = new JLabel();
 		simbadMagILabel = new JLabel();
-		closeButton = new JButton();
 		panel5 = new JPanel();
 		label6 = new JLabel();
 		label13 = new JLabel();
@@ -82,10 +96,18 @@ public class CatalogFormUI extends JDialog {
 		panel6 = new JPanel();
 		radialRadioButton = new JRadioButton();
 		magRadioButton = new JRadioButton();
-		saveButton = new JButton();
+		panel7 = new JPanel();
+		simbadButton = new JButton();
+		closeButton = new JButton();
+		saveQueryButton = new JButton();
+		catalogQueryButton = new JButton();
+		updateButton = new JButton();
+		saveRaDecButton = new JButton();
+		importRaDecButton = new JButton();
+		clearButton = new JButton();
 
 		//======== this ========
-		setTitle("VSP Demo v0.1");
+		setTitle("On-line Catalog Query");
 		Container contentPane = getContentPane();
 		contentPane.setLayout(new BorderLayout());
 
@@ -161,14 +183,6 @@ public class CatalogFormUI extends JDialog {
 					//---- label12 ----
 					label12.setText("Filter:");
 
-					//---- simbadButton ----
-					simbadButton.setText("SIMBAD");
-					simbadButton.setToolTipText("<html>\nRuns a search for ObjectID on the SIMBAD online database\n<p>If the search is successful:</p>\n<p>  - updates RA and Dec fields with SIMBAD coordinates</p>\n<p>  - updates SIMBAD Data and Filter Magnitudes fields</p>\n<p>Note: ObjectID value is unchanged</p>\n</html>");
-
-					//---- catalogButton ----
-					catalogButton.setText("Catalog");
-					catalogButton.setToolTipText("<html>\nRuns queries on the selected online Catalog and DSS database over\n<p>a search region specified by FOV, RA and Dec parameters</p>\n<p>  - saves catalog ref star parameters in a radec file for the selected filter band</p>\n<p>  - saves a DSS FITS file for the specified region</p>\n</html>\n");
-
 					GroupLayout panel1Layout = new GroupLayout(panel1);
 					panel1.setLayout(panel1Layout);
 					panel1Layout.setHorizontalGroup(
@@ -185,31 +199,22 @@ public class CatalogFormUI extends JDialog {
 									.addComponent(label12, GroupLayout.Alignment.TRAILING))
 								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 								.addGroup(panel1Layout.createParallelGroup()
+									.addComponent(filterCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+									.addComponent(catalogCombo, GroupLayout.PREFERRED_SIZE, 96, GroupLayout.PREFERRED_SIZE)
 									.addGroup(panel1Layout.createSequentialGroup()
-										.addComponent(filterCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-										.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-										.addComponent(catalogButton))
-									.addGroup(panel1Layout.createSequentialGroup()
-										.addComponent(catalogCombo, GroupLayout.PREFERRED_SIZE, 96, GroupLayout.PREFERRED_SIZE)
-										.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-										.addComponent(simbadButton))
-									.addGroup(panel1Layout.createSequentialGroup()
+										.addGroup(panel1Layout.createParallelGroup(GroupLayout.Alignment.TRAILING, false)
+											.addComponent(fovField, GroupLayout.Alignment.LEADING)
+											.addComponent(decField, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 96, Short.MAX_VALUE)
+											.addComponent(raField, GroupLayout.Alignment.LEADING)
+											.addComponent(magLimitField))
+										.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 										.addGroup(panel1Layout.createParallelGroup()
-											.addGroup(panel1Layout.createSequentialGroup()
-												.addGroup(panel1Layout.createParallelGroup(GroupLayout.Alignment.TRAILING, false)
-													.addComponent(fovField, GroupLayout.Alignment.LEADING)
-													.addComponent(decField, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 96, Short.MAX_VALUE)
-													.addComponent(raField, GroupLayout.Alignment.LEADING)
-													.addComponent(magLimitField))
-												.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-												.addGroup(panel1Layout.createParallelGroup()
-													.addComponent(label7)
-													.addComponent(label8)
-													.addComponent(label9)
-													.addComponent(label10)))
-											.addComponent(objectIdField, GroupLayout.PREFERRED_SIZE, 187, GroupLayout.PREFERRED_SIZE))
-										.addGap(0, 74, Short.MAX_VALUE)))
-								.addContainerGap())
+											.addComponent(label7)
+											.addComponent(label8)
+											.addComponent(label9)
+											.addComponent(label10)))
+									.addComponent(objectIdField, GroupLayout.PREFERRED_SIZE, 187, GroupLayout.PREFERRED_SIZE))
+								.addContainerGap(62, Short.MAX_VALUE))
 					);
 					panel1Layout.setVerticalGroup(
 						panel1Layout.createParallelGroup()
@@ -238,54 +243,47 @@ public class CatalogFormUI extends JDialog {
 											.addComponent(label8))))
 								.addGroup(panel1Layout.createParallelGroup()
 									.addGroup(panel1Layout.createSequentialGroup()
-										.addGroup(panel1Layout.createParallelGroup()
-											.addGroup(panel1Layout.createSequentialGroup()
-												.addGap(16, 16, 16)
-												.addComponent(label4))
-											.addGroup(panel1Layout.createSequentialGroup()
-												.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-												.addGroup(panel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-													.addComponent(fovField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-													.addComponent(label9))))
-										.addGroup(panel1Layout.createParallelGroup()
-											.addGroup(panel1Layout.createSequentialGroup()
-												.addGap(16, 16, 16)
-												.addComponent(label5))
-											.addGroup(panel1Layout.createSequentialGroup()
-												.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-												.addGroup(panel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-													.addComponent(magLimitField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-													.addComponent(label10))))
+										.addGap(16, 16, 16)
+										.addComponent(label4))
+									.addGroup(panel1Layout.createSequentialGroup()
 										.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
 										.addGroup(panel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-											.addComponent(catalogCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-											.addComponent(label11))
+											.addComponent(fovField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+											.addComponent(label9))))
+								.addGroup(panel1Layout.createParallelGroup()
+									.addGroup(panel1Layout.createSequentialGroup()
+										.addGap(16, 16, 16)
+										.addComponent(label5))
+									.addGroup(panel1Layout.createSequentialGroup()
 										.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
 										.addGroup(panel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-											.addComponent(filterCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-											.addComponent(label12))
-										.addGap(0, 0, Short.MAX_VALUE))
-									.addGroup(GroupLayout.Alignment.TRAILING, panel1Layout.createSequentialGroup()
-										.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-										.addComponent(simbadButton)
-										.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-										.addComponent(catalogButton)))
-								.addContainerGap())
+											.addComponent(magLimitField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+											.addComponent(label10))))
+								.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+								.addGroup(panel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+									.addComponent(catalogCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+									.addComponent(label11))
+								.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+								.addGroup(panel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+									.addComponent(filterCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+									.addComponent(label12))
+								.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 					);
 				}
 
 				//======== panel2 ========
 				{
+					panel2.setBorder(LineBorder.createBlackLineBorder());
 
 					GroupLayout panel2Layout = new GroupLayout(panel2);
 					panel2.setLayout(panel2Layout);
 					panel2Layout.setHorizontalGroup(
 						panel2Layout.createParallelGroup()
-							.addGap(0, 547, Short.MAX_VALUE)
+							.addGap(0, 502, Short.MAX_VALUE)
 					);
 					panel2Layout.setVerticalGroup(
 						panel2Layout.createParallelGroup()
-							.addGap(0, 0, Short.MAX_VALUE)
+							.addGap(0, 655, Short.MAX_VALUE)
 					);
 				}
 
@@ -400,7 +398,7 @@ public class CatalogFormUI extends JDialog {
 									.addComponent(simbadMagVLabel)
 									.addComponent(simbadMagRLabel)
 									.addComponent(simbadMagILabel))
-								.addContainerGap(64, Short.MAX_VALUE))
+								.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 					);
 					panel4Layout.setVerticalGroup(
 						panel4Layout.createParallelGroup()
@@ -424,9 +422,6 @@ public class CatalogFormUI extends JDialog {
 								.addContainerGap(18, Short.MAX_VALUE))
 					);
 				}
-
-				//---- closeButton ----
-				closeButton.setText("Close");
 
 				//======== panel5 ========
 				{
@@ -536,11 +531,10 @@ public class CatalogFormUI extends JDialog {
 					panel6Layout.setHorizontalGroup(
 						panel6Layout.createParallelGroup()
 							.addGroup(panel6Layout.createSequentialGroup()
-								.addContainerGap()
+								.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 								.addGroup(panel6Layout.createParallelGroup()
 									.addComponent(magRadioButton)
-									.addComponent(radialRadioButton))
-								.addContainerGap(19, Short.MAX_VALUE))
+									.addComponent(radialRadioButton)))
 					);
 					panel6Layout.setVerticalGroup(
 						panel6Layout.createParallelGroup()
@@ -549,56 +543,124 @@ public class CatalogFormUI extends JDialog {
 								.addComponent(radialRadioButton)
 								.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
 								.addComponent(magRadioButton)
-								.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+								.addContainerGap(75, Short.MAX_VALUE))
 					);
 				}
 
-				//---- saveButton ----
-				saveButton.setText("Save");
-				saveButton.setToolTipText("<html>\nSaves current dialog settings\n</html>\n");
+				//======== panel7 ========
+				{
+
+					//---- simbadButton ----
+					simbadButton.setText("SIMBAD Query");
+					simbadButton.setToolTipText("<html>\nRuns a search for ObjectID on the SIMBAD online database\n<p>If the search is successful:</p>\n<p>  - updates RA and Dec fields with SIMBAD coordinates</p>\n<p>  - updates SIMBAD Data and Filter Magnitudes fields</p>\n<p>Note: ObjectID value is unchanged</p>\n</html>");
+
+					//---- closeButton ----
+					closeButton.setText("Close");
+					closeButton.setToolTipText("<html>\nRuns a search for ObjectID on the SIMBAD online database\n<p>If the search is successful:</p>\n<p>  - updates RA and Dec fields with SIMBAD coordinates</p>\n<p>  - updates SIMBAD Data and Filter Magnitudes fields</p>\n<p>Note: ObjectID value is unchanged</p>\n</html>");
+
+					//---- saveQueryButton ----
+					saveQueryButton.setText("Save Query Data");
+					saveQueryButton.setToolTipText("<html>\nRuns a search for ObjectID on the SIMBAD online database\n<p>If the search is successful:</p>\n<p>  - updates RA and Dec fields with SIMBAD coordinates</p>\n<p>  - updates SIMBAD Data and Filter Magnitudes fields</p>\n<p>Note: ObjectID value is unchanged</p>\n</html>");
+
+					//---- catalogQueryButton ----
+					catalogQueryButton.setText("Run Catalog Query");
+					catalogQueryButton.setToolTipText("<html>\nRuns a search for ObjectID on the SIMBAD online database\n<p>If the search is successful:</p>\n<p>  - updates RA and Dec fields with SIMBAD coordinates</p>\n<p>  - updates SIMBAD Data and Filter Magnitudes fields</p>\n<p>Note: ObjectID value is unchanged</p>\n</html>");
+
+					//---- updateButton ----
+					updateButton.setText("Update Table");
+					updateButton.setToolTipText("<html>\nRuns a search for ObjectID on the SIMBAD online database\n<p>If the search is successful:</p>\n<p>  - updates RA and Dec fields with SIMBAD coordinates</p>\n<p>  - updates SIMBAD Data and Filter Magnitudes fields</p>\n<p>Note: ObjectID value is unchanged</p>\n</html>");
+
+					//---- saveRaDecButton ----
+					saveRaDecButton.setText("Save RaDec File");
+					saveRaDecButton.setToolTipText("<html>\nRuns a search for ObjectID on the SIMBAD online database\n<p>If the search is successful:</p>\n<p>  - updates RA and Dec fields with SIMBAD coordinates</p>\n<p>  - updates SIMBAD Data and Filter Magnitudes fields</p>\n<p>Note: ObjectID value is unchanged</p>\n</html>");
+
+					//---- importRaDecButton ----
+					importRaDecButton.setText("Import RaDec File");
+					importRaDecButton.setToolTipText("<html>\nRuns a search for ObjectID on the SIMBAD online database\n<p>If the search is successful:</p>\n<p>  - updates RA and Dec fields with SIMBAD coordinates</p>\n<p>  - updates SIMBAD Data and Filter Magnitudes fields</p>\n<p>Note: ObjectID value is unchanged</p>\n</html>");
+
+					//---- clearButton ----
+					clearButton.setText("Clear");
+					clearButton.setToolTipText("<html>\nRuns a search for ObjectID on the SIMBAD online database\n<p>If the search is successful:</p>\n<p>  - updates RA and Dec fields with SIMBAD coordinates</p>\n<p>  - updates SIMBAD Data and Filter Magnitudes fields</p>\n<p>Note: ObjectID value is unchanged</p>\n</html>");
+
+					GroupLayout panel7Layout = new GroupLayout(panel7);
+					panel7.setLayout(panel7Layout);
+					panel7Layout.setHorizontalGroup(
+						panel7Layout.createParallelGroup()
+							.addGroup(panel7Layout.createSequentialGroup()
+								.addContainerGap()
+								.addGroup(panel7Layout.createParallelGroup()
+									.addComponent(closeButton, GroupLayout.PREFERRED_SIZE, 139, GroupLayout.PREFERRED_SIZE)
+									.addComponent(simbadButton, GroupLayout.PREFERRED_SIZE, 139, GroupLayout.PREFERRED_SIZE)
+									.addComponent(saveQueryButton)
+									.addComponent(catalogQueryButton)
+									.addComponent(updateButton)
+									.addComponent(saveRaDecButton)
+									.addComponent(importRaDecButton)
+									.addComponent(clearButton))
+								.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+					);
+					panel7Layout.linkSize(SwingConstants.HORIZONTAL, new Component[] {catalogQueryButton, clearButton, closeButton, importRaDecButton, saveQueryButton, saveRaDecButton, simbadButton, updateButton});
+					panel7Layout.setVerticalGroup(
+						panel7Layout.createParallelGroup()
+							.addGroup(panel7Layout.createSequentialGroup()
+								.addContainerGap()
+								.addComponent(simbadButton, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE)
+								.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+								.addComponent(saveQueryButton, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE)
+								.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+								.addComponent(catalogQueryButton, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE)
+								.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+								.addComponent(updateButton, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE)
+								.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+								.addComponent(saveRaDecButton, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE)
+								.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+								.addComponent(importRaDecButton, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE)
+								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+								.addComponent(clearButton, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE)
+								.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+								.addComponent(closeButton, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE)
+								.addContainerGap())
+					);
+				}
 
 				GroupLayout contentPanelLayout = new GroupLayout(contentPanel);
 				contentPanel.setLayout(contentPanelLayout);
 				contentPanelLayout.setHorizontalGroup(
 					contentPanelLayout.createParallelGroup()
 						.addGroup(contentPanelLayout.createSequentialGroup()
-							.addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-								.addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
-									.addGroup(contentPanelLayout.createSequentialGroup()
-										.addComponent(panel3, GroupLayout.PREFERRED_SIZE, 203, GroupLayout.PREFERRED_SIZE)
-										.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-										.addComponent(panel4, GroupLayout.PREFERRED_SIZE, 136, GroupLayout.PREFERRED_SIZE))
-									.addGroup(contentPanelLayout.createSequentialGroup()
-										.addComponent(panel5, GroupLayout.PREFERRED_SIZE, 203, GroupLayout.PREFERRED_SIZE)
-										.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-										.addComponent(panel6, GroupLayout.PREFERRED_SIZE, 136, GroupLayout.PREFERRED_SIZE))
-									.addComponent(panel1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+							.addComponent(panel7, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+							.addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
 								.addGroup(contentPanelLayout.createSequentialGroup()
-									.addComponent(saveButton, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-									.addComponent(closeButton, GroupLayout.PREFERRED_SIZE, 97, GroupLayout.PREFERRED_SIZE)))
-							.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+									.addComponent(panel3, GroupLayout.PREFERRED_SIZE, 203, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+									.addComponent(panel4, GroupLayout.DEFAULT_SIZE, 117, Short.MAX_VALUE))
+								.addGroup(contentPanelLayout.createSequentialGroup()
+									.addComponent(panel5, GroupLayout.PREFERRED_SIZE, 203, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+									.addComponent(panel6, GroupLayout.PREFERRED_SIZE, 117, GroupLayout.PREFERRED_SIZE))
+								.addComponent(panel1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+							.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
 							.addComponent(panel2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 				);
-				contentPanelLayout.linkSize(SwingConstants.HORIZONTAL, new Component[] {closeButton, saveButton});
 				contentPanelLayout.setVerticalGroup(
 					contentPanelLayout.createParallelGroup()
 						.addGroup(contentPanelLayout.createSequentialGroup()
-							.addComponent(panel1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-							.addGroup(contentPanelLayout.createParallelGroup()
-								.addComponent(panel3, GroupLayout.PREFERRED_SIZE, 159, GroupLayout.PREFERRED_SIZE)
-								.addComponent(panel4, GroupLayout.PREFERRED_SIZE, 159, GroupLayout.PREFERRED_SIZE))
-							.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-							.addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
-								.addComponent(panel5, GroupLayout.PREFERRED_SIZE, 159, GroupLayout.PREFERRED_SIZE)
-								.addComponent(panel6, GroupLayout.DEFAULT_SIZE, 159, Short.MAX_VALUE))
-							.addGap(18, 18, 18)
-							.addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-								.addComponent(closeButton)
-								.addComponent(saveButton))
-							.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-						.addComponent(panel2, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING, false)
+								.addComponent(panel7, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+								.addGroup(GroupLayout.Alignment.LEADING, contentPanelLayout.createSequentialGroup()
+									.addContainerGap()
+									.addComponent(panel1, 245, 245, GroupLayout.PREFERRED_SIZE)
+									.addGap(18, 18, 18)
+									.addGroup(contentPanelLayout.createParallelGroup()
+										.addComponent(panel3, GroupLayout.PREFERRED_SIZE, 159, GroupLayout.PREFERRED_SIZE)
+										.addComponent(panel4, GroupLayout.PREFERRED_SIZE, 159, GroupLayout.PREFERRED_SIZE))
+									.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+									.addGroup(contentPanelLayout.createParallelGroup()
+										.addComponent(panel5, GroupLayout.PREFERRED_SIZE, 159, GroupLayout.PREFERRED_SIZE)
+										.addComponent(panel6, GroupLayout.PREFERRED_SIZE, 159, GroupLayout.PREFERRED_SIZE))))
+							.addContainerGap(56, Short.MAX_VALUE))
+						.addComponent(panel2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 				);
 			}
 			dialogPane.add(contentPanel, BorderLayout.CENTER);
@@ -637,8 +699,6 @@ public class CatalogFormUI extends JDialog {
 	private JLabel label11;
 	private JComboBox<String> filterCombo;
 	private JLabel label12;
-	private JButton simbadButton;
-	private JButton catalogButton;
 	private JPanel panel2;
 	private JPanel panel3;
 	private JLabel idLabel;
@@ -656,7 +716,6 @@ public class CatalogFormUI extends JDialog {
 	private JLabel simbadMagVLabel;
 	private JLabel simbadMagRLabel;
 	private JLabel simbadMagILabel;
-	private JButton closeButton;
 	private JPanel panel5;
 	private JLabel label6;
 	private JLabel label13;
@@ -671,6 +730,14 @@ public class CatalogFormUI extends JDialog {
 	private JPanel panel6;
 	private JRadioButton radialRadioButton;
 	private JRadioButton magRadioButton;
-	private JButton saveButton;
+	private JPanel panel7;
+	private JButton simbadButton;
+	private JButton closeButton;
+	private JButton saveQueryButton;
+	private JButton catalogQueryButton;
+	private JButton updateButton;
+	private JButton saveRaDecButton;
+	private JButton importRaDecButton;
+	private JButton clearButton;
 	// JFormDesigner - End of variables declaration  //GEN-END:variables
 }
