@@ -1,0 +1,296 @@
+JFDML JFormDesigner: "7.0.4.0.360" Java: "1.8.0_252" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormWindow( "javax.swing.JDialog", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+			name: "this"
+			"title": "VSP Demo v0.1"
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+				name: "dialogPane"
+				"border": new javax.swing.border.EmptyBorder( 12, 12, 12, 12 )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+					"$horizontalGroup": "par l {seq {par t {par l:::p {seq l {comp panel3:::p:203:p, space :::p, comp panel4:::p:136:p}, seq l {comp panel5:::p:203:p, space :::p, comp panel6:::p:136:p}, comp panel1::l:::p}, seq t {comp saveButton:2::p:95:p, space u:::p, comp closeButton:2::p:97:p}}, space :::p, comp panel2:::::x}}"
+					"$verticalGroup": "par l {seq l {comp panel1:::::p, space :::p, par l {comp panel3:::p:159:p, comp panel4:::p:159:p}, space :::p, par l:::p {comp panel5:::p:159:p, comp panel6::::159:x}, space s:::p, par b {comp closeButton::b:p::p, comp saveButton::b:p::p}, space :::x}, comp panel2::t:::x}"
+				} ) {
+					name: "contentPanel"
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+						"$horizontalGroup": "par l {seq l {space :p:15:p, par l {comp label1::t:p::p, comp label2::t:p::p, comp label3::t:p::p, comp label4::t:p::p, comp label5::t:p::p, comp label11::t:p::p, comp label12::t:p::p}, space :::p, par l {seq {comp filterCombo:::p::p, space :::x, comp catalogButton:::p::p}, seq l {comp catalogCombo:::p:96:p, space :::x, comp simbadButton:::p::p}, seq {par l {seq {par t:::p {comp fovField::l:::x, comp decField::l::96:x, comp raField::l:::x, comp magLimitField:::::x}, space :::p, par l {comp label7:::p::p, comp label8:::p::p, comp label9:::p::p, comp label10:::p::p}}, comp objectIdField::l:p:187:p}, space :0:74:x}}, space :::p}}"
+						"$verticalGroup": "par l {seq l {space :::p, par b {comp label1::b:p::p, comp objectIdField::b:p::p}, par l {seq {space :p:16:p, comp label2:::p::p}, seq {space u:::p, par b {comp raField::b:p::p, comp label7::b:p::p}}}, par l {seq {space :p:16:p, comp label3:::p::p}, seq {space u:::p, par b {comp decField::b:p::p, comp label8::b:p::p}}}, par l {seq {par l {seq {space :p:16:p, comp label4:::p::p}, seq {space u:::p, par b {comp fovField::b:p::p, comp label9::b:p::p}}}, par l {seq {space :p:16:p, comp label5:::p::p}, seq {space u:::p, par b {comp magLimitField::b:p::p, comp label10::b:p::p}}}, space u:::p, par b {comp catalogCombo::b:p::p, comp label11::b:p::p}, space u:::p, par b {comp filterCombo::b:p::p, comp label12::b:p::p}, space :0:0:x}, seq t {space :::x, comp simbadButton:::p::p, space u:::p, comp catalogButton:::p::p}}, space :::p}}"
+					} ) {
+						name: "panel1"
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label1"
+							"text": "ObjectID"
+						} )
+						add( new FormComponent( "javax.swing.JTextField" ) {
+							name: "objectIdField"
+							"text": "WASP-12"
+							"focusCycleRoot": true
+							"background": new java.awt.Color( 255, 255, 255, 255 )
+							"toolTipText": "<html>\nEnter target name\n<p> Note: This field is <b>not </b>changed after a SIMBAD query</p>\n<p>Examples: WASP-12, wasp_12, Wasp12</p>\n</html>"
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label2"
+							"text": "RA:"
+						} )
+						add( new FormComponent( "javax.swing.JTextField" ) {
+							name: "raField"
+							"text": "06:30:32.80"
+							"toolTipText": "<html>\nEnter target J2000 RA (hours), in sexagesimal format  HH:MM:SS.SS\n<p>Note 1: Use  ':' delimiter</p>\n<p>Note 2: RA updates after a successful SIMBAD query</p>\n<p>RA range: 00:00:00 to 23:59:59.99</p>\n<p>Examples: 12:34:56.78,  1: 2:3.456, => 01:02:03.46</p>\n</html>"
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label3"
+							"text": "Dec:"
+						} )
+						add( new FormComponent( "javax.swing.JTextField" ) {
+							name: "decField"
+							"text": "+20:40:20.27"
+							"toolTipText": "<html>\nEnter target J2000 DEC (degrees), in sexagesimal format  ±DD:MM:SS.SS\n<p>Note 1: Use  ':' delimiter</p>\n<p>Note 2: DEC updates after a successful SIMBAD query</p>\n<p>DEC range: 00:00:00 to ±90:00:00</p>\n<p>Examples: 12:34:56.78 => +12:34:56.78,  -1:2:3.456, => -01:02:03.46</p>\n</html>"
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label4"
+							"text": "Fov:"
+						} )
+						add( new FormComponent( "javax.swing.JTextField" ) {
+							name: "fovField"
+							"text": "60.0"
+							"toolTipText": "<html>\nEnter square field-of-view width (arcmin)\n<p>FOV range: 1.0 to 1199.9 amin\n<p>Examples: 25.0, 1150.0</p>\n</html>"
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label5"
+							"text": "Limit:"
+						} )
+						add( new FormComponent( "javax.swing.JTextField" ) {
+							name: "magLimitField"
+							"text": "17.0"
+							"toolTipText": "<html>\nEnter magnitude limit\n<p>Range: 1.0 to 99.9 mag\n<p>Example: 15.5</p>\n</html>"
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label7"
+							"text": " HH:MM:SS.SS"
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label8"
+							"text": "±DD:MM:SS.SS"
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label9"
+							"text": "arcmin"
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label10"
+							"text": "mag"
+						} )
+						add( new FormComponent( "javax.swing.JComboBox" ) {
+							name: "catalogCombo"
+							"model": new javax.swing.DefaultComboBoxModel {
+								selectedItem: "VSP"
+								addElement( "VSP" )
+								addElement( "APASS" )
+							}
+							auxiliary() {
+								"JavaCodeGenerator.typeParameters": "String"
+							}
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label11"
+							"text": "Catalog:"
+						} )
+						add( new FormComponent( "javax.swing.JComboBox" ) {
+							name: "filterCombo"
+							auxiliary() {
+								"JavaCodeGenerator.typeParameters": "String"
+							}
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label12"
+							"text": "Filter:"
+						} )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "simbadButton"
+							"text": "SIMBAD"
+							"toolTipText": "<html>\nRuns a search for ObjectID on the SIMBAD online database\n<p>If the search is successful:</p>\n<p>  - updates RA and Dec fields with SIMBAD coordinates</p>\n<p>  - updates SIMBAD Data and Filter Magnitudes fields</p>\n<p>Note: ObjectID value is unchanged</p>\n</html>"
+						} )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "catalogButton"
+							"text": "Catalog"
+							"toolTipText": "<html>\nRuns queries on the selected online Catalog and DSS database over\n<p>a search region specified by FOV, RA and Dec parameters</p>\n<p>  - saves catalog ref star parameters in a radec file for the selected filter band</p>\n<p>  - saves a DSS FITS file for the specified region</p>\n</html>\n"
+						} )
+					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+						"$horizontalGroup": "par l {space :0:547:x}"
+						"$verticalGroup": "par l {space :0:0:x}"
+					} ) {
+						name: "panel2"
+					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+						"$horizontalGroup": "par l {seq l {par l {seq {space :p:25:p, par l {comp raLabel::t:p::p, comp decLabel::t:p::p}}, seq l {space :::p, comp idLabel:::p::p}}, space :::p, par l {comp simbadIdLabel::l:p::p, comp simbadRaLabel::l:p::p, comp simbadDecLabel:::p::p}, space :0:37:x}}"
+						"$verticalGroup": "par l {seq l {space :::p, par b {comp simbadIdLabel::b:p::p, comp idLabel::b:p::p}, space u:::p, par b {comp raLabel::b:p::p, comp simbadRaLabel::b:p::p}, space u:::p, par b {comp decLabel::b:p::p, comp simbadDecLabel::b:p::p}, space ::47:x}}"
+					} ) {
+						name: "panel3"
+						"border": new javax.swing.border.TitledBorder( "SIMBAD Data" )
+						"preferredSize": &Dimension0 new java.awt.Dimension( 190, 164 )
+						"toolTipText": "<html>\nSIMBAD query results:\n<p>Populates data fields with results of SIMBAD query </p>\n<p>Fields marked '.' indicate the search failed or no data</p>\n</html>"
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "idLabel"
+							"text": "ObjectId:"
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "raLabel"
+							"text": "RA:"
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "decLabel"
+							"text": "DEC:"
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "simbadIdLabel"
+							"text": "."
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "simbadRaLabel"
+							"text": "HH:MM:SS.SS"
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "simbadDecLabel"
+							"text": "DD:MM:SS.SS"
+						} )
+					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+						"$horizontalGroup": "par l {seq {space :::p, par l {comp idLabel2::t:p::p, comp idLabel3::t:p::p, comp idLabel4::t:p::p, comp idLabel5::t:p::p}, space :::p, par l {comp simbadMagBLabel::l:p::p, comp simbadMagVLabel::l:p::p, comp simbadMagRLabel::l:p::p, comp simbadMagILabel::l:p::p}, space ::64:x}}"
+						"$verticalGroup": "par l {seq l {space :::p, par b {comp idLabel2::b:p::p, comp simbadMagBLabel::b:p::p}, space u:::p, par b {comp idLabel3::b:p::p, comp simbadMagVLabel::b:p::p}, space u:::p, par b {comp idLabel4::b:p::p, comp simbadMagRLabel::b:p::p}, space u:::p, par b {comp idLabel5::b:p::p, comp simbadMagILabel::b:p::p}, space ::18:x}}"
+					} ) {
+						name: "panel4"
+						"border": new javax.swing.border.TitledBorder( "Filter Mag" )
+						"preferredSize": &Dimension1 new java.awt.Dimension( 190, 164 )
+						"toolTipText": "<html>\nSIMBAD query results:\n<p>Populates data fields with results of SIMBAD query </p>\n<p>Fields marked '.' indicate the search failed or no data</p>\n</html>"
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "idLabel2"
+							"text": "MagB:"
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "idLabel3"
+							"text": "MagV:"
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "idLabel4"
+							"text": "MagR:"
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "idLabel5"
+							"text": "MagI:"
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "simbadMagBLabel"
+							"text": "."
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "simbadMagVLabel"
+							"text": "."
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "simbadMagRLabel"
+							"text": "."
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "simbadMagILabel"
+							"text": "."
+						} )
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "closeButton"
+						"text": "Close"
+					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+						"$horizontalGroup": "par l {seq {space :::p, par l {seq {par l {comp label14::t:p::p, comp label6::t:p::p, comp label13::t:p::p}, space :0:19:x, par t {comp spinner1:1:t:p:60:p, comp spinner2:1:t:p:60:p, comp spinner3:1::p:60:p}, space u:::p, par l {comp label15::l:p::p, comp label16::l:p::p, comp lowerMagLabel::l:p::p}, space :::x}, seq l {comp magCheckBox:::p::p, space :0:0:x}}}}"
+						"$verticalGroup": "par l {seq l {space :::p, par b {comp label6::b:p::p, comp spinner1::b:p::p, comp label15::b:p::p}, space :::p, par b {comp label14::b:p::p, comp spinner3::b:p::p, comp label16::b:p::p}, space :::p, par l {comp label13:::p::p, par b:l {comp spinner2::b:p::p, comp lowerMagLabel::b:p::p}}, space u:::p, comp magCheckBox:::p::p, space :::x}}"
+					} ) {
+						name: "panel5"
+						"border": new javax.swing.border.TitledBorder( "Set Mag Limits" )
+						"preferredSize": #Dimension0
+						"toolTipText": "<html>\nSIMBAD query results:\n<p>Populates data fields with results of SIMBAD query </p>\n<p>Fields marked '.' indicate the search failed or no data</p>\n</html>"
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label6"
+							"text": "Upper:"
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label13"
+							"text": "Lower:"
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label14"
+							"text": "Nominal:"
+						} )
+						add( new FormComponent( "javax.swing.JSpinner" ) {
+							name: "spinner1"
+							"model": new javax.swing.SpinnerNumberModel( 0.0, 0.0, 5.0, 0.10000000149011612 )
+						} )
+						add( new FormComponent( "javax.swing.JSpinner" ) {
+							name: "spinner2"
+							"model": new javax.swing.SpinnerNumberModel( 0.0, -5.0, 0.0, 0.10000000149011612 )
+						} )
+						add( new FormComponent( "javax.swing.JSpinner" ) {
+							name: "spinner3"
+							"model": new javax.swing.SpinnerNumberModel( 10.0, 5.5, 25.0, 0.10000000149011612 )
+						} )
+						add( new FormComponent( "javax.swing.JCheckBox" ) {
+							name: "magCheckBox"
+							"text": "Apply mag limits"
+							"selected": true
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label15"
+							"text": "17.6"
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label16"
+							"text": "15.1"
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "lowerMagLabel"
+							"text": "13.5"
+						} )
+					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+						"$horizontalGroup": "par l {seq {space :::p, par l {comp magRadioButton::l:p::p, comp radialRadioButton::l:p::p}, space ::19:x}}"
+						"$verticalGroup": "par l {seq l {space :p:4:p, comp radialRadioButton:::p::p, space u:::p, comp magRadioButton:::p::p, space :::x}}"
+					} ) {
+						name: "panel6"
+						"border": new javax.swing.border.TitledBorder( "Ascending Sort" )
+						"preferredSize": #Dimension1
+						"toolTipText": "<html>\nSIMBAD query results:\n<p>Populates data fields with results of SIMBAD query </p>\n<p>Fields marked '.' indicate the search failed or no data</p>\n</html>"
+						add( new FormComponent( "javax.swing.JRadioButton" ) {
+							name: "radialRadioButton"
+							"text": "Distance"
+							"$buttonGroup": new FormReference( "buttonGroup1" )
+							"selected": true
+						} )
+						add( new FormComponent( "javax.swing.JRadioButton" ) {
+							name: "magRadioButton"
+							"text": "|Delta Mag|"
+							"$buttonGroup": new FormReference( "buttonGroup1" )
+						} )
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "saveButton"
+						"text": "Save"
+						"toolTipText": "<html>\nSaves current dialog settings\n</html>\n"
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "Center"
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "Center"
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 30, 15 )
+			"size": new java.awt.Dimension( 741, 565 )
+		} )
+		add( new FormNonVisual( "javax.swing.ButtonGroup" ) {
+			name: "buttonGroup1"
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 625 )
+		} )
+	}
+}
