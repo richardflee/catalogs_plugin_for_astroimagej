@@ -1,9 +1,9 @@
-package com.github.richardflee.astroimagej.query_objects;
+package com.github.richardflee.astroimagej.query;
 
 import com.github.richardflee.astroimagej.utils.AstroCoords;
 
 /**
- * Query result from on-line catalog database, instances of this class
+ * Single result record of an on-line catalog database query. Instances of this class
  * encapsulate coordinate and magnitude data for a single Comparison or
  * Reference star.
  */
@@ -18,9 +18,8 @@ public class FieldObject extends AbstractFieldObject {
 	private Boolean isSelected = true;
 
 	/**
-	 * Default parameters for Sirius, eg.g for unit test
-	 */
-	
+	 * No arg constructor, default Sirius parameters
+	 */	
 	public FieldObject() {
 		super( "sirius", 
 				AstroCoords.raHms_To_raHr("06:45:08.917"),
@@ -37,7 +36,13 @@ public class FieldObject extends AbstractFieldObject {
 		this.magErr = magErr;
 	}
 
-	
+	/**
+	 * Computes angular distance in arcmin between current object and the target object
+	 * Eqn: A = acos(sin(dec)*sin(dec0)+cos(dec)*cos(dec0)*cos(ra-ra0))
+	 * where (ra0, dec0) and (ra, dec) are astro coordinates for target & this object in DEGREEs
+	 * 
+	 * @param target target FieldObject 
+	 */
 	public void setRadSepAmin(FieldObject target) {
 		double ra = Math.toRadians(raHr * 15.0);
 		double ra0 = Math.toRadians(target.getRaHr() * 15.0);
@@ -108,16 +113,15 @@ public class FieldObject extends AbstractFieldObject {
 		this.magErr = magErr;
 	}
 
+	
 	@Override
 	public String toString() {
-		return "FieldObject [objectId=" + objectId + ", raHr=" + raHr + ", decDeg=" + decDeg + ", mag=" + mag
-				+ ", magErr=" + magErr + ", nObs=" + nObs + ", radSepAmin=" + radSepAmin + ", isSelected=" + isSelected
+		return "FieldObject [mag=" + mag + ", magErr=" + magErr + ", nObs=" + nObs + ", radSepAmin=" + radSepAmin
+				+ ", isSelected=" + isSelected + ", objectId=" + objectId + ", raHr=" + raHr + ", decDeg=" + decDeg
 				+ "]";
 	}
 
-	// 6.50862013 +29.688453 1.0421 4 14.716 0.090
 	public static void main(String[] args) {
-		//CatalogQuery query = new CatalogQuery();
 
 		FieldObject fo1 = new FieldObject("wasp12", 6.50862013, 29.688453, 12.345, 0.23);
 		

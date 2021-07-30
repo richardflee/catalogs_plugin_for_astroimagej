@@ -1,5 +1,7 @@
 package com.github.richardflee.astroimagej.utils;
 
+import com.github.richardflee.astroimagej.enums.JTextFieldsEnum;
+
 /**
  * Class methods to convert between sexagesimal and numeric formats
  */
@@ -100,20 +102,20 @@ public class AstroCoords {
 	 * 
 	 * @param input user input to RA or DEC fields
 	 * 
-	 * @param dataType identifies input field type(OBJECT_ID, RA_HMS .. )
+	 * @param en identifies input field type(OBJECT_ID, RA_HMS .. )
 	 * 
 	 * @return ra or dec input in sexagesimal format HH:MM:SS.SS or DD:MM:SS.SS respectively
 	 */
-//	public static String sexagesimalFormatter(String input, TextFieldType dataType) { 
-//		String sxInput = input;
-//		// converts sexagesimal => numeric => sexagesimal to force formatting
-//		if (dataType == TextFieldType.RA_HMS) {
-//			sxInput = AstroCoords.raHr_To_raHms(AstroCoords.raHms_To_raHr(input));
-//		} else if (dataType == TextFieldType.DEC_DMS) {
-//			sxInput = AstroCoords.decDeg_To_decDms(AstroCoords.decDms_To_decDeg(input));
-//		}		
-//		return sxInput;
-//	}
+	public static String sexagesimalFormatter(String input, JTextFieldsEnum en) { 
+		String sxInput = input;
+		// converts sexagesimal => numeric => sexagesimal to force formatting
+		if (en == JTextFieldsEnum.RA_HMS) {
+			sxInput = AstroCoords.raHr_To_raHms(AstroCoords.raHms_To_raHr(input));
+		} else if (en == JTextFieldsEnum.DEC_DMS) {
+			sxInput = AstroCoords.decDeg_To_decDms(AstroCoords.decDms_To_decDeg(input));
+		}		
+		return sxInput;
+	}
 	
 }
 

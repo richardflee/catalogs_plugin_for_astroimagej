@@ -24,8 +24,8 @@ public enum ColumnsEnum {
 	private static int totalWidth = 0;
 	
     
-	ColumnsEnum(String columnSettings) {
-		this.strVal = columnSettings;
+	ColumnsEnum(String value) {
+		this.strVal = value;
 	}
 
 	/**
@@ -59,7 +59,7 @@ public enum ColumnsEnum {
 	}
 	
 	/**
-	 * Maps column index to associated enum value
+	 * Maps value of column index to associated enum
 	 * @param columnIndex table column index
 	 * @return enum value for this column
 	 */
