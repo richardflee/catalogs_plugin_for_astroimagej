@@ -109,11 +109,15 @@ new FormModel {
 						} )
 					} )
 					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-						"$horizontalGroup": "par l {space :0:502:x}"
-						"$verticalGroup": "par l {space :0:655:x}"
+						"$horizontalGroup": "par l {comp tableScrollPane::l::608:x}"
+						"$verticalGroup": "par l {comp tableScrollPane::l::655:x}"
 					} ) {
 						name: "panel2"
 						"border": new javax.swing.border.LineBorder( sfield java.awt.Color black, 1, false )
+						add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+							name: "tableScrollPane"
+							"verticalScrollBarPolicy": 22
+						} )
 					} )
 					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
 						"$horizontalGroup": "par l {seq l {par l {seq {space :p:25:p, par l {comp raLabel::t:p::p, comp decLabel::t:p::p}}, seq l {space :::p, comp idLabel:::p::p}}, space :::p, par l {comp simbadIdLabel::l:p::p, comp simbadRaLabel::l:p::p, comp simbadDecLabel:::p::p}, space :0:37:x}}"

@@ -66,6 +66,7 @@ public class CatalogFormUI extends JDialog {
 		filterCombo = new JComboBox<>();
 		label12 = new JLabel();
 		panel2 = new JPanel();
+		tableScrollPane = new JScrollPane();
 		panel3 = new JPanel();
 		idLabel = new JLabel();
 		raLabel = new JLabel();
@@ -275,15 +276,20 @@ public class CatalogFormUI extends JDialog {
 				{
 					panel2.setBorder(LineBorder.createBlackLineBorder());
 
+					//======== tableScrollPane ========
+					{
+						tableScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+					}
+
 					GroupLayout panel2Layout = new GroupLayout(panel2);
 					panel2.setLayout(panel2Layout);
 					panel2Layout.setHorizontalGroup(
 						panel2Layout.createParallelGroup()
-							.addGap(0, 502, Short.MAX_VALUE)
+							.addComponent(tableScrollPane, GroupLayout.DEFAULT_SIZE, 608, Short.MAX_VALUE)
 					);
 					panel2Layout.setVerticalGroup(
 						panel2Layout.createParallelGroup()
-							.addGap(0, 655, Short.MAX_VALUE)
+							.addComponent(tableScrollPane, GroupLayout.DEFAULT_SIZE, 655, Short.MAX_VALUE)
 					);
 				}
 
@@ -700,6 +706,7 @@ public class CatalogFormUI extends JDialog {
 	private JComboBox<String> filterCombo;
 	private JLabel label12;
 	private JPanel panel2;
+	private JScrollPane tableScrollPane;
 	private JPanel panel3;
 	private JLabel idLabel;
 	private JLabel raLabel;
