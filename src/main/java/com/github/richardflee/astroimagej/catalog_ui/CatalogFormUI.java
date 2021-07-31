@@ -6,6 +6,7 @@ package com.github.richardflee.astroimagej.catalog_ui;
 
 import java.awt.*;
 import java.awt.Component;
+import java.util.Vector;
 
 import javax.swing.*;
 import javax.swing.GroupLayout;
@@ -18,10 +19,26 @@ import javax.swing.border.*;
  */
 public class CatalogFormUI extends JDialog {
 		private static final long serialVersionUID = 1L;
+		private SimpleListener aListener; 
+		
 	
 	public CatalogFormUI(Window owner) {
 		super(owner);
 		initComponents();
+		
+		//aListener = new SimpleTable(this);
+		
+		Vector<Vector<Object>> vectors = new Vector<>();
+		
+		Vector<Object> v = new Vector<>();		
+		v.add(true);
+		v.add("true");
+		vectors.add(v);
+		
+		v = new Vector<>();		
+		v.add(false);
+		v.add("false");
+		vectors.add(v);
 		
 		simbadButton.addActionListener(e -> System.out.println("Simbad"));
 		
@@ -29,7 +46,7 @@ public class CatalogFormUI extends JDialog {
 		
 		catalogQueryButton.addActionListener(e -> System.out.println("catalog query"));
 		
-		updateButton.addActionListener(e -> System.out.println("update"));
+		updateButton.addActionListener(e -> aListener.updateTable(vectors));
 		
 		saveRaDecButton.addActionListener(e -> System.out.println("save radec"));
 		
@@ -38,6 +55,7 @@ public class CatalogFormUI extends JDialog {
 		clearButton.addActionListener(e -> System.out.println("clear.."));
 		
 		closeButton.addActionListener(e -> dispose());
+		
 	
 	}
 
@@ -674,11 +692,6 @@ public class CatalogFormUI extends JDialog {
 		contentPane.add(dialogPane, BorderLayout.CENTER);
 		pack();
 		setLocationRelativeTo(getOwner());
-
-		//---- buttonGroup1 ----
-		ButtonGroup buttonGroup1 = new ButtonGroup();
-		buttonGroup1.add(radialRadioButton);
-		buttonGroup1.add(magRadioButton);
 		// JFormDesigner - End of component initialization  //GEN-END:initComponents
 	}
 
@@ -706,7 +719,7 @@ public class CatalogFormUI extends JDialog {
 	private JComboBox<String> filterCombo;
 	private JLabel label12;
 	private JPanel panel2;
-	private JScrollPane tableScrollPane;
+	protected JScrollPane tableScrollPane;
 	private JPanel panel3;
 	private JLabel idLabel;
 	private JLabel raLabel;

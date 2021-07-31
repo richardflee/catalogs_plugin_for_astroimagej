@@ -5,6 +5,7 @@ import java.awt.EventQueue;
 import javax.swing.UIManager;
 
 import com.github.richardflee.astroimagej.catalog_ui.CatalogFormUI;
+import com.github.richardflee.astroimagej.catalog_ui.SimpleTable;
 
 import ij.IJ;
 import ij.plugin.PlugIn;
@@ -43,6 +44,8 @@ public class Catalogs_Plugin implements PlugIn {
 
 		// Opens catalog user interface with properties or default data
 		CatalogFormUI catalogUi = new CatalogFormUI(null);
+		
+		SimpleTable st = new SimpleTable(catalogUi);
 
 //		// sets up file writer as listeners to catalog query & save property file events
 //		catalogUi.setPropsWriterListener(pfw);
