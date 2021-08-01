@@ -22,23 +22,20 @@ public class CatalogFormUI extends JDialog {
 		private SimpleListener aListener; 
 		
 	
-	public CatalogFormUI(Window owner) {
-		super(owner);
+	public CatalogFormUI() {
 		initComponents();
 		
-		//aListener = new SimpleTable(this);
+		aListener = new MyModel();
 		
 		Vector<Vector<Object>> vectors = new Vector<>();
 		
-		Vector<Object> v = new Vector<>();		
-		v.add(true);
-		v.add("true");
-		vectors.add(v);
+		for (int i = 0; i < 5; i++) {
+			Vector<Object> v = new Vector<>();		
+			v.add(true);
+			v.add("true");
+			vectors.add(v);
+		}
 		
-		v = new Vector<>();		
-		v.add(false);
-		v.add("false");
-		vectors.add(v);
 		
 		simbadButton.addActionListener(e -> System.out.println("Simbad"));
 		
@@ -52,11 +49,13 @@ public class CatalogFormUI extends JDialog {
 		
 		importRaDecButton.addActionListener(e -> System.out.println("import radec"));
 		
-		clearButton.addActionListener(e -> System.out.println("clear.."));
+		clearButton.addActionListener(e -> aListener.updateTable(null));
 		
 		closeButton.addActionListener(e -> dispose());
-		
+	}
 	
+	public void setSimpleListener(SimpleListener aListener) {
+		this.aListener = aListener;
 	}
 
 	private void initComponents() {

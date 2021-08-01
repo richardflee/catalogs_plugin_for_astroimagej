@@ -43,9 +43,13 @@ public class Catalogs_Plugin implements PlugIn {
 		//RaDecFileWriter rdw = new RaDecFileWriter();
 
 		// Opens catalog user interface with properties or default data
-		CatalogFormUI catalogUi = new CatalogFormUI(null);
+		CatalogFormUI catalogUi = new CatalogFormUI();
 		
-		SimpleTable st = new SimpleTable(catalogUi);
+		new SimpleTable(catalogUi);
+		
+		
+		
+		
 
 //		// sets up file writer as listeners to catalog query & save property file events
 //		catalogUi.setPropsWriterListener(pfw);
