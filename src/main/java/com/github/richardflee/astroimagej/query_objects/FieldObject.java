@@ -1,4 +1,5 @@
-package com.github.richardflee.astroimagej.query;
+
+package com.github.richardflee.astroimagej.query_objects;
 
 import com.github.richardflee.astroimagej.utils.AstroCoords;
 
@@ -15,6 +16,7 @@ public class FieldObject extends AbstractFieldObject {
 	private Integer nObs = 1;
 	private double radSepAmin = 0.0;
 
+	private String apNumber = "Cnn"; 
 	private Boolean isSelected = true;
 
 	/**
@@ -63,6 +65,17 @@ public class FieldObject extends AbstractFieldObject {
 	public Boolean getIsSelected() {
 		return isSelected;
 	}
+
+	
+	public String getApNumber() {
+		return apNumber;
+	}
+
+
+	public void setApNumber(String apNumber) {
+		this.apNumber = apNumber;
+	}
+
 
 	public void setIsSelected(Boolean isSelected) {
 		this.isSelected = isSelected;
@@ -117,8 +130,8 @@ public class FieldObject extends AbstractFieldObject {
 	@Override
 	public String toString() {
 		return "FieldObject [mag=" + mag + ", magErr=" + magErr + ", nObs=" + nObs + ", radSepAmin=" + radSepAmin
-				+ ", isSelected=" + isSelected + ", objectId=" + objectId + ", raHr=" + raHr + ", decDeg=" + decDeg
-				+ "]";
+				+ ", apNumber=" + apNumber + ", isSelected=" + isSelected + ", objectId=" + objectId + ", raHr=" + raHr
+				+ ", decDeg=" + decDeg + "]";
 	}
 
 	public static void main(String[] args) {

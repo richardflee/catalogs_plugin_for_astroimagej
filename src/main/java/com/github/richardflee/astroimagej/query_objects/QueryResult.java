@@ -1,4 +1,4 @@
-package com.github.richardflee.astroimagej.query;
+package com.github.richardflee.astroimagej.query_objects;
 
 
 
@@ -13,7 +13,7 @@ import java.util.List;
 public class QueryResult {
 
 	// object data
-	private CatalogQuery query = null;
+	//private CatalogQuery query = null;
 	private List<FieldObject> fieldObjects = new ArrayList<>();
 
 	
@@ -22,16 +22,16 @@ public class QueryResult {
 	 * @param query
 	 */
 	public QueryResult(CatalogQuery query) {
-		this.query = new CatalogQuery(query);
+	//	this.query = new CatalogQuery(query);
 	}
 	
-	public FieldObject getTargetObject() {		
-		FieldObject fo = new FieldObject();
-		fo.setObjectId(query.getObjectId());
-		fo.setRaHr(query.getRaHr());
-		fo.setDecDeg(fo.getDecDeg());
-		return fo;
-	}
+//	public FieldObject getTargetObject() {		
+//		FieldObject fo = new FieldObject();
+//		fo.setObjectId(query.getObjectId());
+//		fo.setRaHr(query.getRaHr());
+//		fo.setDecDeg(fo.getDecDeg());
+//		return fo;
+//	}
 	
 
 	public List<FieldObject> getFieldObjects() {
@@ -45,15 +45,16 @@ public class QueryResult {
 
 	@Override
 	public String toString() {
-		return "QueryResult [query=" + query + ", fieldObjects=" + fieldObjects + "]";
+		return "QueryResult [fieldObjects=" + fieldObjects + "]";
 	}
 	
 	public static void main(String[] args) {
 		
 		CatalogQuery query = new CatalogQuery();		
 		QueryResult result = new QueryResult(query);
-		FieldObject target = result.getTargetObject();
-		System.out.println(String.format("Default Target object: %s", target.toString()));
+		
+//		FieldObject target = result.getTargetObject();
+//		System.out.println(String.format("Default Target object: %s", target.toString()));
 		
 		
 	}
