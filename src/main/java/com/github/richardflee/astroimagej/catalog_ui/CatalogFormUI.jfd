@@ -10,10 +10,11 @@ new FormModel {
 				name: "dialogPane"
 				"border": new javax.swing.border.EmptyBorder( 12, 12, 12, 12 )
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-					"$horizontalGroup": "par l {seq l {comp panel7:::p::p, space u:::p, par l:::p {seq l {comp panel3:::p:203:p, space :::p, comp panel4::::117:x}, seq l {comp panel5:::p:203:p, space :::p, comp panel6:::p:117:p}, comp panel1::l:::p}, space u:::p, comp panel2:::::x}}"
-					"$verticalGroup": "par l {seq l {par t:::p {comp panel7::l:::x, seq l {space :::p, comp panel1:::245:245:p, space s:::p, par l {comp panel3:::p:159:p, comp panel4:::p:159:p}, space :::p, par l {comp panel5:::p:159:p, comp panel6:::p:159:p}}}, space ::56:x}, comp panel2::l:::x}"
+					"$horizontalGroup": "par l {seq l {par l {seq {comp panel7:::p::p, space u:::p, par l {seq l {comp panel3:::p:203:p, space :::p, comp panel4:::p:117:p}, seq l {comp panel5:::p:203:p, space :::p, comp panel6:::p:117:p}, comp panel1::l:::p}}, seq {space :::p, par l {comp label20::t:p::p, comp label19::t:p::p}, space u:::p, par l {comp totalLabel::t:p::p, comp filteredLabel::t:p::p}}}, space u:::p, comp panel2:::::x}}"
+					"$verticalGroup": "par l {comp panel2::l:::x, seq l {par t:::p {comp panel7::l:::x, seq l {space :::p, comp panel1:::245:245:p, space s:::p, par l {comp panel3:::p:159:p, comp panel4:::p:159:p}, space :::p, par l:::p {comp panel5:::p:159:p, comp panel6::::0:x}}}, space u:::p, par b {comp label19::b:p::p, comp totalLabel::b:p::p}, space :::p, par b {comp label20::b:p::p, comp filteredLabel::b:p::p}, space ::109:x}}"
 				} ) {
 					name: "contentPanel"
+					"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
 					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
 						"$horizontalGroup": "par l {seq l {space :p:15:p, par l {comp label1::t:p::p, comp label2::t:p::p, comp label3::t:p::p, comp label4::t:p::p, comp label5::t:p::p, comp label11::t:p::p, comp label12::t:p::p}, space :::p, par l {comp filterCombo:::p::p, comp catalogCombo::l:p:96:p, seq {par t:::p {comp fovField::l:::x, comp decField::l::96:x, comp raField::l:::x, comp magLimitField:::::x}, space :::p, par l {comp label7:::p::p, comp label8:::p::p, comp label9:::p::p, comp label10:::p::p}}, comp objectIdField::l:p:187:p}, space ::62:x}}"
 						"$verticalGroup": "par l {seq l {space :::p, par b {comp label1::b:p::p, comp objectIdField::b:p::p}, par l {seq {space :p:16:p, comp label2:::p::p}, seq {space u:::p, par b {comp raField::b:p::p, comp label7::b:p::p}}}, par l {seq {space :p:16:p, comp label3:::p::p}, seq {space u:::p, par b {comp decField::b:p::p, comp label8::b:p::p}}}, par l {seq {space :p:16:p, comp label4:::p::p}, seq {space u:::p, par b {comp fovField::b:p::p, comp label9::b:p::p}}}, par l {seq {space :p:16:p, comp label5:::p::p}, seq {space u:::p, par b {comp magLimitField::b:p::p, comp label10::b:p::p}}}, space u:::p, par b {comp catalogCombo::b:p::p, comp label11::b:p::p}, space u:::p, par b {comp filterCombo::b:p::p, comp label12::b:p::p}, space :::x}}"
@@ -110,7 +111,7 @@ new FormModel {
 					} )
 					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
 						"$horizontalGroup": "par l {comp tableScrollPane::l::745:x}"
-						"$verticalGroup": "par l {comp tableScrollPane::l::655:x}"
+						"$verticalGroup": "par l {comp tableScrollPane::l:::x}"
 					} ) {
 						name: "panel2"
 						"border": new javax.swing.border.LineBorder( sfield java.awt.Color black, 1, false )
@@ -156,7 +157,7 @@ new FormModel {
 						} )
 					} )
 					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-						"$horizontalGroup": "par l {seq {space :::p, par l {comp idLabel2::t:p::p, comp idLabel3::t:p::p, comp idLabel4::t:p::p, comp idLabel5::t:p::p}, space :::p, par l {comp simbadMagBLabel::l:p::p, comp simbadMagVLabel::l:p::p, comp simbadMagRLabel::l:p::p, comp simbadMagILabel::l:p::p}, space :::x}}"
+						"$horizontalGroup": "par l {seq {space :::p, par l {comp idLabel2::t:p::p, comp idLabel3::t:p::p, comp idLabel4::t:p::p, comp idLabel5::t:p::p}, space :::p, par l {comp simbadMagBLabel::l:p::p, comp simbadMagVLabel::l:p::p, comp simbadMagRLabel::l:p::p, comp simbadMagILabel::l:p::p}, space ::45:x}}"
 						"$verticalGroup": "par l {seq l {space :::p, par b {comp idLabel2::b:p::p, comp simbadMagBLabel::b:p::p}, space u:::p, par b {comp idLabel3::b:p::p, comp simbadMagVLabel::b:p::p}, space u:::p, par b {comp idLabel4::b:p::p, comp simbadMagRLabel::b:p::p}, space u:::p, par b {comp idLabel5::b:p::p, comp simbadMagILabel::b:p::p}, space ::18:x}}"
 					} ) {
 						name: "panel4"
@@ -197,8 +198,8 @@ new FormModel {
 						} )
 					} )
 					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-						"$horizontalGroup": "par l {seq {space :::p, par l {seq {par l {comp label14::t:p::p, comp label6::t:p::p, comp label13::t:p::p}, space :0:19:x, par t {comp spinner1:1:t:p:60:p, comp spinner2:1:t:p:60:p, comp spinner3:1::p:60:p}, space u:::p, par l {comp label15::l:p::p, comp label16::l:p::p, comp lowerMagLabel::l:p::p}, space :::x}, seq l {comp magCheckBox:::p::p, space :0:0:x}}}}"
-						"$verticalGroup": "par l {seq l {space :::p, par b {comp label6::b:p::p, comp spinner1::b:p::p, comp label15::b:p::p}, space :::p, par b {comp label14::b:p::p, comp spinner3::b:p::p, comp label16::b:p::p}, space :::p, par l {comp label13:::p::p, par b:l {comp spinner2::b:p::p, comp lowerMagLabel::b:p::p}}, space u:::p, comp magCheckBox:::p::p, space :::x}}"
+						"$horizontalGroup": "par l {seq {space :::p, par l {seq {par l {comp label14::t:p::p, comp label6::t:p::p, comp label13::t:p::p}, space :0:20:x, par t {comp upperLimitSpinner:1:t:p:60:p, comp lowerLimitSpinner:1:t:p:60:p, comp magSpinner:1::p:60:p}, space u:::p, par l {comp upperLabel::l:p::p, comp label16::l:p::p, comp lowerLabel::l:p::p}, space ::15:x}, seq l {comp isMagLimitsCheckBox:::p::p, space :0:0:x}}}}"
+						"$verticalGroup": "par l {seq l {space :::p, par b {comp label6::b:p::p, comp upperLimitSpinner::b:p::p, comp upperLabel::b:p::p}, space :::p, par b {comp label14::b:p::p, comp magSpinner::b:p::p, comp label16::b:p::p}, space :::p, par l {comp label13:::p::p, par b:l {comp lowerLimitSpinner::b:p::p, comp lowerLabel::b:p::p}}, space u:::p, comp isMagLimitsCheckBox:::p::p, space :::x}}"
 					} ) {
 						name: "panel5"
 						"border": new javax.swing.border.TitledBorder( "Set Mag Limits" )
@@ -217,56 +218,87 @@ new FormModel {
 							"text": "Nominal:"
 						} )
 						add( new FormComponent( "javax.swing.JSpinner" ) {
-							name: "spinner1"
-							"model": new javax.swing.SpinnerNumberModel( 0.0, 0.0, 5.0, 0.10000000149011612 )
+							name: "upperLimitSpinner"
+							"model": new javax.swing.SpinnerNumberModel( 0.0, -0.1, 5.0, 0.10000000149011612 )
+							auxiliary() {
+								"JavaCodeGenerator.variableModifiers": 4
+							}
 						} )
 						add( new FormComponent( "javax.swing.JSpinner" ) {
-							name: "spinner2"
-							"model": new javax.swing.SpinnerNumberModel( 0.0, -5.0, 0.0, 0.10000000149011612 )
+							name: "lowerLimitSpinner"
+							"model": new javax.swing.SpinnerNumberModel( 0.0, -5.0, 0.1, 0.10000000149011612 )
+							auxiliary() {
+								"JavaCodeGenerator.variableModifiers": 4
+							}
 						} )
 						add( new FormComponent( "javax.swing.JSpinner" ) {
-							name: "spinner3"
+							name: "magSpinner"
 							"model": new javax.swing.SpinnerNumberModel( 10.0, 5.5, 25.0, 0.10000000149011612 )
+							auxiliary() {
+								"JavaCodeGenerator.variableModifiers": 4
+							}
 						} )
 						add( new FormComponent( "javax.swing.JCheckBox" ) {
-							name: "magCheckBox"
+							name: "isMagLimitsCheckBox"
 							"text": "Apply mag limits"
 							"selected": true
+							auxiliary() {
+								"JavaCodeGenerator.variableModifiers": 4
+							}
 						} )
 						add( new FormComponent( "javax.swing.JLabel" ) {
-							name: "label15"
-							"text": "17.6"
+							name: "upperLabel"
+							"text": "N/A"
 						} )
 						add( new FormComponent( "javax.swing.JLabel" ) {
 							name: "label16"
-							"text": "15.1"
+							"text": "."
 						} )
 						add( new FormComponent( "javax.swing.JLabel" ) {
-							name: "lowerMagLabel"
-							"text": "13.5"
+							name: "lowerLabel"
+							"text": "N/A"
 						} )
 					} )
 					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-						"$horizontalGroup": "par l {seq {space :::x, par l {comp magRadioButton::l:p::p, comp radialRadioButton::l:p::p}}}"
-						"$verticalGroup": "par l {seq l {space :p:4:p, comp radialRadioButton:::p::p, space u:::p, comp magRadioButton:::p::p, space ::75:x}}"
+						"$horizontalGroup": "par l {seq l {space :::p, par l {seq {space :0:0:x, par l {comp deltaMagRadioButton::l:p::p, comp radSepRadioButton::l:p::p}}, seq {par l:::p {comp label17:::p::p, seq {space :10:10:p, comp nObsSpinner:::::x}}, space :0:0:x}}}}"
+						"$verticalGroup": "par l {seq l {space :p:4:p, comp radSepRadioButton:::p::p, space u:::p, comp deltaMagRadioButton:::p::p, space s:::p, comp label17:::p::p, space :::p, comp nObsSpinner:::p::p, space :::x}}"
 					} ) {
 						name: "panel6"
 						"border": new javax.swing.border.TitledBorder( "Ascending Sort" )
 						"preferredSize": #Dimension1
 						"toolTipText": "<html>\nSIMBAD query results:\n<p>Populates data fields with results of SIMBAD query </p>\n<p>Fields marked '.' indicate the search failed or no data</p>\n</html>"
 						add( new FormComponent( "javax.swing.JRadioButton" ) {
-							name: "radialRadioButton"
+							name: "radSepRadioButton"
 							"text": "Distance"
 							"selected": true
+							"$buttonGroup": new FormReference( "buttonGroup1" )
+							auxiliary() {
+								"JavaCodeGenerator.variableModifiers": 4
+							}
 						} )
 						add( new FormComponent( "javax.swing.JRadioButton" ) {
-							name: "magRadioButton"
+							name: "deltaMagRadioButton"
 							"text": "|Delta Mag|"
+							"$buttonGroup": new FormReference( "buttonGroup1" )
+							auxiliary() {
+								"JavaCodeGenerator.variableModifiers": 4
+							}
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label17"
+							"text": "Nobs (APASS)"
+						} )
+						add( new FormComponent( "javax.swing.JSpinner" ) {
+							name: "nObsSpinner"
+							"model": new javax.swing.SpinnerNumberModel( 1, 1, 10, 1 )
+							auxiliary() {
+								"JavaCodeGenerator.variableModifiers": 4
+							}
 						} )
 					} )
 					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-						"$horizontalGroup": "par l {seq {space :::p, par l {comp closeButton:2:l:p:139:p, comp simbadButton:2::p:139:p, comp saveQueryButton:2:l:p::p, comp catalogQueryButton:2:l:p::p, comp updateButton:2:l:p::p, comp saveRaDecButton:2:l:p::p, comp importRaDecButton:2:l:p::p, comp clearButton:2:l:p::p}, space :::x}}"
-						"$verticalGroup": "par l {seq l {space :::p, comp simbadButton:::p:39:p, space u:::p, comp saveQueryButton:::p:39:p, space u:::p, comp catalogQueryButton:::p:39:p, space u:::p, comp updateButton:::p:39:p, space u:::p, comp saveRaDecButton:::p:39:p, space u:::p, comp importRaDecButton:::p:39:p, space :::x, comp clearButton:::p:39:p, space u:::p, comp closeButton:::p:39:p, space :::p}}"
+						"$horizontalGroup": "par l {seq {space :::p, par l {seq t {space :0:0:x, comp closeButton:2::p:139:p}, seq {par l {comp simbadButton:2::p:139:p, comp saveQueryButton:2:l:p::p, comp catalogQueryButton:2:l:p::p, comp updateButton:2:l:p::p, comp saveRaDecButton:2:l:p::p, comp importRaDecButton:2:l:p::p, comp clearButton:2:l:p::p}, space :0:0:x}}, space :::p}}"
+						"$verticalGroup": "par l {seq l {space :::p, comp simbadButton:::p:39:p, space u:::p, comp saveQueryButton:::p:39:p, space u:::p, comp catalogQueryButton:::p:39:p, space u:::p, comp updateButton:::p:39:p, space u:::p, comp saveRaDecButton:::p:39:p, space u:::p, comp importRaDecButton:::p:39:p, space :::x, comp clearButton:::p:39:p, space s:::p, comp closeButton:::p:39:p, space :::p}}"
 					} ) {
 						name: "panel7"
 						add( new FormComponent( "javax.swing.JButton" ) {
@@ -334,6 +366,28 @@ new FormModel {
 							}
 						} )
 					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "label19"
+						"text": "Total catalog records:"
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "label20"
+						"text": "Filtered records:"
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "totalLabel"
+						"text": "000"
+						auxiliary() {
+							"JavaCodeGenerator.variableModifiers": 4
+						}
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "filteredLabel"
+						"text": "0"
+						auxiliary() {
+							"JavaCodeGenerator.variableModifiers": 4
+						}
+					} )
 				}, new FormLayoutConstraints( class java.lang.String ) {
 					"value": "Center"
 				} )
@@ -342,7 +396,12 @@ new FormModel {
 			} )
 		}, new FormLayoutConstraints( null ) {
 			"location": new java.awt.Point( 26, 20 )
-			"size": new java.awt.Dimension( 1030, 576 )
+			"size": new java.awt.Dimension( 1030, 660 )
+		} )
+		add( new FormNonVisual( "javax.swing.ButtonGroup" ) {
+			name: "buttonGroup1"
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 690 )
 		} )
 	}
 }

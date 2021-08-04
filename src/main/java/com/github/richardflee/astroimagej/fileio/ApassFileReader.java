@@ -57,10 +57,13 @@ public class ApassFileReader {
 				if (isTarget) {
 					target = fo;
 					fo.setRadSepAmin(target);
+					fo.setTarget(true);
 					isTarget = false;
+					fieldObjects.add(fo);
 				} else {
 					// fo.setObjectId(null);
 					fo.setRadSepAmin(target);
+					fo.setTarget(false);
 					fieldObjects.add(fo);
 				}
 			}

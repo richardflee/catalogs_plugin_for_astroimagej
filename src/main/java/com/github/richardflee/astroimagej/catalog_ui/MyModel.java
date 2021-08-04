@@ -2,20 +2,18 @@ package com.github.richardflee.astroimagej.catalog_ui;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import javax.swing.table.AbstractTableModel;
 
 import com.github.richardflee.astroimagej.enums.ColumnsEnum;
 import com.github.richardflee.astroimagej.query_objects.FieldObject;
-import com.github.richardflee.astroimagej.query_objects.QueryResult;
 import com.github.richardflee.astroimagej.utils.AstroCoords;
 
 class MyModel extends AbstractTableModel implements SimpleListener {
 	private static final long serialVersionUID = 1L;
 
 	// private Vector<Vector<Object>> rows;
-	private List<FieldObject> objectRows;
+	private List<FieldObject> tableRows;
 
 	final String headers[] = { "Ap", "ObjectId", "Ra2000", "Dec2000", "Mag", "Mag Err", "Mag diff", "Dist", "Nobs",
 			"USE" };
@@ -31,53 +29,54 @@ class MyModel extends AbstractTableModel implements SimpleListener {
 			"<html>Number of observation sessions<br>" + "(APASS catalog)</html>",
 			"<html>USE => copy selected rows to radec file<br>Default = selected</html>" };
 
-	private final int AP_COL = ColumnsEnum.AP_COL.getIndex();
+	// private final int AP_COL = ColumnsEnum.AP_COL.getIndex();
 	private final int USE_COL = ColumnsEnum.USE_COL.getIndex();
 	public final int N_COLS = ColumnsEnum.values().length;
 
 	public MyModel() {
-		objectRows = new ArrayList<>();
+		tableRows = new ArrayList<>();
 	}
-	
+
 	@Override
-	public void updateTable(QueryResult result) {
-		if (result == null) {
-			int LastRow = objectRows.size();
-			while (objectRows.size() > 0) {
-				objectRows.remove(0);
-			}
-			fireTableRowsDeleted(0, LastRow);
-			// clear table remove rows
-		} else {
+	public void updateTable(List<FieldObject> currentTableRows) {
+
+		int LastRow = tableRows.size();
+		while (tableRows.size() > 0) {
+			tableRows.remove(0);
+		}
+		fireTableRowsDeleted(0, LastRow);
+		// clear table remove rows
+
+		if (currentTableRows != null) {
 			int idx = 0;
-			for (FieldObject objectRow : result.getFieldObjects()) {
-				// objectRows.add(objectRow); 
-				addItem(idx, objectRow);
+			for (FieldObject tableRow : currentTableRows) {
+				// objectRows.add(objectRow);
+				addItem(idx, tableRow);
 				fireTableRowsInserted(idx, idx);
 				idx++;
 			}
 		}
 	}
 
+	
+
 	public void updateRow(int row) {
 		fireTableRowsUpdated(row, row);
 	}
 
 	public void addItem(int idx, FieldObject objectRow) {
-		objectRows.add(idx, objectRow);
+		tableRows.add(idx, objectRow);
 		fireTableRowsInserted(idx, idx);
 	}
 
 	public void removeItem(int idx) {
-		objectRows.remove(idx);
+		tableRows.remove(idx);
 		fireTableRowsDeleted(idx, idx);
 	}
 
-	
-
 	@Override
 	public int getRowCount() {
-		return objectRows.size();
+		return tableRows.size();
 	}
 
 	@Override
@@ -87,11 +86,11 @@ class MyModel extends AbstractTableModel implements SimpleListener {
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		FieldObject objectRow = objectRows.get(rowIndex);
+		FieldObject objectRow = tableRows.get(rowIndex);
 		Object data = null;
 
 		if (columnIndex == ColumnsEnum.AP_COL.getIndex()) {
-			data = (String) objectRow.getApNumber();
+			data = (String) objectRow.getApertureId();
 
 		} else if (columnIndex == ColumnsEnum.OBJECTID_COL.getIndex()) {
 			data = (String) objectRow.getObjectId();
@@ -109,16 +108,16 @@ class MyModel extends AbstractTableModel implements SimpleListener {
 			data = (String) String.format("%.3f", objectRow.getMagErr());
 
 		} else if (columnIndex == ColumnsEnum.MAG_DIFF_COL.getIndex()) {
-			data = (String) "N/A";
+			data = (String) String.format("%.3f", objectRow.getDeltaMag());
 
 		} else if (columnIndex == ColumnsEnum.DIST_AMIN_COL.getIndex()) {
-			data = (String) String.format("%.3f", objectRow.getRadSepAmin());
+			data = (String) String.format("%.2f", objectRow.getRadSepAmin());
 
 		} else if (columnIndex == ColumnsEnum.NOBS_COL.getIndex()) {
-			data = (String) String.format("%02d", objectRow.getnObs());
+			data = (String) String.format("%2d", objectRow.getnObs());
 
 		} else if (columnIndex == ColumnsEnum.USE_COL.getIndex()) {
-			data = (Boolean) objectRow.getIsSelected();
+			data = (Boolean) objectRow.isSelected();
 		}
 		return data;
 	}
@@ -127,28 +126,26 @@ class MyModel extends AbstractTableModel implements SimpleListener {
 	public void setValueAt(Object value, int rowIndex, int columnIndex) {
 		if (columnIndex == USE_COL) {
 			// Vector<Object> v = rows.get(rowIndex);
-			//FieldObject fo = fieldObjects.get(rowIndex);
-			
-			FieldObject objectRow = objectRows.get(rowIndex);
-			
+			// FieldObject fo = fieldObjects.get(rowIndex);
+
+			FieldObject objectRow = tableRows.get(rowIndex);
+
 			boolean isSelected = (Boolean) getValueAt(rowIndex, USE_COL);
 			isSelected = !isSelected;
-			objectRow.setIsSelected(isSelected);
+			objectRow.setSelected(isSelected);
 
 			int counter = 2;
-			for (int row = 1; row < objectRows.size(); row++) {
-				objectRow = objectRows.get(row);
+			for (int row = 1; row < tableRows.size(); row++) {
+				objectRow = tableRows.get(row);
 				isSelected = (Boolean) getValueAt(row, USE_COL);
 
 				String apNum = isSelected ? String.format("C%02d", counter++) : "";
-				objectRow.setApNumber(apNum);
-				objectRow.setIsSelected(isSelected);
+				objectRow.setApertureId(apNum);
+				objectRow.setSelected(isSelected);
 				fireTableRowsUpdated(row, row);
 			}
 		}
 	}
-
-
 
 	@Override
 	public String getColumnName(int column) {

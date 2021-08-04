@@ -10,13 +10,13 @@ import java.util.Map;
 public enum ColumnsEnum {
 	AP_COL       ("0.4"), 		// format column index, percent column width
 	OBJECTID_COL ("1.22"),
-	RA2000_COL   ("2.15"), 
-	DEC2000_COL  ("3.15"), 
+	RA2000_COL   ("2.14"), 
+	DEC2000_COL  ("3.14"), 
 	MAG_COL      ("4.9"),
 	MAG_ERR_COL  ("5.9"),
 	MAG_DIFF_COL ("6.9"), 
 	DIST_AMIN_COL("7.9"), 
-	NOBS_COL     ("8.4"), 
+	NOBS_COL     ("8.6"), 
 	USE_COL      ("9.4");
 
 	private final String strVal;
