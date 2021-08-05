@@ -9,7 +9,7 @@ import com.github.richardflee.astroimagej.enums.ColumnsEnum;
 import com.github.richardflee.astroimagej.query_objects.FieldObject;
 import com.github.richardflee.astroimagej.utils.AstroCoords;
 
-class CatalogTableModel extends AbstractTableModel implements CatalogTableListener {
+class MyModel extends AbstractTableModel implements SimpleListener {
 	private static final long serialVersionUID = 1L;
 
 	// private Vector<Vector<Object>> rows;
@@ -29,10 +29,11 @@ class CatalogTableModel extends AbstractTableModel implements CatalogTableListen
 			"<html>Number of observation sessions<br>" + "(APASS catalog)</html>",
 			"<html>USE => copy selected rows to radec file<br>Default = selected</html>" };
 
+	// private final int AP_COL = ColumnsEnum.AP_COL.getIndex();
 	private final int USE_COL = ColumnsEnum.USE_COL.getIndex();
 	public final int N_COLS = ColumnsEnum.values().length;
 
-	public CatalogTableModel() {
+	public MyModel() {
 		tableRows = new ArrayList<>();
 	}
 
@@ -49,6 +50,7 @@ class CatalogTableModel extends AbstractTableModel implements CatalogTableListen
 		if (currentTableRows != null) {
 			int idx = 0;
 			for (FieldObject tableRow : currentTableRows) {
+				// objectRows.add(objectRow);
 				addItem(idx, tableRow);
 				fireTableRowsInserted(idx, idx);
 				idx++;
@@ -68,7 +70,10 @@ class CatalogTableModel extends AbstractTableModel implements CatalogTableListen
 		fireTableRowsInserted(idx, idx);
 	}
 
-
+	public void removeItem(int idx) {
+		tableRows.remove(idx);
+		fireTableRowsDeleted(idx, idx);
+	}
 
 	@Override
 	public int getRowCount() {
@@ -161,7 +166,60 @@ class CatalogTableModel extends AbstractTableModel implements CatalogTableListen
 	}
 }
 
-//public void removeItem(int idx) {
-//tableRows.remove(idx);
-//fireTableRowsDeleted(idx, idx);
+//	public void addItem(int idx, Vector<Object> v) {
+//		rows.add(v);
+//		fireTableRowsInserted(idx, idx);
+//	}
+//
+//	public void removeItem(int idx) {
+//		rows.remove(idx);
+//		fireTableRowsDeleted(idx, idx);
+//	}
+
+//@Override
+//public void updateTable(Vector<Vector<Object>> vectors) {
+//	// int lastRow = rows.size();
+//	while (rows.size() > 0) {
+//		rows.remove(0);
+//		fireTableRowsDeleted(0, 0);
+//	}
+//	if (vectors != null) {
+//		for (Vector<Object> v : vectors) {
+//			rows.add(v);
+//		}
+//		fireTableRowsInserted(0, vectors.size());
+//	}
+//}
+
+//@Override
+//public int getRowCount() {
+//	return rows.size();
+//}
+
+//@Override
+//public Object getValueAt(int rowIndex, int columnIndex) {
+//	Vector<Object> v = rows.get(rowIndex);
+//	return v.get(columnIndex);
+//}
+
+//@Override
+//public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+//	if (columnIndex == USE_COL) {
+//		boolean isSelected = (Boolean) getValueAt(rowIndex, columnIndex);
+//		Vector<Object> v = rows.get(rowIndex);
+//		isSelected = !isSelected;
+////		v.set(0,  b ? "TRUE" : "FALSE");
+//		v.set(USE_COL, isSelected);
+//
+//		int counter = 2;
+//		String ap = "";
+//		for (int row = 1; row < rows.size(); row++) {
+//			v = rows.get(row);
+//			isSelected = (Boolean) getValueAt(row, USE_COL);
+//
+//			ap = isSelected ? String.format("C%02d", counter++) : "";
+//			v.set(AP_COL, ap);
+//			fireTableRowsUpdated(row, row);
+//		}
+//	}
 //}

@@ -38,13 +38,13 @@ import javax.swing.border.TitledBorder;
 public class CatalogFormUI extends JDialog {
 	private static final long serialVersionUID = 1L;
 
-	private CatalogTableListener aListener;
+	private SimpleListener aListener;
 	protected ActionHandler handler;
 
 	public CatalogFormUI() {
 		initComponents();
 
-		aListener = new CatalogTableModel();
+		aListener = new MyModel();
 
 		handler = new ActionHandler(this);
 
@@ -88,7 +88,7 @@ public class CatalogFormUI extends JDialog {
 		clearButton.setEnabled(isEnabled);
 	}
 
-	public void setSimpleListener(CatalogTableListener aListener) {
+	public void setSimpleListener(SimpleListener aListener) {
 		this.aListener = aListener;
 	}
 

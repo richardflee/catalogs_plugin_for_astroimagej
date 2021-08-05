@@ -55,7 +55,7 @@ public class ActionHandler {
 
 	}
 
-	public void doCatalogQuery(CatalogTableListener aListener) {
+	public void doCatalogQuery(SimpleListener aListener) {
 
 		System.out.println("catalog query");
 
@@ -70,11 +70,11 @@ public class ActionHandler {
 		updateCatalogTable(aListener);
 	}
 
-	public void doUpdateTable(CatalogTableListener aListener) {
+	public void doUpdateTable(SimpleListener aListener) {
 		updateCatalogTable(aListener);
 	}
 
-	private void updateCatalogTable(CatalogTableListener aListener) {
+	private void updateCatalogTable(SimpleListener aListener) {
 		updateCatalogUiSettings();
 		result.getTargetObject().setMag(targetMag);
 		System.out.println(String.format("Updated target mag = %.3f", result.getTargetObject().getMag()));
