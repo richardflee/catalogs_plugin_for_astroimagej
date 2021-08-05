@@ -5,8 +5,7 @@ import java.util.List;
 import com.github.richardflee.astroimagej.query_objects.FieldObject;
 
 @FunctionalInterface
-public interface SimpleListener {
-	// public void updateTable(Vector<Vector<Object>> vectors);
+public interface CatalogTableListener {
 	public void updateTable(List<FieldObject> fieldObjects);
 
 }

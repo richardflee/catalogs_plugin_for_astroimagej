@@ -19,29 +19,27 @@ import javax.swing.table.TableColumnModel;
 
 import com.github.richardflee.astroimagej.enums.ColumnsEnum;
 
-public class SimpleTable {
+public class CatalogTable {
 
 	private JTable table;
-	private MyModel myModel;
+	private CatalogTableModel myModel;
 	
 	private final int ROW_HT_INCREMENT = 6;
 	private final int PREFERRED_WIDTH = 800;
 	private static int HEADER_HT = 24;
 
-	public SimpleTable(CatalogFormUI catalogUi) {
+	public CatalogTable(CatalogFormUI catalogUi) {
 
 		CatalogFormUI mycatalog = catalogUi;
 		JScrollPane spane = mycatalog.tableScrollPane;
-		
-		
 
-		myModel = new MyModel();
+		myModel = new CatalogTableModel();
 		table = new JTable(myModel);
 
 		catalogUi.setSimpleListener(myModel);
 		
 		ToolTipHeader header = 
-				new ToolTipHeader(table.getColumnModel(), MyModel.toolTips);
+				new ToolTipHeader(table.getColumnModel(), CatalogTableModel.toolTips);
 		table.setTableHeader(header);
 		header.setDefaultRenderer(new HeaderRenderer());
 		
