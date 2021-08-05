@@ -674,19 +674,20 @@ public class CatalogFormUI extends JDialog {
 							.addGroup(panel7Layout.createSequentialGroup()
 								.addContainerGap()
 								.addGroup(panel7Layout.createParallelGroup()
-									.addGroup(GroupLayout.Alignment.TRAILING, panel7Layout.createSequentialGroup()
-										.addGap(0, 0, Short.MAX_VALUE)
-										.addComponent(closeButton, GroupLayout.PREFERRED_SIZE, 139, GroupLayout.PREFERRED_SIZE))
 									.addGroup(panel7Layout.createSequentialGroup()
 										.addGroup(panel7Layout.createParallelGroup()
 											.addComponent(simbadButton, GroupLayout.PREFERRED_SIZE, 139, GroupLayout.PREFERRED_SIZE)
 											.addComponent(saveQueryButton)
 											.addComponent(catalogQueryButton)
-											.addComponent(updateButton)
-											.addComponent(saveRaDecButton)
-											.addComponent(importRaDecButton)
-											.addComponent(clearButton))
-										.addGap(0, 0, Short.MAX_VALUE)))
+											.addComponent(importRaDecButton))
+										.addGap(0, 0, Short.MAX_VALUE))
+									.addGroup(GroupLayout.Alignment.TRAILING, panel7Layout.createSequentialGroup()
+										.addGap(0, 0, Short.MAX_VALUE)
+										.addGroup(panel7Layout.createParallelGroup()
+											.addComponent(closeButton, GroupLayout.Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 139, GroupLayout.PREFERRED_SIZE)
+											.addComponent(updateButton, GroupLayout.Alignment.TRAILING)
+											.addComponent(saveRaDecButton, GroupLayout.Alignment.TRAILING)
+											.addComponent(clearButton, GroupLayout.Alignment.TRAILING))))
 								.addContainerGap())
 					);
 					panel7Layout.linkSize(SwingConstants.HORIZONTAL, new Component[] {catalogQueryButton, clearButton, closeButton, importRaDecButton, saveQueryButton, saveRaDecButton, simbadButton, updateButton});
@@ -699,15 +700,15 @@ public class CatalogFormUI extends JDialog {
 								.addComponent(saveQueryButton, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE)
 								.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
 								.addComponent(catalogQueryButton, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE)
-								.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-								.addComponent(updateButton, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE)
-								.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+								.addGap(18, 18, 18)
 								.addComponent(saveRaDecButton, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE)
 								.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
 								.addComponent(importRaDecButton, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE)
 								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+								.addComponent(updateButton, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE)
+								.addGap(23, 23, 23)
 								.addComponent(clearButton, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE)
-								.addGap(18, 18, 18)
+								.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
 								.addComponent(closeButton, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE)
 								.addContainerGap())
 					);
@@ -846,9 +847,9 @@ public class CatalogFormUI extends JDialog {
 	protected JSpinner lowerLimitSpinner;
 	protected JSpinner magSpinner;
 	protected JCheckBox isMagLimitsCheckBox;
-	private JLabel upperLabel;
+	protected JLabel upperLabel;
 	private JLabel label16;
-	private JLabel lowerLabel;
+	protected JLabel lowerLabel;
 	private JPanel panel6;
 	protected JRadioButton radSepRadioButton;
 	protected JRadioButton deltaMagRadioButton;

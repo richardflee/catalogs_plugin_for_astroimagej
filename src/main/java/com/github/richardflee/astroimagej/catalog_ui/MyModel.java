@@ -55,6 +55,7 @@ class MyModel extends AbstractTableModel implements SimpleListener {
 				fireTableRowsInserted(idx, idx);
 				idx++;
 			}
+			updateApertureId();
 		}
 	}
 
@@ -125,25 +126,26 @@ class MyModel extends AbstractTableModel implements SimpleListener {
 	@Override
 	public void setValueAt(Object value, int rowIndex, int columnIndex) {
 		if (columnIndex == USE_COL) {
-			// Vector<Object> v = rows.get(rowIndex);
-			// FieldObject fo = fieldObjects.get(rowIndex);
 
 			FieldObject objectRow = tableRows.get(rowIndex);
 
 			boolean isSelected = (Boolean) getValueAt(rowIndex, USE_COL);
 			isSelected = !isSelected;
 			objectRow.setSelected(isSelected);
+			updateApertureId();
+		}
+	}
+	
+	private void updateApertureId() {
+		int counter = 2;
+		for (int row = 1; row < tableRows.size(); row++) {
+			FieldObject objectRow = tableRows.get(row);
+			boolean isSelected = (Boolean) getValueAt(row, USE_COL);
 
-			int counter = 2;
-			for (int row = 1; row < tableRows.size(); row++) {
-				objectRow = tableRows.get(row);
-				isSelected = (Boolean) getValueAt(row, USE_COL);
-
-				String apNum = isSelected ? String.format("C%02d", counter++) : "";
-				objectRow.setApertureId(apNum);
-				objectRow.setSelected(isSelected);
-				fireTableRowsUpdated(row, row);
-			}
+			String apNum = isSelected ? String.format("C%02d", counter++) : "";
+			objectRow.setApertureId(apNum);
+			objectRow.setSelected(isSelected);
+			fireTableRowsUpdated(row, row);
 		}
 	}
 
