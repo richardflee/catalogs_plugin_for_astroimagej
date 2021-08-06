@@ -31,20 +31,16 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
-
-/**
- * @author Richard Lee
- */
-public class CatalogFormUI extends JDialog {
+public class CatalogUI extends JDialog {
 	private static final long serialVersionUID = 1L;
 
-	private SimpleListener aListener;
+	private CatalogTableListener catalogTableListener;
 	protected ActionHandler handler;
 
-	public CatalogFormUI() {
+	public CatalogUI() {
 		initComponents();
 
-		aListener = new MyModel();
+		catalogTableListener = new CatalogTableModel();
 
 		handler = new ActionHandler(this);
 
@@ -60,18 +56,18 @@ public class CatalogFormUI extends JDialog {
 		saveQueryButton.addActionListener(e -> System.out.println("save query"));
 
 		catalogQueryButton.addActionListener(e -> {
-			handler.doCatalogQuery(aListener);
+			handler.doCatalogQuery(catalogTableListener);
 			setButtonsEnabled(true);			
 		});
 
-		updateButton.addActionListener(e -> handler.doUpdateTable(aListener));
+		updateButton.addActionListener(e -> handler.doUpdateTable(catalogTableListener));
 
 		saveRaDecButton.addActionListener(e -> System.out.println("save radec"));
 
 		importRaDecButton.addActionListener(e -> System.out.println("import radec"));
 
 		clearButton.addActionListener(e -> {
-			aListener.updateTable(null);
+			catalogTableListener.updateTable(null);
 			totalLabel.setText("0");
 			filteredLabel.setText("0");
 			setButtonsEnabled(false);
@@ -88,8 +84,8 @@ public class CatalogFormUI extends JDialog {
 		clearButton.setEnabled(isEnabled);
 	}
 
-	public void setSimpleListener(SimpleListener aListener) {
-		this.aListener = aListener;
+	public void setSimpleListener(CatalogTableListener catalogTableListener) {
+		this.catalogTableListener = catalogTableListener;
 	}
 
 	private void initComponents() {

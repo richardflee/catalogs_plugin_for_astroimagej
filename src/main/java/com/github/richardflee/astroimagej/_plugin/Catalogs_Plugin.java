@@ -4,8 +4,9 @@ import java.awt.EventQueue;
 
 import javax.swing.UIManager;
 
-import com.github.richardflee.astroimagej.catalog_ui.CatalogFormUI;
-import com.github.richardflee.astroimagej.catalog_ui.SimpleTable;
+import com.github.richardflee.astroimagej.catalog_ui.ActionHandler;
+import com.github.richardflee.astroimagej.catalog_ui.CatalogUI;
+import com.github.richardflee.astroimagej.catalog_ui.catalogTable;
 
 import ij.IJ;
 import ij.plugin.PlugIn;
@@ -43,9 +44,18 @@ public class Catalogs_Plugin implements PlugIn {
 		//RaDecFileWriter rdw = new RaDecFileWriter();
 
 		// Opens catalog user interface with properties or default data
-		CatalogFormUI catalogUi = new CatalogFormUI();
 		
-		new SimpleTable(catalogUi);
+		
+		
+		CatalogUI catalogUi = new CatalogUI();
+		
+//		CatalogTableModel catalogTableModel = new CatalogTableModel();
+//		
+//		ActionHandler handler = new ActionHandler(catalogUi);
+//		
+//		CatalogTable catalogTable = new CatalogTable()
+		
+		new catalogTable(catalogUi);
 		
 		
 		

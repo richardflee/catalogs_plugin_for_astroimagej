@@ -11,7 +11,7 @@ import com.github.richardflee.astroimagej.query_objects.QueryResult;
 
 public class ActionHandler {
 
-	private CatalogFormUI catalogUi;
+	private CatalogUI catalogUi;
 	private CatalogQuery query;
 	private QueryResult result;
 
@@ -27,7 +27,7 @@ public class ActionHandler {
 	private boolean isRadSepSelected;
 	private boolean isDeltaMagSelected;
 
-	public ActionHandler(CatalogFormUI catalogUi) {
+	public ActionHandler(CatalogUI catalogUi) {
 		this.catalogUi = catalogUi;
 		updateCatalogUiSettings();
 	}
@@ -55,7 +55,7 @@ public class ActionHandler {
 
 	}
 
-	public void doCatalogQuery(SimpleListener aListener) {
+	public void doCatalogQuery(CatalogTableListener catalogTableListener) {
 
 		System.out.println("catalog query");
 
@@ -67,14 +67,14 @@ public class ActionHandler {
 		totalRecords = (totalRecords > 0) ? totalRecords : 0;
 		catalogUi.totalLabel.setText(String.format("%3d", totalRecords));
 
+		updateCatalogTable(catalogTableListener);
+	}
+
+	public void doUpdateTable(CatalogTableListener aListener) {
 		updateCatalogTable(aListener);
 	}
 
-	public void doUpdateTable(SimpleListener aListener) {
-		updateCatalogTable(aListener);
-	}
-
-	private void updateCatalogTable(SimpleListener aListener) {
+	private void updateCatalogTable(CatalogTableListener catalogTableListener) {
 		updateCatalogUiSettings();
 		result.getTargetObject().setMag(targetMag);
 		System.out.println(String.format("Updated target mag = %.3f", result.getTargetObject().getMag()));
@@ -121,7 +121,7 @@ public class ActionHandler {
 		int filteredRecords = sortedFilteredList.size() - 1;
 		filteredRecords = (filteredRecords > 0) ? filteredRecords : 0;
 		catalogUi.filteredLabel.setText(String.format("%3d", filteredRecords));
-		aListener.updateTable(sortedFilteredList);
+		catalogTableListener.updateTable(sortedFilteredList);
 
 	}
 

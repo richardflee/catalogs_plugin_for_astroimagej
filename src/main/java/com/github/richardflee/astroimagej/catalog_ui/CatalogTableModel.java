@@ -9,7 +9,7 @@ import com.github.richardflee.astroimagej.enums.ColumnsEnum;
 import com.github.richardflee.astroimagej.query_objects.FieldObject;
 import com.github.richardflee.astroimagej.utils.AstroCoords;
 
-class MyModel extends AbstractTableModel implements SimpleListener {
+class CatalogTableModel extends AbstractTableModel implements CatalogTableListener {
 	private static final long serialVersionUID = 1L;
 
 	// private Vector<Vector<Object>> rows;
@@ -33,7 +33,7 @@ class MyModel extends AbstractTableModel implements SimpleListener {
 	private final int USE_COL = ColumnsEnum.USE_COL.getIndex();
 	public final int N_COLS = ColumnsEnum.values().length;
 
-	public MyModel() {
+	public CatalogTableModel() {
 		tableRows = new ArrayList<>();
 	}
 
