@@ -10,16 +10,17 @@ new FormModel {
 				name: "dialogPane"
 				"border": new javax.swing.border.EmptyBorder( 12, 12, 12, 12 )
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-					"$horizontalGroup": "par l {seq l {par l {seq {comp panel7:::p::p, space u:::p, par l {seq l {comp panel3:::p:203:p, space :::p, comp panel4:::p:117:p}, seq l {comp panel5:::p:203:p, space :::p, comp panel6:::p:117:p}, comp panel1::l:::p}}, seq {space :::p, par l {comp label20::t:p::p, comp label19::t:p::p}, space u:::p, par l {comp totalLabel::t:p::p, comp filteredLabel::t:p::p}}}, space u:::p, comp panel2:::::x}}"
-					"$verticalGroup": "par l {comp panel2::l:::x, seq l {par t:::p {comp panel7::l:::x, seq l {space :::p, comp panel1:::245:245:p, space s:::p, par l {comp panel3:::p:159:p, comp panel4:::p:159:p}, space :::p, par l:::p {comp panel5:::p:159:p, comp panel6::::0:x}}}, space u:::p, par b {comp label19::b:p::p, comp totalLabel::b:p::p}, space :::p, par b {comp label20::b:p::p, comp filteredLabel::b:p::p}, space ::109:x}}"
+					"$horizontalGroup": "par l {seq l {par l {seq {space :::p, par l {comp label20::t:p::p, comp label19::t:p::p}, space u:::p, par l {comp totalLabel::t:p::p, comp filteredLabel::t:p::p}}, comp panel7:::p::p}, space u:::p, par l {seq l {comp panel3:::p:203:p, space :::p, comp panel4:::p:117:p}, comp panel1:::::p, seq l {comp panel5:::p:203:p, space :::p, comp panel6:::p:117:p}}, space u:::p, comp panel2:::::x}}"
+					"$verticalGroup": "par l {comp panel2::l:::x, seq l {space :::p, par l:::p {comp panel7::t:p::p, seq {comp panel1:::p:279:p, space :::p, par l:::p {comp panel4::::141:x, comp panel3::::141:x}, space :::x, par l:::p {comp panel5:::p:159:p, comp panel6:::p:159:p}}}, space :::p, par l {comp label19:::p::p, comp totalLabel:::p::p}, space :::p, par b {comp label20::b:p::p, comp filteredLabel::b:p::p}, space ::110:x}}"
 				} ) {
 					name: "contentPanel"
 					"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
 					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-						"$horizontalGroup": "par l {seq l {space :p:15:p, par l {comp label1::t:p::p, comp label2::t:p::p, comp label3::t:p::p, comp label4::t:p::p, comp label5::t:p::p, comp label11::t:p::p, comp label12::t:p::p}, space :::p, par l {comp filterCombo:::p::p, comp catalogCombo::l:p:96:p, seq {par t:::p {comp fovField::l:::x, comp decField::l::96:x, comp raField::l:::x, comp magLimitField:::::x}, space :::p, par l {comp label7:::p::p, comp label8:::p::p, comp label9:::p::p, comp label10:::p::p}}, comp objectIdField::l:p:187:p}, space ::62:x}}"
+						"$horizontalGroup": "par l {seq l {space :p:15:p, par l {comp label1::t:p::p, comp label2::t:p::p, comp label3::t:p::p, comp label4::t:p::p, comp label5::t:p::p, comp label11::t:p::p, comp label12::t:p::p}, space :::p, par l {comp filterCombo:::p::p, comp catalogCombo::l:p:96:p, seq {par t:::p {comp fovField::l:::x, comp decField::l::96:x, comp raField::l:::x, comp magLimitField:::::x}, space :::p, par l {comp label7:::p::p, comp label8:::p::p, comp label9:::p::p, comp label10:::p::p}}, comp objectIdField::l:p:187:p}, space ::59:x}}"
 						"$verticalGroup": "par l {seq l {space :::p, par b {comp label1::b:p::p, comp objectIdField::b:p::p}, par l {seq {space :p:16:p, comp label2:::p::p}, seq {space u:::p, par b {comp raField::b:p::p, comp label7::b:p::p}}}, par l {seq {space :p:16:p, comp label3:::p::p}, seq {space u:::p, par b {comp decField::b:p::p, comp label8::b:p::p}}}, par l {seq {space :p:16:p, comp label4:::p::p}, seq {space u:::p, par b {comp fovField::b:p::p, comp label9::b:p::p}}}, par l {seq {space :p:16:p, comp label5:::p::p}, seq {space u:::p, par b {comp magLimitField::b:p::p, comp label10::b:p::p}}}, space u:::p, par b {comp catalogCombo::b:p::p, comp label11::b:p::p}, space u:::p, par b {comp filterCombo::b:p::p, comp label12::b:p::p}, space :::x}}"
 					} ) {
 						name: "panel1"
+						"border": new javax.swing.border.TitledBorder( "Catalog Query settings" )
 						add( new FormComponent( "javax.swing.JLabel" ) {
 							name: "label1"
 							"text": "ObjectID"
@@ -90,6 +91,7 @@ new FormModel {
 								addElement( "VSP" )
 								addElement( "APASS" )
 							}
+							"toolTipText": "<html>\nSelect on-line astronomical database from list\n</html>"
 							auxiliary() {
 								"JavaCodeGenerator.typeParameters": "String"
 							}
@@ -100,6 +102,7 @@ new FormModel {
 						} )
 						add( new FormComponent( "javax.swing.JComboBox" ) {
 							name: "filterCombo"
+							"toolTipText": "<html>\nSelect photometric filter from list\n<p>Listed filters depends on selected catalog</p>\n</html>"
 							auxiliary() {
 								"JavaCodeGenerator.typeParameters": "String"
 							}
@@ -110,7 +113,7 @@ new FormModel {
 						} )
 					} )
 					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-						"$horizontalGroup": "par l {comp tableScrollPane::l::745:x}"
+						"$horizontalGroup": "par l {comp tableScrollPane::l::741:x}"
 						"$verticalGroup": "par l {comp tableScrollPane::l:::x}"
 					} ) {
 						name: "panel2"
@@ -125,12 +128,11 @@ new FormModel {
 					} )
 					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
 						"$horizontalGroup": "par l {seq l {par l {seq {space :p:25:p, par l {comp raLabel::t:p::p, comp decLabel::t:p::p}}, seq l {space :::p, comp idLabel:::p::p}}, space :::p, par l {comp simbadIdLabel::l:p::p, comp simbadRaLabel::l:p::p, comp simbadDecLabel:::p::p}, space :0:37:x}}"
-						"$verticalGroup": "par l {seq l {space :::p, par b {comp simbadIdLabel::b:p::p, comp idLabel::b:p::p}, space u:::p, par b {comp raLabel::b:p::p, comp simbadRaLabel::b:p::p}, space u:::p, par b {comp decLabel::b:p::p, comp simbadDecLabel::b:p::p}, space ::47:x}}"
+						"$verticalGroup": "par l {seq l {space :::p, par b {comp simbadIdLabel::b:p::p, comp idLabel::b:p::p}, space u:::p, par b {comp raLabel::b:p::p, comp simbadRaLabel::b:p::p}, space u:::p, par b {comp decLabel::b:p::p, comp simbadDecLabel::b:p::p}, space ::29:x}}"
 					} ) {
 						name: "panel3"
 						"border": new javax.swing.border.TitledBorder( "SIMBAD Data" )
 						"preferredSize": &Dimension0 new java.awt.Dimension( 190, 164 )
-						"toolTipText": "<html>\nSIMBAD query results:\n<p>Populates data fields with results of SIMBAD query </p>\n<p>Fields marked '.' indicate the search failed or no data</p>\n</html>"
 						add( new FormComponent( "javax.swing.JLabel" ) {
 							name: "idLabel"
 							"text": "ObjectId:"
@@ -158,12 +160,11 @@ new FormModel {
 					} )
 					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
 						"$horizontalGroup": "par l {seq {space :::p, par l {comp idLabel2::t:p::p, comp idLabel3::t:p::p, comp idLabel4::t:p::p, comp idLabel5::t:p::p}, space :::p, par l {comp simbadMagBLabel::l:p::p, comp simbadMagVLabel::l:p::p, comp simbadMagRLabel::l:p::p, comp simbadMagILabel::l:p::p}, space ::45:x}}"
-						"$verticalGroup": "par l {seq l {space :::p, par b {comp idLabel2::b:p::p, comp simbadMagBLabel::b:p::p}, space u:::p, par b {comp idLabel3::b:p::p, comp simbadMagVLabel::b:p::p}, space u:::p, par b {comp idLabel4::b:p::p, comp simbadMagRLabel::b:p::p}, space u:::p, par b {comp idLabel5::b:p::p, comp simbadMagILabel::b:p::p}, space ::18:x}}"
+						"$verticalGroup": "par l {seq l {space :::x, par b {comp idLabel2::b:p::p, comp simbadMagBLabel::b:p::p}, space u:::p, par b {comp idLabel3::b:p::p, comp simbadMagVLabel::b:p::p}, space u:::p, par b {comp idLabel4::b:p::p, comp simbadMagRLabel::b:p::p}, space u:::p, par b {comp idLabel5::b:p::p, comp simbadMagILabel::b:p::p}}}"
 					} ) {
 						name: "panel4"
 						"border": new javax.swing.border.TitledBorder( "Filter Mag" )
 						"preferredSize": &Dimension1 new java.awt.Dimension( 190, 164 )
-						"toolTipText": "<html>\nSIMBAD query results:\n<p>Populates data fields with results of SIMBAD query </p>\n<p>Fields marked '.' indicate the search failed or no data</p>\n</html>"
 						add( new FormComponent( "javax.swing.JLabel" ) {
 							name: "idLabel2"
 							"text": "MagB:"
@@ -204,7 +205,6 @@ new FormModel {
 						name: "panel5"
 						"border": new javax.swing.border.TitledBorder( "Set Mag Limits" )
 						"preferredSize": #Dimension0
-						"toolTipText": "<html>\nSIMBAD query results:\n<p>Populates data fields with results of SIMBAD query </p>\n<p>Fields marked '.' indicate the search failed or no data</p>\n</html>"
 						add( new FormComponent( "javax.swing.JLabel" ) {
 							name: "label6"
 							"text": "Upper:"
@@ -220,6 +220,7 @@ new FormModel {
 						add( new FormComponent( "javax.swing.JSpinner" ) {
 							name: "upperLimitSpinner"
 							"model": new javax.swing.SpinnerNumberModel( 0.0, -0.1, 5.0, 0.10000000149011612 )
+							"toolTipText": "<html>\nSet the target mag upper limit\n<p>Setting Upper = 0 disables this limit</p>\n<p>Range: 0 - 5 mag in 0.1 mag increment</p>\n</html>"
 							auxiliary() {
 								"JavaCodeGenerator.variableModifiers": 4
 							}
@@ -227,6 +228,7 @@ new FormModel {
 						add( new FormComponent( "javax.swing.JSpinner" ) {
 							name: "lowerLimitSpinner"
 							"model": new javax.swing.SpinnerNumberModel( 0.0, -5.0, 0.1, 0.10000000149011612 )
+							"toolTipText": "<html>\nSet the target mag lower limit\n<p>Setting Lower = 0 disables this limit</p>\n<p>Range: -5 - 0 mag in 0.1 mag increment</p>\n</html>\n"
 							auxiliary() {
 								"JavaCodeGenerator.variableModifiers": 4
 							}
@@ -234,6 +236,7 @@ new FormModel {
 						add( new FormComponent( "javax.swing.JSpinner" ) {
 							name: "magSpinner"
 							"model": new javax.swing.SpinnerNumberModel( 10.0, 5.5, 25.0, 0.10000000149011612 )
+							"toolTipText": "<html>\nSet the nominal target mag for the selected filter band\n<p>Use the scroll control  or type value in text box</p>\n<p>Range: 5.5 - 25 mag in 0.1 mag increment</p>\n</html>"
 							auxiliary() {
 								"JavaCodeGenerator.variableModifiers": 4
 							}
@@ -272,12 +275,12 @@ new FormModel {
 						name: "panel6"
 						"border": new javax.swing.border.TitledBorder( "Ascending Sort" )
 						"preferredSize": #Dimension1
-						"toolTipText": "<html>\nSIMBAD query results:\n<p>Populates data fields with results of SIMBAD query </p>\n<p>Fields marked '.' indicate the search failed or no data</p>\n</html>"
 						add( new FormComponent( "javax.swing.JRadioButton" ) {
 							name: "radSepRadioButton"
 							"text": "Distance"
 							"selected": true
 							"$buttonGroup": new FormReference( "buttonGroup1" )
+							"toolTipText": "<html>\nSort table records in ascending order of\n<p>radial separation to objectId coordinates</p>\n<p>Separation: arcmin</p>\n</html>"
 							auxiliary() {
 								"JavaCodeGenerator.variableModifiers": 4
 							}
@@ -286,6 +289,7 @@ new FormModel {
 							name: "deltaMagRadioButton"
 							"text": "|Delta Mag|"
 							"$buttonGroup": new FormReference( "buttonGroup1" )
+							"toolTipText": "<html>\nSort table records in ascending order of\n<p>absolute difference in magnitude</p>\n<p>|Delta Mag| = |reference_mag - target_mag|</p>\n</html>\n"
 							auxiliary() {
 								"JavaCodeGenerator.variableModifiers": 4
 							}
@@ -297,6 +301,7 @@ new FormModel {
 						add( new FormComponent( "javax.swing.JSpinner" ) {
 							name: "nObsSpinner"
 							"model": new javax.swing.SpinnerNumberModel( 1, 1, 10, 1 )
+							"toolTipText": "<html>\nSet minimum number of observations APASS catalog\n<p>Range: 1 to 10 (defaults to Nobs =1)</p>\n</html>\n"
 							auxiliary() {
 								"JavaCodeGenerator.variableModifiers": 4
 							}
@@ -304,7 +309,7 @@ new FormModel {
 					} )
 					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
 						"$horizontalGroup": "par l {seq {space :::p, par l {seq {par l {comp simbadButton:2::p:139:p, comp saveQueryButton:2:l:p::p, comp catalogQueryButton:2:l:p::p, comp importRaDecButton:2:l:p::p}, space :0:0:x}, seq t {space :0:0:x, par l {comp closeButton:2:t:p:139:p, comp updateButton:2:t:p::p, comp saveRaDecButton:2:t:p::p, comp clearButton:2:t:p::p}}}, space :::p}}"
-						"$verticalGroup": "par l {seq l {space :::p, comp simbadButton:::p:39:p, space u:::p, comp saveQueryButton:::p:39:p, space u:::p, comp catalogQueryButton:::p:39:p, space s:::p, comp saveRaDecButton:::p:39:p, space u:::p, comp importRaDecButton:::p:39:p, space :::x, comp updateButton:::p:39:p, space :p:23:p, comp clearButton:::p:39:p, space u:::p, comp closeButton:::p:39:p, space :::p}}"
+						"$verticalGroup": "par l {seq l {space :::p, comp simbadButton:::p:39:p, space u:::p, comp saveQueryButton:::p:39:p, space u:::p, comp catalogQueryButton:::p:39:p, space s:::p, comp saveRaDecButton:::p:39:p, space u:::p, comp importRaDecButton:::p:39:p, space ::159:x, comp updateButton:::p:39:p, space :p:23:p, comp clearButton:::p:39:p, space u:::p, comp closeButton:::p:39:p, space :::p}}"
 					} ) {
 						name: "panel7"
 						add( new FormComponent( "javax.swing.JButton" ) {
@@ -318,7 +323,7 @@ new FormModel {
 						add( new FormComponent( "javax.swing.JButton" ) {
 							name: "closeButton"
 							"text": "Close"
-							"toolTipText": "<html>\nRuns a search for ObjectID on the SIMBAD online database\n<p>If the search is successful:</p>\n<p>  - updates RA and Dec fields with SIMBAD coordinates</p>\n<p>  - updates SIMBAD Data and Filter Magnitudes fields</p>\n<p>Note: ObjectID value is unchanged</p>\n</html>"
+							"toolTipText": "<html>\nCloses Catalog Query dialog and returns control to AstroImageJ application\n<p>WARNING: Discaards any unsaved settings</p>\n</html>"
 							auxiliary() {
 								"JavaCodeGenerator.variableModifiers": 4
 							}
@@ -326,7 +331,7 @@ new FormModel {
 						add( new FormComponent( "javax.swing.JButton" ) {
 							name: "saveQueryButton"
 							"text": "Save Query Data"
-							"toolTipText": "<html>\nRuns a search for ObjectID on the SIMBAD online database\n<p>If the search is successful:</p>\n<p>  - updates RA and Dec fields with SIMBAD coordinates</p>\n<p>  - updates SIMBAD Data and Filter Magnitudes fields</p>\n<p>Note: ObjectID value is unchanged</p>\n</html>"
+							"toolTipText": "<html>\nSaves the current Catalog Query settings\n</html>"
 							auxiliary() {
 								"JavaCodeGenerator.variableModifiers": 4
 							}
@@ -334,7 +339,7 @@ new FormModel {
 						add( new FormComponent( "javax.swing.JButton" ) {
 							name: "catalogQueryButton"
 							"text": "Run Catalog Query"
-							"toolTipText": "<html>\nRuns a search for ObjectID on the SIMBAD online database\n<p>If the search is successful:</p>\n<p>  - updates RA and Dec fields with SIMBAD coordinates</p>\n<p>  - updates SIMBAD Data and Filter Magnitudes fields</p>\n<p>Note: ObjectID value is unchanged</p>\n</html>"
+							"toolTipText": "<html>\nRuns a query on the selected online Catalog database\n<p>with specified Catalog Query settings</p>\n</html>"
 							auxiliary() {
 								"JavaCodeGenerator.variableModifiers": 4
 							}
@@ -342,7 +347,7 @@ new FormModel {
 						add( new FormComponent( "javax.swing.JButton" ) {
 							name: "updateButton"
 							"text": "Update Table"
-							"toolTipText": "<html>\nRuns a search for ObjectID on the SIMBAD online database\n<p>If the search is successful:</p>\n<p>  - updates RA and Dec fields with SIMBAD coordinates</p>\n<p>  - updates SIMBAD Data and Filter Magnitudes fields</p>\n<p>Note: ObjectID value is unchanged</p>\n</html>"
+							"toolTipText": "<html>\nUpdates table with current Sort and data filter settings\n</html>"
 							auxiliary() {
 								"JavaCodeGenerator.variableModifiers": 4
 							}
@@ -350,7 +355,7 @@ new FormModel {
 						add( new FormComponent( "javax.swing.JButton" ) {
 							name: "saveRaDecButton"
 							"text": "Save RaDec File"
-							"toolTipText": "<html>\nRuns a search for ObjectID on the SIMBAD online database\n<p>If the search is successful:</p>\n<p>  - updates RA and Dec fields with SIMBAD coordinates</p>\n<p>  - updates SIMBAD Data and Filter Magnitudes fields</p>\n<p>Note: ObjectID value is unchanged</p>\n</html>"
+							"toolTipText": "<html>\nSaves a radec format file to import apertures into AstroImageJ\n<p>File is saved in folder:  ./AstroImage/radec</p>\n<p> Filename format: [objectId].[filter].[fov_amin].radec.txt</p>\n<p> e.g. ./AstroImageJ/radec/wasp12.Rc.020.radec.txt</p>\n</html>"
 							auxiliary() {
 								"JavaCodeGenerator.variableModifiers": 4
 							}
@@ -358,7 +363,7 @@ new FormModel {
 						add( new FormComponent( "javax.swing.JButton" ) {
 							name: "importRaDecButton"
 							"text": "Import RaDec File"
-							"toolTipText": "<html>\nRuns a search for ObjectID on the SIMBAD online database\n<p>If the search is successful:</p>\n<p>  - updates RA and Dec fields with SIMBAD coordinates</p>\n<p>  - updates SIMBAD Data and Filter Magnitudes fields</p>\n<p>Note: ObjectID value is unchanged</p>\n</html>"
+							"toolTipText": "<html>\nReads user selected radec file and loads data into the Catalog Table  \n</html>"
 							auxiliary() {
 								"JavaCodeGenerator.variableModifiers": 4
 							}
@@ -366,7 +371,7 @@ new FormModel {
 						add( new FormComponent( "javax.swing.JButton" ) {
 							name: "clearButton"
 							"text": "Clear"
-							"toolTipText": "<html>\nRuns a search for ObjectID on the SIMBAD online database\n<p>If the search is successful:</p>\n<p>  - updates RA and Dec fields with SIMBAD coordinates</p>\n<p>  - updates SIMBAD Data and Filter Magnitudes fields</p>\n<p>Note: ObjectID value is unchanged</p>\n</html>"
+							"toolTipText": "<html>\nClears current query result data and  removes catalog table records\n</html>"
 							auxiliary() {
 								"JavaCodeGenerator.variableModifiers": 4
 							}
@@ -382,7 +387,7 @@ new FormModel {
 					} )
 					add( new FormComponent( "javax.swing.JLabel" ) {
 						name: "totalLabel"
-						"text": "000"
+						"text": "0"
 						auxiliary() {
 							"JavaCodeGenerator.variableModifiers": 4
 						}

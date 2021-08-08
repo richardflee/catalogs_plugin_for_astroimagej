@@ -9,77 +9,112 @@ import com.github.richardflee.astroimagej.query_objects.CatalogQuery;
 import com.github.richardflee.astroimagej.query_objects.FieldObject;
 import com.github.richardflee.astroimagej.query_objects.QueryResult;
 
+/**
+ * This class handles catalog_ui button click events to command database query,
+ * update tale data and radec file read / write operations
+ *
+ */
 public class ActionHandler {
-
+	// reference to CatalogUI, main user form
 	private CatalogUI catalogUi;
+
+	// references to catalog database query and result objects
 	private CatalogQuery query;
 	private QueryResult result;
 
+	// interface reference updateTable
+	private CatalogTableListener catalogTableListener;
+
+	// catalogUi field and spinner values
 	private double targetMag;
 	private double magUpperLimit;
 	private double magLowerLimit;
 
 	private int numberObs;
-	private int totalRecords;
-	private int filteredRecords;
 
 	private boolean isMagLimitsSelected;
 	private boolean isRadSepSelected;
 	private boolean isDeltaMagSelected;
 
+	/**
+	 * Parameterised constructor references CatalogUI to access form control values
+	 * 
+	 * @param catalogUi reference to main user form interface
+	 */
 	public ActionHandler(CatalogUI catalogUi) {
 		this.catalogUi = catalogUi;
-		updateCatalogUiSettings();
-	}
+		importCatalogUiSettings();
 
-	private void updateCatalogUiSettings() {
-
-		System.out.println(String.format("do mag limits check: %b", catalogUi.isMagLimitsCheckBox.isSelected()));
-
-		String strVal = catalogUi.magSpinner.getValue().toString();
-
-		targetMag = Double.valueOf(catalogUi.magSpinner.getValue().toString());
-		magUpperLimit = Double.valueOf(catalogUi.upperLimitSpinner.getValue().toString());
-
-		magLowerLimit = Double.valueOf(catalogUi.lowerLimitSpinner.getValue().toString());
-		isMagLimitsSelected = Boolean.valueOf(catalogUi.isMagLimitsCheckBox.isSelected());
-
-		// totalRecords = Integer.valueOf(catalogUi.totalLabel.getText().toString());
-		// filteredRecords =
-		// Integer.valueOf(catalogUi.filteredLabel.getText().toString());
-
-		isRadSepSelected = Boolean.valueOf((Boolean) catalogUi.radSepRadioButton.isSelected());
-		isDeltaMagSelected = Boolean.valueOf((Boolean) catalogUi.deltaMagRadioButton.isSelected());
-
-		numberObs = Integer.valueOf(catalogUi.nObsSpinner.getValue().toString());
-
-	}
-
-	public void doCatalogQuery(CatalogTableListener catalogTableListener) {
-
-		System.out.println("catalog query");
-
-		ApassFileReader fr = new ApassFileReader();
+		// TDD replace with cat query build method
 		query = new CatalogQuery();
-		result = fr.runQueryFromFile(query);
+	}
 
+	/**
+	 * Configures local table listener field to broadcast updateTable message
+	 * 
+	 * @param catalogTableListener reference to CataTableListner interface
+	 */
+	public void setCatalogTableListener(CatalogTableListener catalogTableListener) {
+		this.catalogTableListener = catalogTableListener;
+	}
+
+	/**
+	 * Runs a query on on-line astronomical database with query object parameters.
+	 * Outputs result records in the catalog table.
+	 */
+
+	// TTD test with catalog query methods
+	public void doCatalogQuery() {
+		// file read demo ..
+		ApassFileReader fr = new ApassFileReader();
+		QueryResult result = fr.runQueryFromFile(query);
+		this.result = result;
+
+		// Update total reference object records returned by catalog query
+		// excluding target object which is always the top table entry
 		int totalRecords = result.getTotalRecords();
 		totalRecords = (totalRecords > 0) ? totalRecords : 0;
 		catalogUi.totalLabel.setText(String.format("%3d", totalRecords));
 
-		updateCatalogTable(catalogTableListener);
+		// uodates table with sorted & optioanlly filtered query results
+		updateCatalogTable(result);
 	}
 
-	public void doUpdateTable(CatalogTableListener aListener) {
-		updateCatalogTable(aListener);
+	/**
+	 * Updates table with current user filter and sort settings
+	 */
+	public void doUpdateTable() {
+		updateCatalogTable(result);
 	}
 
-	private void updateCatalogTable(CatalogTableListener catalogTableListener) {
-		updateCatalogUiSettings();
+	/**
+	 * Clears catalog table and resets totals
+	 * 
+	 */
+	public void doClearTable() {
+		catalogUi.filteredLabel.setText("0");
+		catalogUi.totalLabel.setText("0");
+		updateCatalogTable(null);
+	}
+
+	/*
+	 * Sorts reference object records relative to target object. Sort options are
+	 * radial distance or difference in magnitude values.
+	 */
+	private void updateCatalogTable(QueryResult result) {
+		if (result == null) {
+			catalogTableListener.updateTable(null);
+			return;
+		}
+		// current ui data
+		importCatalogUiSettings();
+
+		// updates query result object with user-input target mag value
 		result.getTargetObject().setMag(targetMag);
-		System.out.println(String.format("Updated target mag = %.3f", result.getTargetObject().getMag()));
 
-		// sort
+		// sort relative to target
+		// sort type from selected radio button: sorts radial distance or absolute
+		// difference
 		List<FieldObject> sortedList = null;
 		if (isRadSepSelected) {
 			sortedList = result.sortByDistance(targetMag);
@@ -89,40 +124,52 @@ public class ActionHandler {
 
 		// apply nObs limit
 		List<FieldObject> sortedFilteredList = null;
-
 		sortedFilteredList = sortedList.stream().filter(p -> ((p.getnObs() >= numberObs) || (p.isTarget())))
 				.collect(Collectors.toList());
 
+		// option to apply mag difference filters
+		// if upper and/or lower limits < 0.1 (effectively 0) then limits are not
+		// applied (N/A)
 		if (isMagLimitsSelected) {
-
-			// apply target mag limits
-			if (Math.abs(magUpperLimit) < 0.01) {
-				catalogUi.upperLabel.setText(String.format("%s", "N/A"));
-			} else {
-
-			}
-
 			final double upperLimit = ((Math.abs(magUpperLimit) < 0.01) ? 100.0 : targetMag + magUpperLimit);
-			String upperText = (Math.abs(magUpperLimit) < 0.01) ? "N/A" : String.format("%.1f", upperLimit);
-			catalogUi.upperLabel.setText(upperText);
+			String limit = (Math.abs(magUpperLimit) < 0.01) ? "N/A" : String.format("%.1f", upperLimit);
+			catalogUi.upperLabel.setText(limit);
 
 			final double lowerLimit = ((Math.abs(magLowerLimit) < 0.01) ? -100.0 : targetMag + magLowerLimit);
-			String lowerText = (Math.abs(magLowerLimit) < 0.01) ? "N/A" : String.format("%.1f", lowerLimit);
-			catalogUi.lowerLabel.setText(lowerText);
-			
-			
+			limit = (Math.abs(magLowerLimit) < 0.01) ? "N/A" : String.format("%.1f", lowerLimit);
+			catalogUi.lowerLabel.setText(limit);
 
-			System.out.println(String.format("mag range= %.3f,  %.3f", upperLimit, lowerLimit));
-
+			// apply mag upper & lower mag limits
 			sortedFilteredList = sortedFilteredList.stream().filter(p -> (p.getMag() >= lowerLimit))
 					.filter(p -> p.getMag() <= upperLimit).collect(Collectors.toList());
 		}
 
+		// update number of filtered records, clip to 0 if count is negative
 		int filteredRecords = sortedFilteredList.size() - 1;
 		filteredRecords = (filteredRecords > 0) ? filteredRecords : 0;
 		catalogUi.filteredLabel.setText(String.format("%3d", filteredRecords));
-		catalogTableListener.updateTable(sortedFilteredList);
 
+		// run table update with sort / filter selections
+		catalogTableListener.updateTable(sortedFilteredList);
+	}
+
+	/*
+	 * Import catalogUI sort and filter control values
+	 */
+	private void importCatalogUiSettings() {
+		// values of nominal mag, upper and lower limits and state of apply filter
+		// checkbox
+		targetMag = Double.valueOf(catalogUi.magSpinner.getValue().toString());
+		magUpperLimit = Double.valueOf(catalogUi.upperLimitSpinner.getValue().toString());
+		magLowerLimit = Double.valueOf(catalogUi.lowerLimitSpinner.getValue().toString());
+		isMagLimitsSelected = Boolean.valueOf(catalogUi.isMagLimitsCheckBox.isSelected());
+
+		// sort option, mutually exclusive
+		isRadSepSelected = Boolean.valueOf((Boolean) catalogUi.radSepRadioButton.isSelected());
+		isDeltaMagSelected = Boolean.valueOf((Boolean) catalogUi.deltaMagRadioButton.isSelected());
+
+		// number of observations spin control, relevant to apass catalog only
+		numberObs = Integer.valueOf(catalogUi.nObsSpinner.getValue().toString());
 	}
 
 	public static void main(String args[]) {
@@ -136,8 +183,6 @@ public class ActionHandler {
 		FieldObject target = fieldObjects.stream().filter(p -> p.isTarget()).findFirst().get();
 		fieldObjects.remove(target);
 		target.setApertureId("T01");
-
-		System.out.println("there");
 
 		// sort by distance
 		List<FieldObject> sortByRadSep = fieldObjects.stream()
@@ -165,23 +210,5 @@ public class ActionHandler {
 		for (FieldObject fo : sortByDeltaMag) {
 			System.out.println(fo.toString());
 		}
-
 	}
-
 }
-
-//		System.out.println(String.format("mag spinner: %.1f", catalogUi.magSpinner.getValue()));
-//		
-//		System.out.println(String.format("upper limit spinner: %.1f", catalogUi.upperLimitSpinner.getValue()));
-//		
-//		System.out.println(String.format("lower limit spinner: %.1f", catalogUi.lowerLimitSpinner.getValue()));
-//		
-//		System.out.println(String.format("total records label: %s", catalogUi.totalRecordsLabel.getText()));
-//		
-//		System.out.println(String.format("filtered records label: %s", catalogUi.filteredRecordsLabel.getText()));
-//		
-//		System.out.println(String.format("rad sep radio button: %b", catalogUi.radSepRadioButton.isSelected()));
-//		
-//		System.out.println(String.format("delta mag radio buttonr: %b", catalogUi.deltaMagRadioButton.isSelected()));
-//		
-//		System.out.println(String.format("nobs spinner: %02d", catalogUi.nObsSpinner.getValue()));

@@ -9,15 +9,22 @@ import com.github.richardflee.astroimagej.enums.ColumnsEnum;
 import com.github.richardflee.astroimagej.query_objects.FieldObject;
 import com.github.richardflee.astroimagej.utils.AstroCoords;
 
-class CatalogTableModel extends AbstractTableModel implements CatalogTableListener {
+/**
+ * Data model for CatalogTable astronomical object table
+ * <p>Extends super class AbstractTableModel and implements updateTable method 
+ * specified in CatalogTableListener interface.</p>
+ */
+public class CatalogTableModel extends AbstractTableModel implements CatalogTableListener {
 	private static final long serialVersionUID = 1L;
 
-	// private Vector<Vector<Object>> rows;
+	// table data array
 	private List<FieldObject> tableRows;
 
-	final String headers[] = { "Ap", "ObjectId", "Ra2000", "Dec2000", "Mag", "Mag Err", "Mag diff", "Dist", "Nobs",
+	// header column names
+	final static String headers[] = { "Ap", "ObjectId", "Ra2000", "Dec2000", "Mag", "Mag Err", "Mag diff", "Dist", "Nobs",
 			"USE" };
-
+	
+	// header tooltips, html formatting
 	public static final String[] toolTips = { "<html>Identifies measurement aperture for selected rows</html>",
 			"<html>Object identifer<br>APASS format: HHMMSSS±DDMMSS</html>", "<html>Object coordinates</html>",
 			"<html>Object coordinates</html>", "<html>Catalog magnitude for selected mag band</html>",
@@ -29,7 +36,7 @@ class CatalogTableModel extends AbstractTableModel implements CatalogTableListen
 			"<html>Number of observation sessions<br>" + "(APASS catalog)</html>",
 			"<html>USE => copy selected rows to radec file<br>Default = selected</html>" };
 
-	// private final int AP_COL = ColumnsEnum.AP_COL.getIndex();
+	// column numbers 
 	private final int USE_COL = ColumnsEnum.USE_COL.getIndex();
 	public final int N_COLS = ColumnsEnum.values().length;
 
@@ -37,43 +44,44 @@ class CatalogTableModel extends AbstractTableModel implements CatalogTableListen
 		tableRows = new ArrayList<>();
 	}
 
+	
+	/**
+	 * Overrides CatalogTableListener -> updateTable() method.
+	 * <p>Clears table if new data is null,  otherwise updates table with new currentTableRows data</p>
+	 * 
+	 * @param new data set comprising first row target data then series of reference row data
+	 */
 	@Override
 	public void updateTable(List<FieldObject> currentTableRows) {
-
+		// repeat delete top row (index 0) until table is empty
 		int LastRow = tableRows.size();
 		while (tableRows.size() > 0) {
 			tableRows.remove(0);
 		}
 		fireTableRowsDeleted(0, LastRow);
-		// clear table remove rows
-
+		
+		// update table with current data
 		if (currentTableRows != null) {
 			int idx = 0;
 			for (FieldObject tableRow : currentTableRows) {
-				// objectRows.add(objectRow);
 				addItem(idx, tableRow);
-				fireTableRowsInserted(idx, idx);
 				idx++;
 			}
 			updateApertureId();
 		}
 	}
 
-	
-
-	public void updateRow(int row) {
-		fireTableRowsUpdated(row, row);
-	}
-
-	public void addItem(int idx, FieldObject objectRow) {
-		tableRows.add(idx, objectRow);
+	/**
+	 * add row to table at row number idx & update
+	 * 
+	 * @param idx row number to inset new row 
+	 * @param tableRow new row data
+	 */
+	private void addItem(int idx, FieldObject tableRow) {
+		tableRows.add(idx, tableRow);
 		fireTableRowsInserted(idx, idx);
 	}
 
-	public void removeItem(int idx) {
-		tableRows.remove(idx);
-		fireTableRowsDeleted(idx, idx);
-	}
 
 	@Override
 	public int getRowCount() {
@@ -85,50 +93,65 @@ class CatalogTableModel extends AbstractTableModel implements CatalogTableListen
 		return N_COLS;
 	}
 
+	/**
+	 * Returns the value for the cell at rowIndex, columnIndex
+	 * <p>Lookup based on ColumnsEnum enum value for that columnIndex</p>
+	 * 
+	 * @param rowIndex lookup row index
+	 * @param columnIndex lookup column index
+	 * @return data string or boolean lookup value
+	 */
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		FieldObject objectRow = tableRows.get(rowIndex);
+		
+		// reverse lookup ColumnsEnum en from columnIndex
+		ColumnsEnum en = ColumnsEnum.getEnum(columnIndex);
+		
+		// match ColumnsEnum en to process data
 		Object data = null;
-
-		if (columnIndex == ColumnsEnum.AP_COL.getIndex()) {
+		if (en == ColumnsEnum.AP_COL) {
 			data = (String) objectRow.getApertureId();
 
-		} else if (columnIndex == ColumnsEnum.OBJECTID_COL.getIndex()) {
+		} else if (en == ColumnsEnum.OBJECTID_COL) {
 			data = (String) objectRow.getObjectId();
 
-		} else if (columnIndex == ColumnsEnum.RA2000_COL.getIndex()) {
+		} else if (en == ColumnsEnum.RA2000_COL) {
 			data = (String) AstroCoords.raHr_To_raHms(objectRow.getRaHr());
 
-		} else if (columnIndex == ColumnsEnum.DEC2000_COL.getIndex()) {
+		} else if (en == ColumnsEnum.DEC2000_COL) {
 			data = (String) AstroCoords.decDeg_To_decDms(objectRow.getDecDeg());
 
-		} else if (columnIndex == ColumnsEnum.MAG_COL.getIndex()) {
+		} else if (en == ColumnsEnum.MAG_COL) {
 			data = (String) String.format("%.3f", objectRow.getMag());
 
-		} else if (columnIndex == ColumnsEnum.MAG_ERR_COL.getIndex()) {
+		} else if (en == ColumnsEnum.MAG_ERR_COL) {
 			data = (String) String.format("%.3f", objectRow.getMagErr());
 
-		} else if (columnIndex == ColumnsEnum.MAG_DIFF_COL.getIndex()) {
+		} else if (en == ColumnsEnum.MAG_DIFF_COL) {
 			data = (String) String.format("%.3f", objectRow.getDeltaMag());
 
-		} else if (columnIndex == ColumnsEnum.DIST_AMIN_COL.getIndex()) {
+		} else if (en == ColumnsEnum.DIST_AMIN_COL) {
 			data = (String) String.format("%.2f", objectRow.getRadSepAmin());
 
-		} else if (columnIndex == ColumnsEnum.NOBS_COL.getIndex()) {
+		} else if (en == ColumnsEnum.NOBS_COL) {
 			data = (String) String.format("%2d", objectRow.getnObs());
 
-		} else if (columnIndex == ColumnsEnum.USE_COL.getIndex()) {
+		} else if (en == ColumnsEnum.USE_COL) {
 			data = (Boolean) objectRow.isSelected();
 		}
 		return data;
 	}
+	
 
+	/**
+	 * Toggles boolean value when user clicks on Use cell checkbox
+	 */
 	@Override
 	public void setValueAt(Object value, int rowIndex, int columnIndex) {
 		if (columnIndex == USE_COL) {
-
+			// extract active row, toggle selected flag and update aperture id column
 			FieldObject objectRow = tableRows.get(rowIndex);
-
 			boolean isSelected = (Boolean) getValueAt(rowIndex, USE_COL);
 			isSelected = !isSelected;
 			objectRow.setSelected(isSelected);
@@ -136,6 +159,10 @@ class CatalogTableModel extends AbstractTableModel implements CatalogTableListen
 		}
 	}
 	
+	/*
+	 * Updates aperture id values when user selects or deselects use_col checkbox.
+	 * No update to target aperture T01 
+	 */
 	private void updateApertureId() {
 		int counter = 2;
 		for (int row = 1; row < tableRows.size(); row++) {
@@ -154,72 +181,22 @@ class CatalogTableModel extends AbstractTableModel implements CatalogTableListen
 		return headers[column];
 	}
 
+	/*
+	 *  Configure column edit status: only boolean use_col checkbox is editable 
+	 *  Target top row is not editable
+	 */ 
 	@Override
 	public boolean isCellEditable(int row, int column) {
 		boolean isEditable = (row != 0) && (column == USE_COL);
 		return isEditable;
 	}
 
+	/*
+	 *  Configure column class: string for all columns except use_col = boolean
+	 */
 	@Override
 	public Class<?> getColumnClass(int column) {
 		return (column == ColumnsEnum.USE_COL.getIndex()) ? Boolean.class : String.class;
 	}
 }
 
-//	public void addItem(int idx, Vector<Object> v) {
-//		rows.add(v);
-//		fireTableRowsInserted(idx, idx);
-//	}
-//
-//	public void removeItem(int idx) {
-//		rows.remove(idx);
-//		fireTableRowsDeleted(idx, idx);
-//	}
-
-//@Override
-//public void updateTable(Vector<Vector<Object>> vectors) {
-//	// int lastRow = rows.size();
-//	while (rows.size() > 0) {
-//		rows.remove(0);
-//		fireTableRowsDeleted(0, 0);
-//	}
-//	if (vectors != null) {
-//		for (Vector<Object> v : vectors) {
-//			rows.add(v);
-//		}
-//		fireTableRowsInserted(0, vectors.size());
-//	}
-//}
-
-//@Override
-//public int getRowCount() {
-//	return rows.size();
-//}
-
-//@Override
-//public Object getValueAt(int rowIndex, int columnIndex) {
-//	Vector<Object> v = rows.get(rowIndex);
-//	return v.get(columnIndex);
-//}
-
-//@Override
-//public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-//	if (columnIndex == USE_COL) {
-//		boolean isSelected = (Boolean) getValueAt(rowIndex, columnIndex);
-//		Vector<Object> v = rows.get(rowIndex);
-//		isSelected = !isSelected;
-////		v.set(0,  b ? "TRUE" : "FALSE");
-//		v.set(USE_COL, isSelected);
-//
-//		int counter = 2;
-//		String ap = "";
-//		for (int row = 1; row < rows.size(); row++) {
-//			v = rows.get(row);
-//			isSelected = (Boolean) getValueAt(row, USE_COL);
-//
-//			ap = isSelected ? String.format("C%02d", counter++) : "";
-//			v.set(AP_COL, ap);
-//			fireTableRowsUpdated(row, row);
-//		}
-//	}
-//}

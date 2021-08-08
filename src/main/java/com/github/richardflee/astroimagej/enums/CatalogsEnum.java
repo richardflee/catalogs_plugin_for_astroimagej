@@ -5,11 +5,9 @@ import java.util.List;
 
 /**
  * Enum lists on-line astronomical catalogs selection options
- * <p>
- * Internally encodes catalog magnitude bands as a '.' delimited string. Method
+ * <p> Internally encodes catalog magnitude bands as '.' delimited string. Method
  * magBands decodes string and returns string array of filter / magnitude names
- * for selected catalog
- * </p>
+ * for selected catalog </p>
  */
 public enum CatalogsEnum {
 	SIMBAD("B.V.R.I"), VSP("B.V.Rc.Ic"), APASS("B.V.SG.SR.SI"), DSS("");

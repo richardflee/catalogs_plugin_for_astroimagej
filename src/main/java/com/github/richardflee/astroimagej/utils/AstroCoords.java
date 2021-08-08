@@ -101,9 +101,7 @@ public class AstroCoords {
 	 * If data entry is RA or DEC field then formats input to sexagesimal format
 	 * 
 	 * @param input user input to RA or DEC fields
-	 * 
 	 * @param en identifies input field type(OBJECT_ID, RA_HMS .. )
-	 * 
 	 * @return ra or dec input in sexagesimal format HH:MM:SS.SS or DD:MM:SS.SS respectively
 	 */
 	public static String sexagesimalFormatter(String input, JTextFieldsEnum en) { 

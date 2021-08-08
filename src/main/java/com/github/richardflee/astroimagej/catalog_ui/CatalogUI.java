@@ -31,61 +31,78 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
+/**
+ * This class creates the main catalogs_plugin user interface. User options are: 
+ * <p>Specify and run on-line astronomical database queries</p>
+ * <p>Sort and filter query results</p>
+ * <p>Options to save and reload data to and freom astroimagej compatible radec file</p>
+ * <p>Query result table and item select/deselect option is delegated to CatalogTable class</p>
+ * <p>Note: form design and layout in JFormDesigner v7.0.4</p>
+ */
 public class CatalogUI extends JDialog {
 	private static final long serialVersionUID = 1L;
 
-	private CatalogTableListener catalogTableListener;
+	// references to catable tables dtat model and button click event handler
+	private CatalogTableModel model;
 	protected ActionHandler handler;
 
+	/**
+	 * Initialises catalog_ui object references
+	 */
 	public CatalogUI() {
 		initComponents();
-
-		catalogTableListener = new CatalogTableModel();
-
+		
+		// catalog table & data model
+		model = new CatalogTableModel();
+		new CatalogTable(this, model);
+		
+		// button click event handlers
 		handler = new ActionHandler(this);
-
+		handler.setCatalogTableListener(model);
+		
+		// configures button click events
 		setUpActionListeners();
-
+		
+		// open in "no data" state
 		setButtonsEnabled(false);
-
 	}
-
+	
+	/**
+	 * Configures button event listeners and data/no-data button states
+	 */
 	private void setUpActionListeners() {
 		simbadButton.addActionListener(e -> System.out.println("Simbad"));
 
 		saveQueryButton.addActionListener(e -> System.out.println("save query"));
 
 		catalogQueryButton.addActionListener(e -> {
-			handler.doCatalogQuery(catalogTableListener);
-			setButtonsEnabled(true);			
+			handler.doCatalogQuery();
+			setButtonsEnabled(true);
 		});
 
-		updateButton.addActionListener(e -> handler.doUpdateTable(catalogTableListener));
+		updateButton.addActionListener(e -> handler.doUpdateTable());
 
 		saveRaDecButton.addActionListener(e -> System.out.println("save radec"));
 
 		importRaDecButton.addActionListener(e -> System.out.println("import radec"));
 
 		clearButton.addActionListener(e -> {
-			catalogTableListener.updateTable(null);
-			totalLabel.setText("0");
-			filteredLabel.setText("0");
+			handler.doClearTable();
 			setButtonsEnabled(false);
-			
 		});
 
 		closeButton.addActionListener(e -> System.exit(0));
-
 	}
-
+	
+	/*
+	 * Enables or disables [Update] and [Clear] buttons 
+	 * 
+	 * @param isEnabled true if there is table data, false if table  data is null;
+	 */
 	private void setButtonsEnabled(boolean isEnabled) {
 		updateButton.setEnabled(isEnabled);
 		saveRaDecButton.setEnabled(isEnabled);
 		clearButton.setEnabled(isEnabled);
-	}
-
-	public void setSimpleListener(CatalogTableListener catalogTableListener) {
-		this.catalogTableListener = catalogTableListener;
 	}
 
 	private void initComponents() {
@@ -177,6 +194,7 @@ public class CatalogUI extends JDialog {
 
 				//======== panel1 ========
 				{
+					panel1.setBorder(new TitledBorder("Catalog Query settings"));
 
 					//---- label1 ----
 					label1.setText("ObjectID");
@@ -232,9 +250,13 @@ public class CatalogUI extends JDialog {
 						"VSP",
 						"APASS"
 					}));
+					catalogCombo.setToolTipText("<html>\nSelect on-line astronomical database from list\n</html>");
 
 					//---- label11 ----
 					label11.setText("Catalog:");
+
+					//---- filterCombo ----
+					filterCombo.setToolTipText("<html>\nSelect photometric filter from list\n<p>Listed filters depends on selected catalog</p>\n</html>");
 
 					//---- label12 ----
 					label12.setText("Filter:");
@@ -270,7 +292,7 @@ public class CatalogUI extends JDialog {
 											.addComponent(label9)
 											.addComponent(label10)))
 									.addComponent(objectIdField, GroupLayout.PREFERRED_SIZE, 187, GroupLayout.PREFERRED_SIZE))
-								.addContainerGap(62, Short.MAX_VALUE))
+								.addContainerGap(59, Short.MAX_VALUE))
 					);
 					panel1Layout.setVerticalGroup(
 						panel1Layout.createParallelGroup()
@@ -340,7 +362,7 @@ public class CatalogUI extends JDialog {
 					panel2.setLayout(panel2Layout);
 					panel2Layout.setHorizontalGroup(
 						panel2Layout.createParallelGroup()
-							.addComponent(tableScrollPane, GroupLayout.DEFAULT_SIZE, 745, Short.MAX_VALUE)
+							.addComponent(tableScrollPane, GroupLayout.DEFAULT_SIZE, 741, Short.MAX_VALUE)
 					);
 					panel2Layout.setVerticalGroup(
 						panel2Layout.createParallelGroup()
@@ -352,7 +374,6 @@ public class CatalogUI extends JDialog {
 				{
 					panel3.setBorder(new TitledBorder("SIMBAD Data"));
 					panel3.setPreferredSize(new Dimension(190, 164));
-					panel3.setToolTipText("<html>\nSIMBAD query results:\n<p>Populates data fields with results of SIMBAD query </p>\n<p>Fields marked '.' indicate the search failed or no data</p>\n</html>");
 
 					//---- idLabel ----
 					idLabel.setText("ObjectId:");
@@ -408,7 +429,7 @@ public class CatalogUI extends JDialog {
 								.addGroup(panel3Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 									.addComponent(decLabel)
 									.addComponent(simbadDecLabel))
-								.addContainerGap(47, Short.MAX_VALUE))
+								.addContainerGap(29, Short.MAX_VALUE))
 					);
 				}
 
@@ -416,7 +437,6 @@ public class CatalogUI extends JDialog {
 				{
 					panel4.setBorder(new TitledBorder("Filter Mag"));
 					panel4.setPreferredSize(new Dimension(190, 164));
-					panel4.setToolTipText("<html>\nSIMBAD query results:\n<p>Populates data fields with results of SIMBAD query </p>\n<p>Fields marked '.' indicate the search failed or no data</p>\n</html>");
 
 					//---- idLabel2 ----
 					idLabel2.setText("MagB:");
@@ -464,7 +484,7 @@ public class CatalogUI extends JDialog {
 					panel4Layout.setVerticalGroup(
 						panel4Layout.createParallelGroup()
 							.addGroup(panel4Layout.createSequentialGroup()
-								.addContainerGap()
+								.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 								.addGroup(panel4Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 									.addComponent(idLabel2)
 									.addComponent(simbadMagBLabel))
@@ -479,8 +499,7 @@ public class CatalogUI extends JDialog {
 								.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
 								.addGroup(panel4Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 									.addComponent(idLabel5)
-									.addComponent(simbadMagILabel))
-								.addContainerGap(18, Short.MAX_VALUE))
+									.addComponent(simbadMagILabel)))
 					);
 				}
 
@@ -488,7 +507,6 @@ public class CatalogUI extends JDialog {
 				{
 					panel5.setBorder(new TitledBorder("Set Mag Limits"));
 					panel5.setPreferredSize(new Dimension(190, 164));
-					panel5.setToolTipText("<html>\nSIMBAD query results:\n<p>Populates data fields with results of SIMBAD query </p>\n<p>Fields marked '.' indicate the search failed or no data</p>\n</html>");
 
 					//---- label6 ----
 					label6.setText("Upper:");
@@ -501,12 +519,15 @@ public class CatalogUI extends JDialog {
 
 					//---- upperLimitSpinner ----
 					upperLimitSpinner.setModel(new SpinnerNumberModel(0.0, -0.1, 5.0, 0.10000000149011612));
+					upperLimitSpinner.setToolTipText("<html>\nSet the target mag upper limit\n<p>Setting Upper = 0 disables this limit</p>\n<p>Range: 0 - 5 mag in 0.1 mag increment</p>\n</html>");
 
 					//---- lowerLimitSpinner ----
 					lowerLimitSpinner.setModel(new SpinnerNumberModel(0.0, -5.0, 0.1, 0.10000000149011612));
+					lowerLimitSpinner.setToolTipText("<html>\nSet the target mag lower limit\n<p>Setting Lower = 0 disables this limit</p>\n<p>Range: -5 - 0 mag in 0.1 mag increment</p>\n</html>\n");
 
 					//---- magSpinner ----
 					magSpinner.setModel(new SpinnerNumberModel(10.0, 5.5, 25.0, 0.10000000149011612));
+					magSpinner.setToolTipText("<html>\nSet the nominal target mag for the selected filter band\n<p>Use the scroll control  or type value in text box</p>\n<p>Range: 5.5 - 25 mag in 0.1 mag increment</p>\n</html>");
 
 					//---- isMagLimitsCheckBox ----
 					isMagLimitsCheckBox.setText("Apply mag limits");
@@ -578,20 +599,22 @@ public class CatalogUI extends JDialog {
 				{
 					panel6.setBorder(new TitledBorder("Ascending Sort"));
 					panel6.setPreferredSize(new Dimension(190, 164));
-					panel6.setToolTipText("<html>\nSIMBAD query results:\n<p>Populates data fields with results of SIMBAD query </p>\n<p>Fields marked '.' indicate the search failed or no data</p>\n</html>");
 
 					//---- radSepRadioButton ----
 					radSepRadioButton.setText("Distance");
 					radSepRadioButton.setSelected(true);
+					radSepRadioButton.setToolTipText("<html>\nSort table records in ascending order of\n<p>radial separation to objectId coordinates</p>\n<p>Separation: arcmin</p>\n</html>");
 
 					//---- deltaMagRadioButton ----
 					deltaMagRadioButton.setText("|Delta Mag|");
+					deltaMagRadioButton.setToolTipText("<html>\nSort table records in ascending order of\n<p>absolute difference in magnitude</p>\n<p>|Delta Mag| = |reference_mag - target_mag|</p>\n</html>\n");
 
 					//---- label17 ----
 					label17.setText("Nobs (APASS)");
 
 					//---- nObsSpinner ----
 					nObsSpinner.setModel(new SpinnerNumberModel(1, 1, 10, 1));
+					nObsSpinner.setToolTipText("<html>\nSet minimum number of observations APASS catalog\n<p>Range: 1 to 10 (defaults to Nobs =1)</p>\n</html>\n");
 
 					GroupLayout panel6Layout = new GroupLayout(panel6);
 					panel6.setLayout(panel6Layout);
@@ -637,31 +660,31 @@ public class CatalogUI extends JDialog {
 
 					//---- closeButton ----
 					closeButton.setText("Close");
-					closeButton.setToolTipText("<html>\nRuns a search for ObjectID on the SIMBAD online database\n<p>If the search is successful:</p>\n<p>  - updates RA and Dec fields with SIMBAD coordinates</p>\n<p>  - updates SIMBAD Data and Filter Magnitudes fields</p>\n<p>Note: ObjectID value is unchanged</p>\n</html>");
+					closeButton.setToolTipText("<html>\nCloses Catalog Query dialog and returns control to AstroImageJ application\n<p>WARNING: Discaards any unsaved settings</p>\n</html>");
 
 					//---- saveQueryButton ----
 					saveQueryButton.setText("Save Query Data");
-					saveQueryButton.setToolTipText("<html>\nRuns a search for ObjectID on the SIMBAD online database\n<p>If the search is successful:</p>\n<p>  - updates RA and Dec fields with SIMBAD coordinates</p>\n<p>  - updates SIMBAD Data and Filter Magnitudes fields</p>\n<p>Note: ObjectID value is unchanged</p>\n</html>");
+					saveQueryButton.setToolTipText("<html>\nSaves the current Catalog Query settings\n</html>");
 
 					//---- catalogQueryButton ----
 					catalogQueryButton.setText("Run Catalog Query");
-					catalogQueryButton.setToolTipText("<html>\nRuns a search for ObjectID on the SIMBAD online database\n<p>If the search is successful:</p>\n<p>  - updates RA and Dec fields with SIMBAD coordinates</p>\n<p>  - updates SIMBAD Data and Filter Magnitudes fields</p>\n<p>Note: ObjectID value is unchanged</p>\n</html>");
+					catalogQueryButton.setToolTipText("<html>\nRuns a query on the selected online Catalog database\n<p>with specified Catalog Query settings</p>\n</html>");
 
 					//---- updateButton ----
 					updateButton.setText("Update Table");
-					updateButton.setToolTipText("<html>\nRuns a search for ObjectID on the SIMBAD online database\n<p>If the search is successful:</p>\n<p>  - updates RA and Dec fields with SIMBAD coordinates</p>\n<p>  - updates SIMBAD Data and Filter Magnitudes fields</p>\n<p>Note: ObjectID value is unchanged</p>\n</html>");
+					updateButton.setToolTipText("<html>\nUpdates table with current Sort and data filter settings\n</html>");
 
 					//---- saveRaDecButton ----
 					saveRaDecButton.setText("Save RaDec File");
-					saveRaDecButton.setToolTipText("<html>\nRuns a search for ObjectID on the SIMBAD online database\n<p>If the search is successful:</p>\n<p>  - updates RA and Dec fields with SIMBAD coordinates</p>\n<p>  - updates SIMBAD Data and Filter Magnitudes fields</p>\n<p>Note: ObjectID value is unchanged</p>\n</html>");
+					saveRaDecButton.setToolTipText("<html>\nSaves a radec format file to import apertures into AstroImageJ\n<p>File is saved in folder:  ./AstroImage/radec</p>\n<p> Filename format: [objectId].[filter].[fov_amin].radec.txt</p>\n<p> e.g. ./AstroImageJ/radec/wasp12.Rc.020.radec.txt</p>\n</html>");
 
 					//---- importRaDecButton ----
 					importRaDecButton.setText("Import RaDec File");
-					importRaDecButton.setToolTipText("<html>\nRuns a search for ObjectID on the SIMBAD online database\n<p>If the search is successful:</p>\n<p>  - updates RA and Dec fields with SIMBAD coordinates</p>\n<p>  - updates SIMBAD Data and Filter Magnitudes fields</p>\n<p>Note: ObjectID value is unchanged</p>\n</html>");
+					importRaDecButton.setToolTipText("<html>\nReads user selected radec file and loads data into the Catalog Table  \n</html>");
 
 					//---- clearButton ----
 					clearButton.setText("Clear");
-					clearButton.setToolTipText("<html>\nRuns a search for ObjectID on the SIMBAD online database\n<p>If the search is successful:</p>\n<p>  - updates RA and Dec fields with SIMBAD coordinates</p>\n<p>  - updates SIMBAD Data and Filter Magnitudes fields</p>\n<p>Note: ObjectID value is unchanged</p>\n</html>");
+					clearButton.setToolTipText("<html>\nClears current query result data and  removes catalog table records\n</html>");
 
 					GroupLayout panel7Layout = new GroupLayout(panel7);
 					panel7.setLayout(panel7Layout);
@@ -700,7 +723,7 @@ public class CatalogUI extends JDialog {
 								.addComponent(saveRaDecButton, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE)
 								.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
 								.addComponent(importRaDecButton, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE)
-								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 159, Short.MAX_VALUE)
 								.addComponent(updateButton, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE)
 								.addGap(23, 23, 23)
 								.addComponent(clearButton, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE)
@@ -717,7 +740,7 @@ public class CatalogUI extends JDialog {
 				label20.setText("Filtered records:");
 
 				//---- totalLabel ----
-				totalLabel.setText("000");
+				totalLabel.setText("0");
 
 				//---- filteredLabel ----
 				filteredLabel.setText("0");
@@ -729,19 +752,6 @@ public class CatalogUI extends JDialog {
 						.addGroup(contentPanelLayout.createSequentialGroup()
 							.addGroup(contentPanelLayout.createParallelGroup()
 								.addGroup(contentPanelLayout.createSequentialGroup()
-									.addComponent(panel7, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-									.addGroup(contentPanelLayout.createParallelGroup()
-										.addGroup(contentPanelLayout.createSequentialGroup()
-											.addComponent(panel3, GroupLayout.PREFERRED_SIZE, 203, GroupLayout.PREFERRED_SIZE)
-											.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-											.addComponent(panel4, GroupLayout.PREFERRED_SIZE, 117, GroupLayout.PREFERRED_SIZE))
-										.addGroup(contentPanelLayout.createSequentialGroup()
-											.addComponent(panel5, GroupLayout.PREFERRED_SIZE, 203, GroupLayout.PREFERRED_SIZE)
-											.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-											.addComponent(panel6, GroupLayout.PREFERRED_SIZE, 117, GroupLayout.PREFERRED_SIZE))
-										.addComponent(panel1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
-								.addGroup(contentPanelLayout.createSequentialGroup()
 									.addContainerGap()
 									.addGroup(contentPanelLayout.createParallelGroup()
 										.addComponent(label20, GroupLayout.Alignment.TRAILING)
@@ -749,7 +759,19 @@ public class CatalogUI extends JDialog {
 									.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
 									.addGroup(contentPanelLayout.createParallelGroup()
 										.addComponent(totalLabel, GroupLayout.Alignment.TRAILING)
-										.addComponent(filteredLabel, GroupLayout.Alignment.TRAILING))))
+										.addComponent(filteredLabel, GroupLayout.Alignment.TRAILING)))
+								.addComponent(panel7, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+							.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+							.addGroup(contentPanelLayout.createParallelGroup()
+								.addGroup(contentPanelLayout.createSequentialGroup()
+									.addComponent(panel3, GroupLayout.PREFERRED_SIZE, 203, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+									.addComponent(panel4, GroupLayout.PREFERRED_SIZE, 117, GroupLayout.PREFERRED_SIZE))
+								.addComponent(panel1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addGroup(contentPanelLayout.createSequentialGroup()
+									.addComponent(panel5, GroupLayout.PREFERRED_SIZE, 203, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+									.addComponent(panel6, GroupLayout.PREFERRED_SIZE, 117, GroupLayout.PREFERRED_SIZE)))
 							.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
 							.addComponent(panel2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 				);
@@ -757,28 +779,28 @@ public class CatalogUI extends JDialog {
 					contentPanelLayout.createParallelGroup()
 						.addComponent(panel2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 						.addGroup(contentPanelLayout.createSequentialGroup()
-							.addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING, false)
-								.addComponent(panel7, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-								.addGroup(GroupLayout.Alignment.LEADING, contentPanelLayout.createSequentialGroup()
-									.addContainerGap()
-									.addComponent(panel1, 245, 245, GroupLayout.PREFERRED_SIZE)
-									.addGap(18, 18, 18)
-									.addGroup(contentPanelLayout.createParallelGroup()
-										.addComponent(panel3, GroupLayout.PREFERRED_SIZE, 159, GroupLayout.PREFERRED_SIZE)
-										.addComponent(panel4, GroupLayout.PREFERRED_SIZE, 159, GroupLayout.PREFERRED_SIZE))
+							.addContainerGap()
+							.addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
+								.addComponent(panel7, GroupLayout.Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addGroup(contentPanelLayout.createSequentialGroup()
+									.addComponent(panel1, GroupLayout.PREFERRED_SIZE, 279, GroupLayout.PREFERRED_SIZE)
 									.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 									.addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
+										.addComponent(panel4, GroupLayout.DEFAULT_SIZE, 141, Short.MAX_VALUE)
+										.addComponent(panel3, GroupLayout.DEFAULT_SIZE, 141, Short.MAX_VALUE))
+									.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+									.addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
 										.addComponent(panel5, GroupLayout.PREFERRED_SIZE, 159, GroupLayout.PREFERRED_SIZE)
-										.addComponent(panel6, GroupLayout.DEFAULT_SIZE, 0, Short.MAX_VALUE))))
-							.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-							.addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+										.addComponent(panel6, GroupLayout.PREFERRED_SIZE, 159, GroupLayout.PREFERRED_SIZE))))
+							.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+							.addGroup(contentPanelLayout.createParallelGroup()
 								.addComponent(label19)
 								.addComponent(totalLabel))
 							.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 							.addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 								.addComponent(label20)
 								.addComponent(filteredLabel))
-							.addContainerGap(109, Short.MAX_VALUE))
+							.addContainerGap(110, Short.MAX_VALUE))
 				);
 			}
 			dialogPane.add(contentPanel, BorderLayout.CENTER);

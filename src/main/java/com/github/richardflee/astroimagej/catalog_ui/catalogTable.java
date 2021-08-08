@@ -19,40 +19,59 @@ import javax.swing.table.TableColumnModel;
 
 import com.github.richardflee.astroimagej.enums.ColumnsEnum;
 
-public class catalogTable {
+/**
+ * This class comprises a Java Swing JTable with CatalogTableModel data model. 
+ * <p> The first row consisting of target object data then a series of reference  object row data. 
+ *  Selected reference rows can be copied to an radec file for importing apertures into aij. 
+ * 
+ * <p>The first column shows the projected astroimagej aperture number, T01 (target) then C02, C03 .. for selected
+ * reference rows. If the user deselects  a reference row, the aperture number automatically clears and higher
+ * aperture numbers adjust to maintain numerical sequence, e.g. T01, C02, [blank], C03 ...where [blank] denotes
+ *  a deselected row</p>
+ */
+public class CatalogTable {
 
 	private JTable table;
-	private CatalogTableModel catalogModel;
 	
+	// table format constants
 	private final int ROW_HT_INCREMENT = 6;
 	private final int PREFERRED_WIDTH = 800;
-	private static int HEADER_HT = 24;
+	private int HEADER_HT = 24;
 
-	public catalogTable(CatalogUI catalogUi) {
-
-		CatalogUI mycatalog = catalogUi;
-		JScrollPane spane = mycatalog.tableScrollPane;
+	/**
+	 * Creates new catalog table, applying table and header formatting. 
+	 * 
+	 * @param catalogUi reference to main catalog UI
+	 * @param catalogTableModel 
+	 */
+	public CatalogTable(CatalogUI catalogUi, CatalogTableModel catalogTableModel) {
 		
-		catalogModel = new CatalogTableModel();
-		table = new JTable(catalogModel);
-
-		catalogUi.setSimpleListener(catalogModel);
+		// connects JTable to ata model
+		table = new JTable(catalogTableModel);
 		
+		// configure header tooltips and formatting
 		ToolTipHeader header = 
 				new ToolTipHeader(table.getColumnModel(), CatalogTableModel.toolTips);
 		table.setTableHeader(header);
 		header.setDefaultRenderer(new HeaderRenderer());
 		
+		// configure table cell formatting
 		tableCellsFormatter(table, PREFERRED_WIDTH);
 		table.getColumnModel().getColumn(0).setCellRenderer(new ApColumnRenderer());
-
+		
+		// embeds table in catalog UI scroll pane
+		JScrollPane spane = catalogUi.tableScrollPane;
 		table.setFillsViewportHeight(true);
 		spane.setViewportView(table);
 		
+		// finally set header size (ignores width = 0)
 		spane.getColumnHeader().setPreferredSize(new Dimension(0, HEADER_HT));
 	}
 	
-	// implementation code to set a tooltip text to each column of JTableHeader
+	/*
+	 * Implementation code to set a tooltip text to each column of JTableHeader
+	 *  ref: https://docs.oracle.com/javase/tutorial/uiswing/components/table.html#headertooltip
+	 */
 	class ToolTipHeader extends JTableHeader {
 		
 		private static final long serialVersionUID = 1L;
@@ -71,8 +90,7 @@ public class catalogTable {
 		}
 	}
 	
-	public static class HeaderRenderer extends JLabel implements TableCellRenderer {
-
+	public class HeaderRenderer extends JLabel implements TableCellRenderer {
 		private static final long serialVersionUID = 1L;
 
 		public HeaderRenderer() {
@@ -95,6 +113,9 @@ public class catalogTable {
 		}
 	}
 	
+	/*
+	 *
+	 */
 	class ApColumnRenderer extends DefaultTableCellRenderer {
 		
 		private static final long serialVersionUID = 1L;
@@ -106,21 +127,25 @@ public class catalogTable {
 			Component cellComponent = super.getTableCellRendererComponent(
 					table, value, isSelected, hasFocus, row, column);
 			
-			if (row == 0) {
-				cellComponent.setForeground(Color.GREEN);
-			} else {
-				cellComponent.setForeground(Color.RED);
-			}
+			// sets top (target) ApId cell = green, other ApIds = red + horiz text align
+			Color color = (row == 0) ? Color.GREEN : Color.RED;
+			cellComponent.setForeground(color);
 			setHorizontalAlignment(JLabel.CENTER);
 			return cellComponent;
 		}
-
 	}
 	
-	public void tableCellsFormatter(JTable table, int tablePreferredWidth) {
-
+	/**
+	 * Sets row height and column widths; applies text cell renderer
+	 * 
+	 * @param table table model
+	 * @param tablePreferredWidth scales overall table width 
+	 */
+	private void tableCellsFormatter(JTable table, int tablePreferredWidth) {
+		// add increment to row height (may vary with OS?) 
 		table.setRowHeight(table.getRowHeight() + ROW_HT_INCREMENT);
-
+		
+		// prepares text cell renderer (excludes Use cell boolean type) 
 		DefaultTableCellRenderer cr0 = new DefaultTableCellRenderer();
 		cr0.setHorizontalAlignment(SwingConstants.CENTER);
 
@@ -133,7 +158,6 @@ public class catalogTable {
 				table.getColumnModel().getColumn(idx).setCellRenderer(cr0);
 			}
 		}
-
 	}
 
 	public static void main(String[] args) {

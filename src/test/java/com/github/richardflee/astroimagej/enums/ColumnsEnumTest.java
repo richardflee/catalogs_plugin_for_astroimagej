@@ -23,7 +23,7 @@ class ColumnsEnumTest {
 	@Test
 	void testGetWidth() {
 		assertEquals(4, ap_col.getWidth());
-		assertEquals(15, ra2000_col.getWidth());
+		assertEquals(14, ra2000_col.getWidth());
 		assertEquals(4, use_col.getWidth());
 	}
 
