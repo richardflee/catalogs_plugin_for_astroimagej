@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.github.richardflee.astroimagej.fileio.ApassFileReader;
+import com.github.richardflee.astroimagej.fileio.RaDecFileWriter;
 import com.github.richardflee.astroimagej.query_objects.CatalogQuery;
 import com.github.richardflee.astroimagej.query_objects.FieldObject;
 import com.github.richardflee.astroimagej.query_objects.QueryResult;
@@ -19,8 +20,9 @@ public class ActionHandler {
 	private CatalogUI catalogUi;
 
 	// references to catalog database query and result objects
-	private CatalogQuery query;
-	private QueryResult result;
+	private CatalogQuery query = null;
+	private QueryResult result = null;
+	private List<FieldObject> sortedFilteredList = null;
 
 	// interface reference updateTable
 	private CatalogTableListener catalogTableListener;
@@ -45,7 +47,7 @@ public class ActionHandler {
 		this.catalogUi = catalogUi;
 		importCatalogUiSettings();
 
-		// TDD replace with cat query build method
+		// TTD replace with cat query build method
 		query = new CatalogQuery();
 	}
 
@@ -57,27 +59,48 @@ public class ActionHandler {
 	public void setCatalogTableListener(CatalogTableListener catalogTableListener) {
 		this.catalogTableListener = catalogTableListener;
 	}
+	
+	
+	/**
+	 * Writes radec file with selected table data to radec format text file
+	 * in local radec astromagej folder
+	 * <p>Example: ./astroimagej/radec/wasp_12.Rc.020.radec.txt</p>
+	 */
+	public void doWriteRaDecFile() {
+		// filter selected records
+		List<FieldObject> selectedList = sortedFilteredList
+									.stream()
+									.filter(p -> p.isSelected())
+									.collect(Collectors.toList());
+		RaDecFileWriter fw = new RaDecFileWriter();
+		System.out.println(fw.writeRaDecFile(selectedList, query));
+	}
+	
+	public void doImportRaDecFile() {
+		System.out.println("import radec");
+	}
 
 	/**
 	 * Runs a query on on-line astronomical database with query object parameters.
 	 * Outputs result records in the catalog table.
 	 */
-
 	// TTD test with catalog query methods
 	public void doCatalogQuery() {
 		// file read demo ..
 		ApassFileReader fr = new ApassFileReader();
-		QueryResult result = fr.runQueryFromFile(query);
-		this.result = result;
+		QueryResult currentResult = fr.runQueryFromFile(query);
 
 		// Update total reference object records returned by catalog query
 		// excluding target object which is always the top table entry
-		int totalRecords = result.getTotalRecords();
+		int totalRecords = currentResult.getTotalRecords();
 		totalRecords = (totalRecords > 0) ? totalRecords : 0;
 		catalogUi.totalLabel.setText(String.format("%3d", totalRecords));
 
-		// uodates table with sorted & optioanlly filtered query results
-		updateCatalogTable(result);
+		// updates table with sorted & optioanlly filtered query results
+		updateCatalogTable(currentResult);
+		
+		// update field value
+		this.result = currentResult;
 	}
 
 	/**
@@ -100,10 +123,18 @@ public class ActionHandler {
 	/*
 	 * Sorts reference object records relative to target object. Sort options are
 	 * radial distance or difference in magnitude values.
+	 * 
+	 * @return FieldObject list sorted and filtered as specified by user settings
 	 */
 	private void updateCatalogTable(QueryResult result) {
+		
+		// field objects listed by sort order and applied filters
+		List<FieldObject> currentSortedFilteredList = null;
+		
+		// clears catalog table and resets sorted list field
 		if (result == null) {
 			catalogTableListener.updateTable(null);
+			this.sortedFilteredList = currentSortedFilteredList;
 			return;
 		}
 		// current ui data
@@ -123,8 +154,7 @@ public class ActionHandler {
 		}
 
 		// apply nObs limit
-		List<FieldObject> sortedFilteredList = null;
-		sortedFilteredList = sortedList.stream().filter(p -> ((p.getnObs() >= numberObs) || (p.isTarget())))
+		currentSortedFilteredList = sortedList.stream().filter(p -> ((p.getnObs() >= numberObs) || (p.isTarget())))
 				.collect(Collectors.toList());
 
 		// option to apply mag difference filters
@@ -140,17 +170,19 @@ public class ActionHandler {
 			catalogUi.lowerLabel.setText(limit);
 
 			// apply mag upper & lower mag limits
-			sortedFilteredList = sortedFilteredList.stream().filter(p -> (p.getMag() >= lowerLimit))
+			currentSortedFilteredList = currentSortedFilteredList.stream().filter(p -> (p.getMag() >= lowerLimit))
 					.filter(p -> p.getMag() <= upperLimit).collect(Collectors.toList());
 		}
 
 		// update number of filtered records, clip to 0 if count is negative
-		int filteredRecords = sortedFilteredList.size() - 1;
+		int filteredRecords = currentSortedFilteredList.size() - 1;
 		filteredRecords = (filteredRecords > 0) ? filteredRecords : 0;
 		catalogUi.filteredLabel.setText(String.format("%3d", filteredRecords));
 
 		// run table update with sort / filter selections
-		catalogTableListener.updateTable(sortedFilteredList);
+		catalogTableListener.updateTable(currentSortedFilteredList);
+		
+		this.sortedFilteredList = currentSortedFilteredList;
 	}
 
 	/*

@@ -115,6 +115,19 @@ public class CatalogQuery extends AbstractFieldObject {
 				+ ", magBand=" + magBand + ", objectId=" + objectId + ", raHr=" + raHr + ", decDeg=" + decDeg + "]";
 	}
 	
+	public String toFormattedString() {
+		String lines = "#\n#ObjectId, RA, Dec, Fov, MagLimit, Catalog, Filter\n";
+		
+		lines += String.format("#%s, ", super.getObjectId());
+		lines += String.format("%s, ", AstroCoords.raHr_To_raHms(super.getRaHr()));
+		lines += String.format("%s, ", AstroCoords.decDeg_To_decDms(super.getDecDeg()));
+		lines += String.format("%.1f, ", getFovAmin());
+		lines += String.format("%.1f, ", getMagLimit());
+		lines += String.format("%s, ", getCatalogType().toString());
+		lines += String.format("%s\n", getMagBand());
+		return lines;
+	}
+	
 	public static void main(String[] args) {
 		CatalogQuery query1 = new CatalogQuery();
 		CatalogQuery query2 = new CatalogQuery(query1);

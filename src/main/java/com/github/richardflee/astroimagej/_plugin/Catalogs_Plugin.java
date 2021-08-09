@@ -17,7 +17,7 @@ public class Catalogs_Plugin implements PlugIn {
 	}
 
 	public static void main(String[] args) {
-		IJ.showMessage("radec", "constructo");
+		//IJ.showMessage("radec", "constructo");
 
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -39,6 +39,7 @@ public class Catalogs_Plugin implements PlugIn {
 
 		// Instantiates file writer objects
 		//PropertiesFileWriter pfw = new PropertiesFileWriter();
+		
 		//RaDecFileWriter rdw = new RaDecFileWriter();
 
 		// Opens catalog user interface with properties or default data

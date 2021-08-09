@@ -82,9 +82,9 @@ public class CatalogUI extends JDialog {
 
 		updateButton.addActionListener(e -> handler.doUpdateTable());
 
-		saveRaDecButton.addActionListener(e -> System.out.println("save radec"));
-
-		importRaDecButton.addActionListener(e -> System.out.println("import radec"));
+		saveRaDecButton.addActionListener(e -> handler.doWriteRaDecFile());
+		
+		importRaDecButton.addActionListener(e -> handler.doImportRaDecFile());
 
 		clearButton.addActionListener(e -> {
 			handler.doClearTable();
