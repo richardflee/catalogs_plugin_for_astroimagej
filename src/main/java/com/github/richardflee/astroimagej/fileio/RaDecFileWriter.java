@@ -124,7 +124,7 @@ public class RaDecFileWriter extends AbstractRaDecFile {
 		// table block		
 		lines.add("#\n#Ap, ObjectId, RA, Dec, Mag, MagErr, MagDelta, RadSpe, Nobs\n");
 		for (FieldObject fo : selectedList) {
-			lines.add(getTableLine(fo));
+			lines.add(compileTableLine(fo));
 		}
 		
 		// query block
@@ -150,7 +150,7 @@ public class RaDecFileWriter extends AbstractRaDecFile {
 		List<String> lines = fw.compileRaDecList(selectedList, query);
 		
 		for (FieldObject fo : selectedList) {
-			System.out.println(fw.getTableLine(fo));
+			System.out.println(fw.compileTableLine(fo));
 		}
 		
 		

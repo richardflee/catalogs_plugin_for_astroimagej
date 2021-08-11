@@ -14,7 +14,7 @@ class AbstractRaDecFile {
 	 * @param fo FieldObject single table row data
 	 * @return line comprising comma-separated table data 
 	 */
-	String getTableLine(FieldObject fo) {
+	String compileTableLine(FieldObject fo) {
 		// assign terms[ColumnsEnum index] to corresponding FieldObject fo values
 		String[] terms = new String[ColumnsEnum.size - 1];		
 		terms[ColumnsEnum.AP_COL.getIndex()] = String.format("#%s", fo.getApertureId());
@@ -34,7 +34,7 @@ class AbstractRaDecFile {
 		return line;
 	}
 	
-	public FieldObject getFieldObject(String dataLine) {
+	public FieldObject compileFieldObject(String dataLine) {
 		
 		FieldObject fo = new FieldObject();
 		String[] terms = dataLine.replace(" ", "").split(",");
@@ -74,6 +74,8 @@ class AbstractRaDecFile {
 		return fo;
 	}
 	
+	
+	
 	public static void main(String[] args) {
 		
 		String[] dataLines = 
@@ -83,8 +85,8 @@ class AbstractRaDecFile {
 		
 		AbstractRaDecFile f = new AbstractRaDecFile();
 		
-		FieldObject fo0 = f.getFieldObject(dataLines[0]);
-		FieldObject fo1 = f.getFieldObject(dataLines[1]);
+		FieldObject fo0 = f.compileFieldObject(dataLines[0]);
+		FieldObject fo1 = f.compileFieldObject(dataLines[1]);
 		System.out.println(fo0.toString());
 		System.out.println(fo1.toString());
 		

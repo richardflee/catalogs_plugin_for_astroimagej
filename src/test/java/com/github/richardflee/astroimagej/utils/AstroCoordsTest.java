@@ -6,7 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import com.github.richardflee.astroimagej.enums.JTextFieldsEnum;
+import com.github.richardflee.astroimagej.enums.QueryEnum;
 
 class AstroCoordsTest {
 	
@@ -73,7 +73,7 @@ class AstroCoordsTest {
 		"01:02:03.45,   1: 2: 3.454"
 	})
 	void testUserFormat_ToSexagemsimal_RaHms_IsCorrect(String formattedRaHms, String input) {
-		assertEquals(formattedRaHms, AstroCoords.sexagesimalFormatter(input, JTextFieldsEnum.RA_HMS));
+		assertEquals(formattedRaHms, AstroCoords.sexagesimalFormatter(input, QueryEnum.RA_HMS));
 	}
 	
 	@DisplayName("Verify formatting of decDms input")	
@@ -85,7 +85,7 @@ class AstroCoordsTest {
 		"-01:02:03.45,   -1: 2: 3.454"
 	})
 	void testUserFormat_ToSexagemsimal_DecDms_IsCorrect(String formattedRaHms, String input) {
-		assertEquals(formattedRaHms, AstroCoords.sexagesimalFormatter(input, JTextFieldsEnum.DEC_DMS));
+		assertEquals(formattedRaHms, AstroCoords.sexagesimalFormatter(input, QueryEnum.DEC_DMS));
 	}
 
 }

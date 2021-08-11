@@ -1,34 +1,39 @@
 package com.github.richardflee.astroimagej.query_objects;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 import com.github.richardflee.astroimagej.enums.CatalogsEnum;
+import com.github.richardflee.astroimagej.enums.QueryEnum;
 import com.github.richardflee.astroimagej.utils.AstroCoords;
 
 /**
  * Encapsulates catalog query parameters
- * <p> Defaults to wasp 12 default parameters for first use and and for unit tests</p>
+ * <p>
+ * Defaults to wasp 12 default parameters for first use and and for unit tests
+ * </p>
  */
 public class CatalogQuery extends AbstractFieldObject {
 	private double fovAmin = 0.0;
 	private double magLimit = 0.0;
 	private CatalogsEnum catalogType = null;
 	private String magBand = null;
-	
+
 	/**
 	 * No arguments constructor defaults to WASP12 parameters
 	 */
 	public CatalogQuery() {
-		super("wasp 12", 
-				AstroCoords.raHms_To_raHr("06:30:32.797"),
-				AstroCoords.decDms_To_decDeg("+29:40:20.27"));
-		
+		super("wasp 12", AstroCoords.raHms_To_raHr("06:30:32.797"), AstroCoords.decDms_To_decDeg("+29:40:20.27"));
+
 		this.fovAmin = 60.0;
 		this.magLimit = 15.0;
 		this.catalogType = CatalogsEnum.VSP;
 		this.magBand = "V";
 	}
-	
+
 	/**
 	 * Copy constructor
+	 * 
 	 * @param query source object to copy
 	 */
 	public CatalogQuery(CatalogQuery query) {
@@ -71,7 +76,6 @@ public class CatalogQuery extends AbstractFieldObject {
 		this.magBand = magBand;
 	}
 
-		
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -114,29 +118,67 @@ public class CatalogQuery extends AbstractFieldObject {
 		return "CatalogQuery [fovAmin=" + fovAmin + ", magLimit=" + magLimit + ", catalogType=" + catalogType
 				+ ", magBand=" + magBand + ", objectId=" + objectId + ", raHr=" + raHr + ", decDeg=" + decDeg + "]";
 	}
-	
+
 	public String toFormattedString() {
-		String lines = "#\n#ObjectId, RA, Dec, Fov, MagLimit, Catalog, Filter\n";
+		String line = "#\n#ObjectId, RA, Dec, Fov, MagLimit, Catalog, Filter\n";
 		
-		lines += String.format("#%s, ", super.getObjectId());
-		lines += String.format("%s, ", AstroCoords.raHr_To_raHms(super.getRaHr()));
-		lines += String.format("%s, ", AstroCoords.decDeg_To_decDms(super.getDecDeg()));
-		lines += String.format("%.1f, ", getFovAmin());
-		lines += String.format("%.1f, ", getMagLimit());
-		lines += String.format("%s, ", getCatalogType().toString());
-		lines += String.format("%s\n", getMagBand());
-		return lines;
+		String[] terms = new String[QueryEnum.size];
+		terms[QueryEnum.OBJECT_ID.getIndex()] = String.format("#%s", super.getObjectId());
+		terms[QueryEnum.RA_HMS.getIndex()] = String.format("%s", AstroCoords.raHr_To_raHms(super.getRaHr()));
+		terms[QueryEnum.DEC_DMS.getIndex()] = String.format("%s", AstroCoords.decDeg_To_decDms(super.getDecDeg()));
+		terms[QueryEnum.FOV_AMIN.getIndex()] = String.format("%.1f", getFovAmin());
+		terms[QueryEnum.MAG_LIMIT.getIndex()] = String.format("%.1f", getMagLimit());
+		terms[QueryEnum.CATALOG_DROPDOWN.getIndex()] = String.format("%s", getCatalogType().toString());
+		terms[QueryEnum.FILTER_DROPDOWN.getIndex()] =  String.format("%s\n", getMagBand());
+		
+		line += Arrays.asList(terms).stream().collect(Collectors.joining(","));
+		return line;
 	}
-	
+
+	public static CatalogQuery fromFormattedString(String dataLine) {
+		
+		dataLine = dataLine.replace("#", "");
+
+		CatalogQuery query = new CatalogQuery();
+		String terms[] = dataLine.replace(" ", "").split(",");
+
+		String objectId = terms[QueryEnum.OBJECT_ID.getIndex()];
+		query.setObjectId(objectId);
+
+		String raHms = terms[QueryEnum.RA_HMS.getIndex()];
+		query.setRaHr(AstroCoords.raHms_To_raHr(raHms));
+
+		String decDms = terms[QueryEnum.DEC_DMS.getIndex()];
+		query.setDecDeg((AstroCoords.decDms_To_decDeg(decDms)));
+
+		String fovAmin = terms[QueryEnum.FOV_AMIN.getIndex()];
+		query.setFovAmin(Double.valueOf(fovAmin));
+		
+		String magLimit = terms[QueryEnum.MAG_LIMIT.getIndex()];
+		query.setMagLimit(Double.valueOf(magLimit));
+		
+		String catalogName = terms[QueryEnum.CATALOG_DROPDOWN.getIndex()];
+		query.setCatalogType(CatalogsEnum.getEnum(catalogName));
+		
+		String magBand = terms[QueryEnum.FILTER_DROPDOWN.getIndex()];
+		query.setMagBand(magBand);
+		return query;
+	}
+
 	public static void main(String[] args) {
 		CatalogQuery query1 = new CatalogQuery();
 		CatalogQuery query2 = new CatalogQuery(query1);
-		
+
 		System.out.println(query1.toString());
 		System.out.println(query2.toString());
-		
+
 		System.out.println(String.format("CatalogQuery equals q1 = q2 : %b", query1.equals(query2)));
+		
+		System.out.println(String.format("Demo toFormattedString:\n %s", query1.toFormattedString()));
+		
+		String dataLine = "#wasp 12,06:30:32.80,+29:40:20.27,60.0,15.0,VSP,V";
+		CatalogQuery query3 = CatalogQuery.fromFormattedString(dataLine);
+		System.out.println(String.format("Demo fromFormattedString:\n %s", query3.toString()));
+				
 	}
 }
-
-

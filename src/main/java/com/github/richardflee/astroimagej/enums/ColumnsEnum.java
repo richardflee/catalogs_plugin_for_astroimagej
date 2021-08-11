@@ -32,11 +32,9 @@ public enum ColumnsEnum {
 	 * Table column index
 	 * @return table column index 
 	 */
-	public int getIndex() {	
-		int[] result = Arrays.stream(strVal.split("\\."))
-		        			.mapToInt(Integer::valueOf)
-		        			.toArray();
-		return result[0];
+	public int getIndex() {
+		String[] splitStr = strVal.split("\\.");
+		return Integer.valueOf(splitStr[0]);
 	}
 	
 	/**
@@ -44,10 +42,8 @@ public enum ColumnsEnum {
 	 * @return percentage column width
 	 */
 	public int getWidth() {	
-		int[] result = Arrays.stream(strVal.split("\\."))
-		        			.mapToInt(Integer::valueOf)
-		        			.toArray();
-		return result[1];
+		String[] splitStr = strVal.split("\\.");
+		return Integer.valueOf(splitStr[1]);
 	}
 	
 	/**
