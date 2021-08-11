@@ -8,12 +8,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.github.richardflee.astroimagej.enums.ColumnsEnum;
 import com.github.richardflee.astroimagej.query_objects.CatalogQuery;
 import com.github.richardflee.astroimagej.query_objects.FieldObject;
 import com.github.richardflee.astroimagej.query_objects.QueryResult;
 import com.github.richardflee.astroimagej.utils.AstroCoords;
 
-public class RaDecFileWriter {
+public class RaDecFileWriter extends AbstractRaDecFile {
 
 	private boolean isDataBlock;
 	
@@ -21,7 +22,6 @@ public class RaDecFileWriter {
 		// compile data lines first
 		isDataBlock = true;
 	}
-	
 	
 	/**
 	 * Writes radec file to import apertures into astroimagej with filename format [objectid].[magband].radec.txt
@@ -86,13 +86,13 @@ public class RaDecFileWriter {
 	 * @return single data record ordered: RA, Dec, RefStar, Centroid, Mag 
 	 */
 	private String getFieldLine(FieldObject fo) {
-		String line = AstroCoords.raHr_To_raHms(fo.getRaHr()) + ", ";
-		line += AstroCoords.decDeg_To_decDms(fo.getDecDeg()) + ", ";
+		String line = AstroCoords.raHr_To_raHms(fo.getRaHr()) + ",";
+		line += AstroCoords.decDeg_To_decDms(fo.getDecDeg()) + ",";
 		if (isDataBlock) {
-			line += fo.isTarget() ? "0, 1, 99.99" : String.format("1, 1, %.3f", fo.getMag());
+			line += fo.isTarget() ? "0,1,99.99" : String.format("1,1,%.3f", fo.getMag());
 			isDataBlock = false;
 		} else {
-			line += String.format("1, 1, %.3f", fo.getMag());
+			line += String.format("1,1,%.3f", fo.getMag());
 		}
 		
 		return line;
@@ -103,31 +103,28 @@ public class RaDecFileWriter {
 	 * Compiles list of strings to write to radec file. List comprises 3 blocks separated by single char '#'. 
 	 * Comment lines start with '#'
 	 * 
-	 * <p>Block 1: data lines in astroimagej radec format</p>
-	 * <p>Block 2: comment line consisting of data line + aperture id, object id and mag error</p>
-	 * <p>Block 3: comment line consisting of query data</p>
+	 * <p>Block 1: data lines: astroimagej radec format</p>
+	 * <p>Block 2: comment lines: catalog table data</p>
+	 * <p>Block 3: comment line: query data</p>
 	 * 
-	 * @param sortedFilteredList list of FieldObjects to convert to write to radec file
+	 * @param selectedList list of FieldObjects to convert to write to radec file
 	 * @param query catalog query data for this data set
 	 * @return data and comment line string array  
 	 */
-	private List<String> compileRaDecList(List<FieldObject> sortedFilteredList, CatalogQuery query) {
+	private List<String> compileRaDecList(List<FieldObject> selectedList, CatalogQuery query) {
 		List<String> lines = new ArrayList<>();
 
 		// data block
 		lines.add("#RA, Dec, RefStar, Centroid, Mag\n");
-		for (FieldObject fo : sortedFilteredList) {
+		for (FieldObject fo : selectedList) {
 			String line = getFieldLine(fo)+ "\n";
 			lines.add(line);
 		}		
-		lines.add("#\n#Ap, Auid, RA, Dec, RefStar, Centroid, Mag, MagErr\n");
 		
-		// comment block
-		for (FieldObject fo : sortedFilteredList) {
-			String line = String.format("#%s, %s, " , fo.getApertureId(), fo.getObjectId());
-			line += getFieldLine(fo);
-			line += String.format(", %.3f\n", fo.getMagErr());
-			lines.add(line);
+		// table block		
+		lines.add("#\n#Ap, ObjectId, RA, Dec, Mag, MagErr, MagDelta, RadSpe, Nobs\n");
+		for (FieldObject fo : selectedList) {
+			lines.add(getTableLine(fo));
 		}
 		
 		// query block
@@ -135,7 +132,6 @@ public class RaDecFileWriter {
 		return lines;
 	}
 	
-
 	public static void main(String[] args) {
 		// compile result object from file
 		ApassFileReader fr = new ApassFileReader();
@@ -145,17 +141,22 @@ public class RaDecFileWriter {
 
 		RaDecFileWriter fw = new RaDecFileWriter();
 
-		System.out.println(fw.compileFilename(query));
+		//System.out.println(fw.compileFilename(query));
 		
-		System.out.println(fw.getFile(query).toString());
+		//System.out.println(fw.getFile(query).toString());
 		
-		List<FieldObject> sortedFilteredList = result.getFieldObjects();
+		List<FieldObject> selectedList = result.getFieldObjects();
 		
-		List<String> lines = fw.compileRaDecList(sortedFilteredList, query);
+		List<String> lines = fw.compileRaDecList(selectedList, query);
 		
-		lines.stream().forEach(System.out::println);
+		for (FieldObject fo : selectedList) {
+			System.out.println(fw.getTableLine(fo));
+		}
 		
-		System.out.println(fw.writeRaDecFile(sortedFilteredList, query));
+		
+		//lines.stream().forEach(System.out::println);
+		
+		//System.out.println(fw.writeRaDecFile(selectedList, query));
 		
 		
 

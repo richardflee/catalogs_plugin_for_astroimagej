@@ -17,7 +17,7 @@ public class Catalogs_Plugin implements PlugIn {
 	}
 
 	public static void main(String[] args) {
-		//IJ.showMessage("radec", "constructo");
+		IJ.showMessage("radec", "constructo");
 
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
