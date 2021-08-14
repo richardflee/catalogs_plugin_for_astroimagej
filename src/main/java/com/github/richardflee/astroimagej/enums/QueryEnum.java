@@ -1,9 +1,7 @@
 package com.github.richardflee.astroimagej.enums;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Stream;
 
 /**
  * Catalog ui jtext field identifiers to enable validation of user inputs

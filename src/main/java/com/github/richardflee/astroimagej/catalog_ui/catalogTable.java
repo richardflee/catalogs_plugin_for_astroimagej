@@ -46,7 +46,7 @@ public class CatalogTable {
 	 */
 	public CatalogTable(CatalogUI catalogUi, CatalogTableModel catalogTableModel) {
 		
-		// connects JTable to ata model
+		// connects JTable to data model
 		table = new JTable(catalogTableModel);
 		
 		// configure header tooltips and formatting

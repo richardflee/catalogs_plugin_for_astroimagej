@@ -1,4 +1,4 @@
-package com.github.richardflee.astroimagej.query_objects;
+package com.github.richardflee.astroimagej.data_objects;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -8,10 +8,8 @@ import com.github.richardflee.astroimagej.enums.QueryEnum;
 import com.github.richardflee.astroimagej.utils.AstroCoords;
 
 /**
- * Encapsulates catalog query parameters
- * <p>
- * Defaults to wasp 12 default parameters for first use and and for unit tests
- * </p>
+ * This class encapsulates catalog query parameters
+ * <p>Defaults to wasp 12 default parameters for first use and and for unit tests</p>
  */
 public class CatalogQuery extends AbstractFieldObject {
 	private double fovAmin = 0.0;
@@ -43,7 +41,72 @@ public class CatalogQuery extends AbstractFieldObject {
 		this.catalogType = query.getCatalogType();
 		this.magBand = query.getMagBand();
 	}
+	
+	/**
+	 * Compiles query items and header and query data into string array
+	 * 
+	 * @return two element string array comprising query items and current query data
+	 */
+	public String[] toFormattedString() {
+		String[] lines = new String[2];
+		
+		// items header
+		lines[0] = "#\n#ObjectId, RA, Dec, Fov, MagLimit, Catalog, Filter\n";
+		
+		// compile data by QueryEnum index
+		String[] terms = new String[QueryEnum.size];
+		terms[QueryEnum.OBJECT_ID.getIndex()] = String.format("#%s", super.getObjectId());
+		terms[QueryEnum.RA_HMS.getIndex()] = String.format("%s", AstroCoords.raHr_To_raHms(super.getRaHr()));
+		terms[QueryEnum.DEC_DMS.getIndex()] = String.format("%s", AstroCoords.decDeg_To_decDms(super.getDecDeg()));
+		terms[QueryEnum.FOV_AMIN.getIndex()] = String.format("%.1f", getFovAmin());
+		terms[QueryEnum.MAG_LIMIT.getIndex()] = String.format("%.1f", getMagLimit());
+		terms[QueryEnum.CATALOG_DROPDOWN.getIndex()] = String.format("%s", getCatalogType().toString());
+		terms[QueryEnum.FILTER_DROPDOWN.getIndex()] = String.format("%s\n", getMagBand());
 
+		// assemble data into comma-separated string
+		lines[1] = Arrays.asList(terms).stream().collect(Collectors.joining(","));
+		return lines;
+	}
+
+	/**
+	 * Static method compiles query object from comma-separated text line compring query paramters
+	 * 
+	 * @param dataLine comma separated sequence of query data items
+	 * @return query object compiled with dataLine parameters
+	 */
+	public static CatalogQuery fromFormattedString(String dataLine) {
+		// strips leading '#' char indicating radec comment line
+		dataLine = dataLine.replace("#", "");
+		
+		// loads comma-delimeted dataLine terms into aray, strip leading/trailing blank spaces
+		CatalogQuery query = new CatalogQuery();
+		String terms[] = dataLine.replace(" ", "").split(",");
+		
+		// load query object by QueryNum index
+		String objectId = terms[QueryEnum.OBJECT_ID.getIndex()];
+		query.setObjectId(objectId);
+
+		String raHms = terms[QueryEnum.RA_HMS.getIndex()];
+		query.setRaHr(AstroCoords.raHms_To_raHr(raHms));
+
+		String decDms = terms[QueryEnum.DEC_DMS.getIndex()];
+		query.setDecDeg((AstroCoords.decDms_To_decDeg(decDms)));
+
+		String fovAmin = terms[QueryEnum.FOV_AMIN.getIndex()];
+		query.setFovAmin(Double.valueOf(fovAmin));
+
+		String magLimit = terms[QueryEnum.MAG_LIMIT.getIndex()];
+		query.setMagLimit(Double.valueOf(magLimit));
+
+		String catalogName = terms[QueryEnum.CATALOG_DROPDOWN.getIndex()];
+		query.setCatalogType(CatalogsEnum.getEnum(catalogName));
+
+		String magBand = terms[QueryEnum.FILTER_DROPDOWN.getIndex()];
+		query.setMagBand(magBand);
+		return query;
+	}
+	
+	// geters setters
 	public Double getFovAmin() {
 		return fovAmin;
 	}
@@ -119,51 +182,7 @@ public class CatalogQuery extends AbstractFieldObject {
 				+ ", magBand=" + magBand + ", objectId=" + objectId + ", raHr=" + raHr + ", decDeg=" + decDeg + "]";
 	}
 
-	public String toFormattedString() {
-		String line = "#\n#ObjectId, RA, Dec, Fov, MagLimit, Catalog, Filter\n";
-		
-		String[] terms = new String[QueryEnum.size];
-		terms[QueryEnum.OBJECT_ID.getIndex()] = String.format("#%s", super.getObjectId());
-		terms[QueryEnum.RA_HMS.getIndex()] = String.format("%s", AstroCoords.raHr_To_raHms(super.getRaHr()));
-		terms[QueryEnum.DEC_DMS.getIndex()] = String.format("%s", AstroCoords.decDeg_To_decDms(super.getDecDeg()));
-		terms[QueryEnum.FOV_AMIN.getIndex()] = String.format("%.1f", getFovAmin());
-		terms[QueryEnum.MAG_LIMIT.getIndex()] = String.format("%.1f", getMagLimit());
-		terms[QueryEnum.CATALOG_DROPDOWN.getIndex()] = String.format("%s", getCatalogType().toString());
-		terms[QueryEnum.FILTER_DROPDOWN.getIndex()] =  String.format("%s\n", getMagBand());
-		
-		line += Arrays.asList(terms).stream().collect(Collectors.joining(","));
-		return line;
-	}
-
-	public static CatalogQuery fromFormattedString(String dataLine) {
-		
-		dataLine = dataLine.replace("#", "");
-
-		CatalogQuery query = new CatalogQuery();
-		String terms[] = dataLine.replace(" ", "").split(",");
-
-		String objectId = terms[QueryEnum.OBJECT_ID.getIndex()];
-		query.setObjectId(objectId);
-
-		String raHms = terms[QueryEnum.RA_HMS.getIndex()];
-		query.setRaHr(AstroCoords.raHms_To_raHr(raHms));
-
-		String decDms = terms[QueryEnum.DEC_DMS.getIndex()];
-		query.setDecDeg((AstroCoords.decDms_To_decDeg(decDms)));
-
-		String fovAmin = terms[QueryEnum.FOV_AMIN.getIndex()];
-		query.setFovAmin(Double.valueOf(fovAmin));
-		
-		String magLimit = terms[QueryEnum.MAG_LIMIT.getIndex()];
-		query.setMagLimit(Double.valueOf(magLimit));
-		
-		String catalogName = terms[QueryEnum.CATALOG_DROPDOWN.getIndex()];
-		query.setCatalogType(CatalogsEnum.getEnum(catalogName));
-		
-		String magBand = terms[QueryEnum.FILTER_DROPDOWN.getIndex()];
-		query.setMagBand(magBand);
-		return query;
-	}
+	
 
 	public static void main(String[] args) {
 		CatalogQuery query1 = new CatalogQuery();
@@ -172,13 +191,12 @@ public class CatalogQuery extends AbstractFieldObject {
 		System.out.println(query1.toString());
 		System.out.println(query2.toString());
 
-		System.out.println(String.format("CatalogQuery equals q1 = q2 : %b", query1.equals(query2)));
-		
-		System.out.println(String.format("Demo toFormattedString:\n %s", query1.toFormattedString()));
-		
+		System.out.println(String.format("\nCatalogQuery equals q1 = q2 : %b", query1.equals(query2)));
+
+		System.out.println(String.format("\nDemo toFormattedString:\n %s", query1.toFormattedString()[1]));
+
 		String dataLine = "#wasp 12,06:30:32.80,+29:40:20.27,60.0,15.0,VSP,V";
 		CatalogQuery query3 = CatalogQuery.fromFormattedString(dataLine);
 		System.out.println(String.format("Demo fromFormattedString:\n %s", query3.toString()));
-				
 	}
 }

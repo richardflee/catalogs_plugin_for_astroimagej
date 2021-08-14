@@ -3,18 +3,24 @@ package com.github.richardflee.astroimagej.fileio;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import com.github.richardflee.astroimagej.data_objects.FieldObject;
 import com.github.richardflee.astroimagej.enums.ColumnsEnum;
-import com.github.richardflee.astroimagej.query_objects.FieldObject;
 import com.github.richardflee.astroimagej.utils.AstroCoords;
 
+/**
+ * Base class for radec file reader and writer handles catalog table data.
+ * <p>Data arrays are indexed by ColumnsEnum getIndex() to maintain sync between 
+ * table data read / write operations</p>
+ */
 class AbstractRaDecFile {
-	/**
-	 * Returns single row of catalog table data in a comma-separated string  
+	/*
+	 * Returns single row of catalog table data in a comma-delimited string
+	 * <p>Evaluates ColumnsEnum getIndex() to assign array indices</p>
 	 * 
 	 * @param fo FieldObject single table row data
 	 * @return line comprising comma-separated table data 
 	 */
-	String compileTableLine(FieldObject fo) {
+	protected String compileTableLine(FieldObject fo) {
 		// assign terms[ColumnsEnum index] to corresponding FieldObject fo values
 		String[] terms = new String[ColumnsEnum.size - 1];		
 		terms[ColumnsEnum.AP_COL.getIndex()] = String.format("#%s", fo.getApertureId());
@@ -34,10 +40,17 @@ class AbstractRaDecFile {
 		return line;
 	}
 	
-	public FieldObject compileFieldObject(String dataLine) {
+	/*
+	 * Assembles a FieldObject from single table data line.
+	 * <p>Evaluates ColumnsEnum getIndex() to assign array indices</p>
+	 * 
+	 * @param tableLine single table data row comma-delimited string
+	 * @return FieldObject compiled from tableData values
+	 */
+	protected FieldObject compileFieldObject(String tableLine) {
 		
 		FieldObject fo = new FieldObject();
-		String[] terms = dataLine.replace(" ", "").split(",");
+		String[] terms = tableLine.replace(" ", "").split(",");
 		
 		String apertureId = terms[ColumnsEnum.AP_COL.getIndex()];
 		fo.setApertureId(apertureId);
@@ -75,9 +88,7 @@ class AbstractRaDecFile {
 	}
 	
 	
-	
 	public static void main(String[] args) {
-		
 		String[] dataLines = 
 			{"#T01, wasp12, 06:30:32.80, +29:40:20.27, 10.000, 0.567, 0.000, 0.00,  1",
 			  "#C02, star04, 06:30:31.03, +29:41:18.43, 9.120, 0.090, -0.880, 1.04,  4"					
@@ -89,7 +100,5 @@ class AbstractRaDecFile {
 		FieldObject fo1 = f.compileFieldObject(dataLines[1]);
 		System.out.println(fo0.toString());
 		System.out.println(fo1.toString());
-		
 	}
-
 }

@@ -31,6 +31,9 @@ new FormModel {
 							"focusCycleRoot": true
 							"background": new java.awt.Color( 255, 255, 255, 255 )
 							"toolTipText": "<html>\nEnter target name\n<p> Note: This field is <b>not </b>changed after a SIMBAD query</p>\n<p>Examples: WASP-12, wasp_12, Wasp12</p>\n</html>"
+							auxiliary() {
+								"JavaCodeGenerator.variableModifiers": 4
+							}
 						} )
 						add( new FormComponent( "javax.swing.JLabel" ) {
 							name: "label2"
@@ -40,6 +43,9 @@ new FormModel {
 							name: "raField"
 							"text": "06:30:32.80"
 							"toolTipText": "<html>\nEnter target J2000 RA (hours), in sexagesimal format  HH:MM:SS.SS\n<p>Note 1: Use  ':' delimiter</p>\n<p>Note 2: RA updates after a successful SIMBAD query</p>\n<p>RA range: 00:00:00 to 23:59:59.99</p>\n<p>Examples: 12:34:56.78,  1: 2:3.456, => 01:02:03.46</p>\n</html>"
+							auxiliary() {
+								"JavaCodeGenerator.variableModifiers": 4
+							}
 						} )
 						add( new FormComponent( "javax.swing.JLabel" ) {
 							name: "label3"
@@ -49,6 +55,9 @@ new FormModel {
 							name: "decField"
 							"text": "+20:40:20.27"
 							"toolTipText": "<html>\nEnter target J2000 DEC (degrees), in sexagesimal format  ±DD:MM:SS.SS\n<p>Note 1: Use  ':' delimiter</p>\n<p>Note 2: DEC updates after a successful SIMBAD query</p>\n<p>DEC range: 00:00:00 to ±90:00:00</p>\n<p>Examples: 12:34:56.78 => +12:34:56.78,  -1:2:3.456, => -01:02:03.46</p>\n</html>"
+							auxiliary() {
+								"JavaCodeGenerator.variableModifiers": 4
+							}
 						} )
 						add( new FormComponent( "javax.swing.JLabel" ) {
 							name: "label4"
@@ -58,6 +67,9 @@ new FormModel {
 							name: "fovField"
 							"text": "60.0"
 							"toolTipText": "<html>\nEnter square field-of-view width (arcmin)\n<p>FOV range: 1.0 to 1199.9 amin\n<p>Examples: 25.0, 1150.0</p>\n</html>"
+							auxiliary() {
+								"JavaCodeGenerator.variableModifiers": 4
+							}
 						} )
 						add( new FormComponent( "javax.swing.JLabel" ) {
 							name: "label5"
@@ -67,6 +79,9 @@ new FormModel {
 							name: "magLimitField"
 							"text": "17.0"
 							"toolTipText": "<html>\nEnter magnitude limit\n<p>Range: 1.0 to 99.9 mag\n<p>Example: 15.5</p>\n</html>"
+							auxiliary() {
+								"JavaCodeGenerator.variableModifiers": 4
+							}
 						} )
 						add( new FormComponent( "javax.swing.JLabel" ) {
 							name: "label7"
@@ -94,6 +109,7 @@ new FormModel {
 							"toolTipText": "<html>\nSelect on-line astronomical database from list\n</html>"
 							auxiliary() {
 								"JavaCodeGenerator.typeParameters": "String"
+								"JavaCodeGenerator.variableModifiers": 4
 							}
 						} )
 						add( new FormComponent( "javax.swing.JLabel" ) {
@@ -105,6 +121,7 @@ new FormModel {
 							"toolTipText": "<html>\nSelect photometric filter from list\n<p>Listed filters depends on selected catalog</p>\n</html>"
 							auxiliary() {
 								"JavaCodeGenerator.typeParameters": "String"
+								"JavaCodeGenerator.variableModifiers": 4
 							}
 						} )
 						add( new FormComponent( "javax.swing.JLabel" ) {
@@ -199,8 +216,8 @@ new FormModel {
 						} )
 					} )
 					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-						"$horizontalGroup": "par l {seq {space :::p, par l {seq {par l {comp label14::t:p::p, comp label6::t:p::p, comp label13::t:p::p}, space :0:20:x, par t {comp upperLimitSpinner:1:t:p:60:p, comp lowerLimitSpinner:1:t:p:60:p, comp magSpinner:1::p:60:p}, space u:::p, par l {comp upperLabel::l:p::p, comp label16::l:p::p, comp lowerLabel::l:p::p}, space ::15:x}, seq l {comp isMagLimitsCheckBox:::p::p, space :0:0:x}}}}"
-						"$verticalGroup": "par l {seq l {space :::p, par b {comp label6::b:p::p, comp upperLimitSpinner::b:p::p, comp upperLabel::b:p::p}, space :::p, par b {comp label14::b:p::p, comp magSpinner::b:p::p, comp label16::b:p::p}, space :::p, par l {comp label13:::p::p, par b:l {comp lowerLimitSpinner::b:p::p, comp lowerLabel::b:p::p}}, space u:::p, comp isMagLimitsCheckBox:::p::p, space :::x}}"
+						"$horizontalGroup": "par l {seq {space :::p, par l {seq {par l {comp label14::t:p::p, comp label6::t:p::p, comp label13::t:p::p}, space :0:20:x, par t {comp upperLimitSpinner:1:t:p:60:p, comp lowerLimitSpinner:1:t:p:60:p, comp targetMagSpinner:1::p:60:p}, space u:::p, par l {comp upperLabel::l:p::p, comp label16::l:p::p, comp lowerLabel::l:p::p}, space ::15:x}, seq l {comp isMagLimitsCheckBox:::p::p, space :0:0:x}}}}"
+						"$verticalGroup": "par l {seq l {space :::p, par b {comp label6::b:p::p, comp upperLimitSpinner::b:p::p, comp upperLabel::b:p::p}, space :::p, par b {comp label14::b:p::p, comp targetMagSpinner::b:p::p, comp label16::b:p::p}, space :::p, par l {comp label13:::p::p, par b:l {comp lowerLimitSpinner::b:p::p, comp lowerLabel::b:p::p}}, space u:::p, comp isMagLimitsCheckBox:::p::p, space :::x}}"
 					} ) {
 						name: "panel5"
 						"border": new javax.swing.border.TitledBorder( "Set Mag Limits" )
@@ -234,7 +251,7 @@ new FormModel {
 							}
 						} )
 						add( new FormComponent( "javax.swing.JSpinner" ) {
-							name: "magSpinner"
+							name: "targetMagSpinner"
 							"model": new javax.swing.SpinnerNumberModel( 10.0, 5.5, 25.0, 0.10000000149011612 )
 							"toolTipText": "<html>\nSet the nominal target mag for the selected filter band\n<p>Use the scroll control  or type value in text box</p>\n<p>Range: 5.5 - 25 mag in 0.1 mag increment</p>\n</html>"
 							auxiliary() {
@@ -269,14 +286,14 @@ new FormModel {
 						} )
 					} )
 					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-						"$horizontalGroup": "par l {seq l {space :::p, par l {seq {space :0:0:x, par l {comp deltaMagRadioButton::l:p::p, comp radSepRadioButton::l:p::p}}, seq {par l:::p {comp label17:::p::p, seq {space :10:10:p, comp nObsSpinner:::::x}}, space :0:0:x}}}}"
-						"$verticalGroup": "par l {seq l {space :p:4:p, comp radSepRadioButton:::p::p, space u:::p, comp deltaMagRadioButton:::p::p, space s:::p, comp label17:::p::p, space :::p, comp nObsSpinner:::p::p, space :::x}}"
+						"$horizontalGroup": "par l {seq l {space :::p, par l {seq {space :0:0:x, par l {comp deltaMagRadioButton::l:p::p, comp distanceRadioButton::l:p::p}}, seq {par l:::p {comp label17:::p::p, seq {space :10:10:p, comp nObsSpinner:::::x}}, space :0:0:x}}}}"
+						"$verticalGroup": "par l {seq l {space :p:4:p, comp distanceRadioButton:::p::p, space u:::p, comp deltaMagRadioButton:::p::p, space s:::p, comp label17:::p::p, space :::p, comp nObsSpinner:::p::p, space :::x}}"
 					} ) {
 						name: "panel6"
 						"border": new javax.swing.border.TitledBorder( "Ascending Sort" )
 						"preferredSize": #Dimension1
 						add( new FormComponent( "javax.swing.JRadioButton" ) {
-							name: "radSepRadioButton"
+							name: "distanceRadioButton"
 							"text": "Distance"
 							"selected": true
 							"$buttonGroup": new FormReference( "buttonGroup1" )

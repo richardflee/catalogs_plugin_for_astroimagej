@@ -1,5 +1,5 @@
 
-package com.github.richardflee.astroimagej.query_objects;
+package com.github.richardflee.astroimagej.data_objects;
 
 import com.github.richardflee.astroimagej.utils.AstroCoords;
 
@@ -81,17 +81,12 @@ public class FieldObject extends AbstractFieldObject {
 		// converts to double value
 		this.deltaMag = deltaMag1000 / 1000.0;
 	}
-	
-	
-	
-	/**
-	 *  Overloaded methods
-	 */
+	//  Overloaded methods
 
+	
 	public double getRadSepAmin() {
 		return radSepAmin;
 	}
-	
 	
 	
 	public double getDeltaMag() {
@@ -215,14 +210,6 @@ public class FieldObject extends AbstractFieldObject {
 		fo1.setDeltaMag(deltaMag1000);
 		System.out.println(String.format("Test overload integer delta mag %.3f, %.3f", 
 								deltaMag1000 / 1000.0, fo1.getDeltaMag()));
-		
-		
-		//System.out.println(String.format("Test signed mag delta: %.3f", fo1.getSignedDeltaMag(13.345)));
-		//System.out.println(String.format("Test unsigned mag delta: %.3f", fo1.getUnsignedDeltaMag(13.345)));
-		
 	}
-
-
-	
 
 }

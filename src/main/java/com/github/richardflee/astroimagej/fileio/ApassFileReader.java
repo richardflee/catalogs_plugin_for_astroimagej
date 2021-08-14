@@ -8,11 +8,10 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-
+import com.github.richardflee.astroimagej.data_objects.CatalogQuery;
+import com.github.richardflee.astroimagej.data_objects.FieldObject;
+import com.github.richardflee.astroimagej.data_objects.QueryResult;
 import com.github.richardflee.astroimagej.enums.ColumnsEnum;
-import com.github.richardflee.astroimagej.query_objects.CatalogQuery;
-import com.github.richardflee.astroimagej.query_objects.FieldObject;
-import com.github.richardflee.astroimagej.query_objects.QueryResult;
 
 public class ApassFileReader {
 
@@ -24,7 +23,7 @@ public class ApassFileReader {
 	// => catalog.runQuery
 	public QueryResult runQueryFromFile(CatalogQuery query) {
 
-		QueryResult result = new QueryResult(query);
+		QueryResult result = new QueryResult();
 		FieldObject target = null;
 		List<FieldObject> fieldObjects = new ArrayList<>();
 
@@ -36,7 +35,6 @@ public class ApassFileReader {
 				String[] terms = line.split("\t");
 
 				for (int idx = 0; idx < terms.length; idx++) {
-
 					String term = terms[idx];
 					if (idx == ColumnsEnum.OBJECTID_COL.getIndex()) {
 						fo.setObjectId(term);

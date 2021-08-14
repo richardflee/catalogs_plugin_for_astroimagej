@@ -13,12 +13,86 @@ import javax.swing.JFileChooser;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import com.github.richardflee.astroimagej.query_objects.CatalogQuery;
-import com.github.richardflee.astroimagej.query_objects.FieldObject;
+import com.github.richardflee.astroimagej.data_objects.CatalogQuery;
+import com.github.richardflee.astroimagej.data_objects.FieldObject;
+import com.github.richardflee.astroimagej.data_objects.QueryResult;
 
+/**
+ * Imports radec file data and populates catlog table and creates new query object. Radec file format:
+ * <p>Block 1: data = astroimagej radec format data to draw apertures on plate solve images</p>
+ * <p>Block 2: comment = header + selected catalog table rows</p>
+ * <p>Block 3: comment = header + row of catalog query data</p>
+ * <p>Comment lines have leading char "#". A single "#" denotes break between blocks.</p>
+ */
 public class RaDecFileReader extends AbstractRaDecFile {
+	
+	private List<String> lines = null;
+	private boolean raDecFileSelected = false;
+	
+	/**
+	 * Opens file dialog in ./astroimgej/radec folder with txt file filter. 
+	 * <p>If a file is selected, sets raDecFileSelected flag true, opens selected file and converts to text array.</p>
+	 */
+	public RaDecFileReader() {
+		File file = radecFileDialog();
+		raDecFileSelected = (file != null);		
+		if (raDecFileSelected)  {
+			this.lines = readRaDecFile(file);
+		}
+	}
+	
+	/**
+	 * Compiles a QueryResult object from block 2 radec data
+	 * 
+	 * @return FieldObject array encapsulated in QueryResult object
+	 */
+	
+	public QueryResult getTableData() {
+		// check user selected a file
+		if (!raDecFileSelected) {
+			return null;
+		}
+		// block 2 radec data
+		List<String> tableLines = getTableLines(lines);
+		
+		// convert data set to QueryResult object array FieldObjects
+		QueryResult currentResult = new QueryResult();
+		List<FieldObject> fieldObjects = currentResult.getFieldObjects();
+		for (String tableLine : tableLines) {
+			FieldObject fo = compileFieldObject(tableLine);
+			fieldObjects.add(fo);
+		}
+		return currentResult;
+	}
+	
+	/**
+	 * Compiles a CatalogQuery object from block 3 radec data
+	 * 
+	 * @return CatalogQuery object
+	 */
+	
+	public CatalogQuery getQueryData() {
+		// check user selected a file
+		if (!raDecFileSelected) {
+			return null;
+		}
+		// locate single data line and convert to a new query object
+		String dataLine = getQueryLine(lines);
+		return CatalogQuery.fromFormattedString(dataLine);
+	}
+	
+	// file selected getter
+	public boolean getFileSelected() {
+		return raDecFileSelected;
+	}
 
-	public List<String> readRaDecFile(File file) {
+	/*
+	 * Converts user selected radec text file to text list
+	 * 
+	 * @param file file reference to selected file
+	 * @return file text copied to array list 
+	 */
+	private List<String> readRaDecFile(File file) {
 		List<String> lines = new ArrayList<>();
 
 		Path path = file.toPath();
@@ -30,14 +104,20 @@ public class RaDecFileReader extends AbstractRaDecFile {
 		return lines;
 	}
 
-	public File radecFileDialog() {
-
+	/*
+	 * Opens file dialog configured for radec folder and file type
+	 * 
+	 * @return file reference to selected file, or null if Cancel pressed
+	 */
+	private File radecFileDialog() {
+		// sets common ui theme 
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception ex) {
 			System.err.println("Failed to initialize Windows Look-Feel");
 		}
-
+		
+		// configures file chooser dialog start folder and file type
 		File file = new File(System.getProperty("user.dir"), "radec");
 		JFileChooser jfc = new JFileChooser(file);
 		jfc.setDialogTitle("Select radec file");
@@ -45,74 +125,71 @@ public class RaDecFileReader extends AbstractRaDecFile {
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("RaDec files (*.txt)", "txt");
 		jfc.addChoosableFileFilter(filter);
 
-		int returnValue = jfc.showOpenDialog(null);
-		if (returnValue == JFileChooser.APPROVE_OPTION) {
+		// sets file object to selected text file or null if Cancel
+		if (jfc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 			file = jfc.getSelectedFile();
 		} else {
 			file = null;
 		}
 		return file;
 	}
-
-	public List<FieldObject> getTableData(List<String> lines) {
+	
+	/*
+	 * Extracts radec block 2 table data in text array
+	 * 
+	 * @param lines text array comprising full radec data set 
+	 * @return text array comprising radec table data set 
+	 */
+	private List<String> getTableLines(List<String> lines) {
 		int idx = 0;
+		// first "#" marks start of radec block 2
 		while (!(lines.get(idx).equals("#"))) {
 			idx++;
 		}
+		// fromIndex marks start of table data, skips marker and header lines
 		int fromIndex = idx + 2;
-
+		
+		// reverse search for 2nd "#" char, marks end of block 2 data
 		idx = lines.size() - 1;
 		while (!(lines.get(idx).equals("#"))) {
 			idx--;
 		}
 		int toIndex = idx;
-		List<String> dataLines = lines.subList(fromIndex, toIndex);
-		
-
-		List<FieldObject> fieldObjects = new ArrayList<>();
-		for (String dataLine : dataLines) {
-			FieldObject fo = compileFieldObject(dataLine);
-			fieldObjects.add(fo);
-		}
-		return fieldObjects;
+		return lines.subList(fromIndex, toIndex);		
 	}
-	
-	private String getQueryLine(List<String> lines) {
 
+	
+	/*
+	 * Extracts radec block 3 table data in single text line
+	 * 
+	 * @param lines text array comprising full radec data set 
+	 * @return text text line compring radec query data set 
+	 */
+	private String getQueryLine(List<String> lines) {
+		// reverse search to find last "#" marker
 		int idx = lines.size() - 1;
 		while (!(lines.get(idx).equals("#"))) {
 			idx--;
 		}
+		// skips marker and header and returns data line
 		int dataIndex = idx + 2;
 		return lines.get(dataIndex);
 	}
 	
-	public CatalogQuery getQueryData(List<String> lines) {
-		String dataLine = getQueryLine(lines);
-		return CatalogQuery.fromFormattedString(dataLine);
-	}
 
 	public static void main(String[] args) {
 
 		RaDecFileReader fr = new RaDecFileReader();
 
-		File file = fr.radecFileDialog();
-
-		if (file == null) {
-			System.out.println("null");
-			System.exit(0);
-		}
-
-		List<String> lines = fr.readRaDecFile(file);
-		lines.stream().forEach(System.out::println);
-		List<FieldObject> fieldObjects = fr.getTableData(lines);
-		CatalogQuery query = fr.getQueryData(lines);
+		QueryResult currentResult = fr.getTableData();
+		CatalogQuery query = fr.getQueryData();
 		
-		System.out.println();
-		fieldObjects.stream().forEach(p -> System.out.println(p.toString()));
-
-		String dataLine = fr.getQueryLine(lines);
-		System.out.println(query.toString());
+		if (fr.lines != null) {
+			currentResult.getFieldObjects().stream().forEach(p -> System.out.println(p.toString()));		
+			System.out.println(query.toString());
+		} else {
+			System.out.println("No file selected");
+		}
 
 	}
 }

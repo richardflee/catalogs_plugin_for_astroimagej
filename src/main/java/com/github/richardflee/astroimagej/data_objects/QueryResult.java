@@ -1,4 +1,4 @@
-package com.github.richardflee.astroimagej.query_objects;
+package com.github.richardflee.astroimagej.data_objects;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -29,8 +29,17 @@ public class QueryResult {
 
 	private List<FieldObject> fieldObjects;
 
-	public QueryResult(CatalogQuery query) {
+	public QueryResult() {
 		fieldObjects = new ArrayList<>();
+	}
+
+	// getters / setters
+	public List<FieldObject> getFieldObjects() {
+		return fieldObjects;
+	}
+
+	public void setFieldObject(FieldObject fieldObject) {
+		fieldObjects.add(fieldObject);
 	}
 
 	/**
@@ -47,20 +56,57 @@ public class QueryResult {
 	/**
 	 * Sorts object list in order of increasing absolute difference in reference an
 	 * target star magnitude.
-	 * <p>
-	 * Nominal target magnitude entered by user in UI.
-	 * </p>
 	 * 
+	 * <p>Nominal target magnitude entered by user in UI.</p>
 	 * @return list headed by target object then reference objects sorted by
 	 *         magnitude difference
 	 */
-	public List<FieldObject> sortByDeltaMag(double targetMag) {	
+	public List<FieldObject> sortByDeltaMag(double targetMag) {
 		return sortFieldObjects(targetMag, SortTypeEnum.SORT_BY_DELTA_MAG);
 	}
 
+	/**
+	 * Total number of list items
+	 * 
+	 * @return total items
+	 */
+	public int getTotalRecords() {
+		return fieldObjects.size() - 1;
+	}
+
+	/**
+	 * Returns first item from list where isTarget is true
+	 * 
+	 * @return reference to target object
+	 */
+	public FieldObject getTargetObject() {
+		return fieldObjects.stream().filter(p -> p.isTarget()).findFirst().get();
+	}
+
+	/**
+	 * Updates field object delta mag fields: delatMag = obj_mag - tgt_mag
+	 * 
+	 * @param targetMag target object nominal mag
+	 */
+	public void updateDeltaMags(double targetMag) {
+		fieldObjects.forEach(p -> p.setDeltaMag(targetMag));
+	}
+
+	/*
+	 * Sorts list of fieldobjects in ascending order by selected sort type with
+	 * target bject first list item.
+	 * 
+	 * @param targetMag user input value for target mag for current filter / mag
+	 * band
+	 * 
+	 * @param sortType user selects sort either by radial distance or absolute
+	 * difference in mag to target value
+	 * 
+	 * @return sorted list of field obejcts, with target item 0.
+	 */
 	private List<FieldObject> sortFieldObjects(double targetMag, SortTypeEnum sortType) {
-		
-		List<FieldObject> sortedList  = null;
+
+		List<FieldObject> sortedList = null;
 		// id target star
 		FieldObject targetObject = this.getTargetObject();
 		targetObject.setApertureId("T01");
@@ -86,29 +132,6 @@ public class QueryResult {
 		return sortedList;
 	}
 
-	public int getTotalRecords( ) {
-		return fieldObjects.size() - 1;
-	}
-	
-	
-	/**
-	 * Returns first item from list where isTarget is true
-	 * 
-	 * @return reference to target object
-	 */
-	public FieldObject getTargetObject() {
-		return fieldObjects.stream().filter(p -> p.isTarget()).findFirst().get();
-	}
-
-	/**
-	 * Updates field object delta mag fields: delatMag = obj_mag - tgt_mag
-	 * 
-	 * @param targetMag target object nominal mag
-	 */
-	public void updateDeltaMags(double targetMag) {
-		fieldObjects.forEach(p -> p.setDeltaMag(targetMag));
-	}
-
 	/*
 	 * Assigns aperture identifier T01 to target object, C02, C03 .. to selected
 	 * reference objects and empty string for de-selected objects.
@@ -124,16 +147,6 @@ public class QueryResult {
 			}
 			fo.setApertureId(apNumber);
 		}
-	}
-
-	// getters / setters
-
-	public List<FieldObject> getFieldObjects() {
-		return fieldObjects;
-	}
-
-	public void setFieldObject(FieldObject fieldObject) {
-		fieldObjects.add(fieldObject);
 	}
 
 	@Override
@@ -163,7 +176,6 @@ public class QueryResult {
 		System.out.println(String.format("Sorted in increasing distance: %b", b));
 		System.out.println();
 
-
 		sorted = result.sortByDeltaMag(targetMag);
 
 		// test: monotonic increase in |obj_mag - tgtmag|
@@ -175,7 +187,7 @@ public class QueryResult {
 		}
 		System.out.println(String.format("Target mag = %.3f", targetMag));
 		System.out.println(String.format("Sorted in increasing abs deltaMag: %b", b));
-		
+
 		System.out.println(String.format("Total no records =  %02d", result.getTotalRecords()));
 
 	}

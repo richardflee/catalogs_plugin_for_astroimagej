@@ -2,7 +2,7 @@ package com.github.richardflee.astroimagej.catalog_ui;
 
 import java.util.List;
 
-import com.github.richardflee.astroimagej.query_objects.FieldObject;
+import com.github.richardflee.astroimagej.data_objects.FieldObject;
 
 /**
  * Interface for button click updateTable events 
