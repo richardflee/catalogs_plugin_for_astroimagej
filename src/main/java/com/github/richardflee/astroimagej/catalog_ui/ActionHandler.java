@@ -45,7 +45,7 @@ public class ActionHandler {
 		//this.settings = catalogUi.importCatalogUiSortFilter();
 
 		// TTD replace with cat query build method
-		//query = new CatalogQuery();
+		query = new CatalogQuery();
 	}
 
 	/**
@@ -176,12 +176,13 @@ public class ActionHandler {
 		// sort relative to target
 		// sort type from selected radio button: sorts radial distance or absolute
 		// difference
-		// boolean sortByDistance = catalogUi.
-		// List<FieldObject> sortedList = ApplyTableSort(sortByDistance);
+		boolean sortByDistance = catalogUi.distanceRadioButton.isSelected();
+		List<FieldObject> sortedList =  applyTableSort(result, settings);
 
 		// apply nObs limit
-//		currentSortedFilteredList = sortedList.stream().filter(p -> ((p.getnObs() >= numberObs) || (p.isTarget())))
-//				.collect(Collectors.toList());
+		int numberObs = (int) catalogUi.nObsSpinner.getValue();
+		currentSortedFilteredList = sortedList.stream().filter(p -> ((p.getnObs() >= numberObs) || (p.isTarget())))
+				.collect(Collectors.toList());
 
 		// option to apply mag difference filters
 		// if upper and/or lower limits < 0.1 (effectively 0) then limits are not
