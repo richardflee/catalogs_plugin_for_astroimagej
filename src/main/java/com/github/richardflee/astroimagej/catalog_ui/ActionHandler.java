@@ -1,6 +1,5 @@
 package com.github.richardflee.astroimagej.catalog_ui;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,7 +52,6 @@ public class ActionHandler {
 		// TTD read target mag frm props file or deault settings value
 		double targetMag = 12.34;
 		settings.setTargetMagSpinnerValue(targetMag);
-
 	}
 
 	/**
@@ -123,11 +121,16 @@ public class ActionHandler {
 	public void doSaveRaDecFile() {
 		// filter selected records
 		// TTD apply filters to selected records & save
-//		// TTDO replace sorted list with sort process
-//		List<FieldObject> selectedList = sortedFilteredList.stream().filter(p -> p.isSelected())
-//				.collect(Collectors.toList());
-//		RaDecFileWriter fw = new RaDecFileWriter();
-//		fw.writeRaDecFile(selectedList, query);
+		// TTDO replace sorted list with sort process
+		
+		List<FieldObject> sortedFilteredList = updateCatalogUiTable(result);
+		
+		List<FieldObject> selectedList = sortedFilteredList.stream()
+						.filter(p -> p.isSelected())
+						.collect(Collectors.toList());
+		
+		RaDecFileWriter fw = new RaDecFileWriter();
+		fw.writeRaDecFile(selectedList, query);
 	}
 
 	/**
@@ -180,170 +183,117 @@ public class ActionHandler {
 	 * 
 	 * @return FieldObject list sorted and filtered as specified by user settings
 	 */
-	private void updateCatalogUiTable(QueryResult result) {
+	private List<FieldObject> updateCatalogUiTable(QueryResult result) {
 		// clears table
 		catalogTableListener.updateTable(null);
 
 		// result = null => reset sortedFilteredList field and exit method
 		if (result == null) {
-			return;
+			return null;
 		}
 
 		// current ui data
-		CatalogSettings settings = catalogUi.getCatalogUiSortFilterSettings();
+		CatalogSettings currentSettings = catalogUi.getCatalogUiSortFilterSettings();
 
 		// field objects listed by sort order and applied filters
 		// List<FieldObject> currentSortedFilteredList = null;
 
 		// updates query result object with user-input target mag value
-		double targetMag = settings.getTargetMagSpinnerValue();
-		result.getTargetObject().setMag(targetMag);
+		// double targetMag = currentSettings.getTargetMagSpinnerValue();
+		
 
 		// sort relative to target
 		// sort type from selected radio button: sorts radial distance or absolute
 		// difference
 		// boolean sortByDistance = catalogUi.distanceRadioButton.isSelected();
-		List<FieldObject> sortedFilteredList = result.getSortedList(settings);
+		List<FieldObject> sortedFilteredList = result.getSortedList(currentSettings);
 
 		// apply nObs limit
 		int numberObs = (int) catalogUi.nObsSpinner.getValue();
-		sortedFilteredList = sortedFilteredList.stream()
-									.filter(p -> ((p.getnObs() >= numberObs) || (p.isTarget())))
-									.collect(Collectors.toList());
+		sortedFilteredList = sortedFilteredList.stream().filter(p -> ((p.getnObs() >= numberObs) || (p.isTarget())))
+				.collect(Collectors.toList());
 
 		// apply mag limits filter
-		if (settings.isMagLimitsCheckBoxValue() == true) {
-			double magUpperLimit = settings.getUpperLimitSpinnerValue();
-			double magLowerLimit = settings.getLowerLimitSpinnerValue();
+		if (currentSettings.isMagLimitsCheckBoxValue() == true) {
+			double magUpperLimit = currentSettings.getUpperLimitSpinnerValue();
+			double magLowerLimit = currentSettings.getLowerLimitSpinnerValue();
 			
+			double targetMag = currentSettings.getTargetMagSpinnerValue();
+			result.getTargetObject().setMag(targetMag);
+			
+
 			sortedFilteredList = sortedFilteredList.stream()
-									.filter(p -> (Math.abs(magUpperLimit) < 0.01 || p.getMag() <= magUpperLimit))
-									.filter(p -> (Math.abs(magLowerLimit) < 0.01 || p.getMag() >= magLowerLimit))
-									.collect(Collectors.toList());
+					.filter(p -> (Math.abs(magUpperLimit) < 0.01 || p.getMag() <= magUpperLimit + targetMag))
+					.filter(p -> (Math.abs(magLowerLimit) < 0.01 || p.getMag() >= magLowerLimit + targetMag))
+					.collect(Collectors.toList());
 		}
-		
-		settings = updateLabelValues(settings, sortedFilteredList.size());
-		
-		catalogUi.setCatalogUiSortFilterSettings(settings);
+
+		currentSettings.updateLabelValues(result.getRecordsTotal(), sortedFilteredList.size());
+
+		catalogUi.setCatalogUiSortFilterSettings(currentSettings);
 
 		// run table update with sort / filter selections
 		catalogTableListener.updateTable(sortedFilteredList);
-		this.settings = settings;
+		this.settings = currentSettings;
+		
+		return sortedFilteredList;
 	}
 
-	private CatalogSettings updateLabelValues(CatalogSettings settings, int nFilteredRecords) {
-		CatalogSettings labelSettings = settings;
-
-		labelSettings.setTotalLabelValue(this.result.getRecordsTotal());
-		labelSettings.setFilteredLabelValue(nFilteredRecords - 1);
-		
-		double limitVal = settings.getUpperLimitSpinnerValue();
-		String limitStr = (Math.abs(limitVal) < 0.01) ? "N/A" : String.format("%.1f", limitVal);
-		labelSettings.setUpperLabelValue(limitStr);
-		
-		limitVal = settings.getLowerLimitSpinnerValue();
-		limitStr = (Math.abs(limitVal) < 0.01) ? "N/A" : String.format("%.1f", limitVal);
-		labelSettings.setLowerLabelValue(limitStr);
-		
-		return labelSettings;
-	}
-
-//	private Double[] getMagLimitValues(CatalogSettings settings) {
-//		Double[] limitValues = new Double[2];
-//
-//		double magUpperLimit = settings.getUpperLimitSpinnerValue();
-//		double targetMag = settings.getTargetMagSpinnerValue();
-//		double magLowerLimit = settings.getLowerLimitSpinnerValue();
-//
-//		if (Math.abs(magUpperLimit) < 0.01) {
-//			limitValues[0] = "N/A";
-//		} else {
-//			limitValues[0] = String.format("%.1f", targetMag + magUpperLimit);
-//		}
-//
-//		if (Math.abs(magLowerLimit) < 0.01) {
-//			limitValues[1] = "N/A";
-//		} else {
-//			limitValues[1] = String.format("%.1f", targetMag + magLowerLimit);
-//		}
-//		return limitValues;
-//	}
-
-//	/*
-//	 * Import catalogUI sort and filter control values
-//	 */
-//	private void importCatalogSettings() {
-//		// values of nominal mag, upper and lower limits and state of apply filter
-//		// checkbox
-//		targetMag = Double.valueOf(catalogUi.targetMagSpinner.getValue().toString());
-//		magUpperLimit = Double.valueOf(catalogUi.upperLimitSpinner.getValue().toString());
-//		magLowerLimit = Double.valueOf(catalogUi.lowerLimitSpinner.getValue().toString());
-//		isMagLimitsSelected = Boolean.valueOf(catalogUi.isMagLimitsCheckBox.isSelected());
-//
-//		// sort option, mutually exclusive
-//		isDistanceSelected = Boolean.valueOf((Boolean) catalogUi.distanceRadioButton.isSelected());
-//		isDeltaMagSelected = Boolean.valueOf((Boolean) catalogUi.deltaMagRadioButton.isSelected());
-//
-//		// number of observations spin control, relevant to apass catalog only
-//		numberObs = Integer.valueOf(catalogUi.nObsSpinner.getValue().toString());
-//	}
-
-//	private void updateCatalogSettings(FieldObject target, CatalogQuery query) {
-//		// catalog query settings
-//		catalogUi.objectIdField.setText(query.getObjectId());
-//		catalogUi.raField.setText(AstroCoords.raHr_To_raHms(query.getRaHr()));
-//		catalogUi.decField.setText(AstroCoords.decDeg_To_decDms(query.getDecDeg()));
-//		catalogUi.fovField.setText(String.format("%.1f", query.getFovAmin()));
-//		catalogUi.magLimitField.setText(String.format("%.1f", query.getMagLimit()));
-//		catalogUi.catalogCombo.setSelectedItem(query.getCatalogType().toString());
-//		catalogUi.filterCombo.setSelectedItem(query.getMagBand());
-//	}
-
-//	private void initialiseCatalogSortFilerSettings(FieldObject target) {
-//		// mag limits
-//		catalogUi.targetMagSpinner.setValue(target.getMag());
-//		catalogUi.isMagLimitsCheckBox.setSelected(false);
-//		catalogUi.nObsSpinner.setValue(1);
-//
-//	}
 
 	public static void main(String args[]) {
 
 		ApassFileReader fr = new ApassFileReader();
 		CatalogQuery query = new CatalogQuery();
 		QueryResult result = fr.runQueryFromFile(query);
+		CatalogSettings settings = new CatalogSettings();
+
+		settings.setTargetMagSpinnerValue(15.0);
+		settings.setUpperLimitSpinnerValue(0.5);
+		settings.setLowerLimitSpinnerValue(-1.5);
+
 		System.out.println(result.toString());
 
-		List<FieldObject> fieldObjects = result.getFieldObjects();
-		FieldObject target = fieldObjects.stream().filter(p -> p.isTarget()).findFirst().get();
-		fieldObjects.remove(target);
-		target.setApertureId("T01");
+//		List<FieldObject> fieldObjects = result.getFieldObjects();
+//		FieldObject target = fieldObjects.stream().filter(p -> p.isTarget()).findFirst().get();
+//		fieldObjects.remove(target);
+//		target.setApertureId("T01");
 
-		// sort by distance
-		List<FieldObject> sortByRadSep = fieldObjects.stream()
-				.sorted(Comparator.comparingDouble(FieldObject::getRadSepAmin)).collect(Collectors.toList());
+//		double magUpperLimit = settings.getUpperLimitSpinnerValue();
+//		double magLowerLimit = settings.getLowerLimitSpinnerValue();
 
-		int idx = 2;
-		for (FieldObject fo : sortByRadSep) {
-			String apNumber = (fo.isSelected()) ? String.format("C%02d", idx++) : "";
-			fo.setApertureId(apNumber);
-		}
-		sortByRadSep.add(0, target);
-		System.out.println("here");
+	//	List<FieldObject> sortedFilteredList = result.getSortedList(settings);
 
-		double tgtMag = 16.046;
+//		sortedFilteredList.stream()
+//				.filter(p -> (Math.abs(magUpperLimit) < 0.01 || p.getMag() <= magUpperLimit))
+//				.collect(Collectors.toList());
 
-		List<FieldObject> sortByDeltaMag = fieldObjects.stream()
-				.sorted(Comparator.comparingDouble(p -> Math.abs((p.getMag() - tgtMag)))).collect(Collectors.toList());
-		idx = 2;
-		for (FieldObject fo : sortByDeltaMag) {
-			String apNumber = (fo.isSelected()) ? String.format("C%02d", idx++) : "";
-			fo.setApertureId(apNumber);
-		}
+//		// sort by distance
+//		List<FieldObject> sortByRadSep = fieldObjects.stream()
+//				.sorted(Comparator.comparingDouble(FieldObject::getRadSepAmin)).collect(Collectors.toList());
+//
+//		int idx = 2;
+//		for (FieldObject fo : sortByRadSep) {
+//			String apNumber = (fo.isSelected()) ? String.format("C%02d", idx++) : "";
+//			fo.setApertureId(apNumber);
+//		}
+//		sortByRadSep.add(0, target);
+//		System.out.println("here");
+//
+//		double tgtMag = 16.046;
+//
+//		List<FieldObject> sortByDeltaMag = fieldObjects.stream()
+//				.sorted(Comparator.comparingDouble(p -> Math.abs((p.getMag() - tgtMag)))).collect(Collectors.toList());
+//		idx = 2;
+//		for (FieldObject fo : sortByDeltaMag) {
+//			String apNumber = (fo.isSelected()) ? String.format("C%02d", idx++) : "";
+//			fo.setApertureId(apNumber);
+//		}
+//
+//		sortByDeltaMag.add(0, target);
+//		for (FieldObject fo : sortByDeltaMag) {
+//			System.out.println(fo.toString());
+//		}
+//		
 
-		sortByDeltaMag.add(0, target);
-		for (FieldObject fo : sortByDeltaMag) {
-			System.out.println(fo.toString());
-		}
 	}
 }

@@ -70,6 +70,20 @@ public class CatalogSettings {
 		upperLabelValue ="N/A";
 		lowerLabelValue = "N/A";
 	}
+	
+	public void updateLabelValues(int nTotalRecords, int nFilteredRecords) {
+		
+		this.setTotalLabelValue(nTotalRecords);
+		this.setFilteredLabelValue(nFilteredRecords - 1);
+
+		double limitVal = this.getUpperLimitSpinnerValue();
+		String limitStr = (Math.abs(limitVal) < 0.01) ? "N/A" : String.format("%.1f", limitVal);
+		this.setUpperLabelValue(limitStr);
+
+		limitVal = this.getLowerLimitSpinnerValue();
+		limitStr = (Math.abs(limitVal) < 0.01) ? "N/A" : String.format("%.1f", limitVal);
+		this.setLowerLabelValue(limitStr);
+	}
 
 	
 

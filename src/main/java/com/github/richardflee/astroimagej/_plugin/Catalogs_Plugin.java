@@ -4,7 +4,6 @@ import java.awt.EventQueue;
 
 import javax.swing.UIManager;
 
-import com.github.richardflee.astroimagej.catalog_ui.ActionHandler;
 import com.github.richardflee.astroimagej.catalog_ui.CatalogTableModel;
 import com.github.richardflee.astroimagej.catalog_ui.CatalogUI;
 

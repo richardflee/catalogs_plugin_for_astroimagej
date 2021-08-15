@@ -33,7 +33,6 @@ import javax.swing.border.TitledBorder;
 
 import com.github.richardflee.astroimagej.data_objects.CatalogQuery;
 import com.github.richardflee.astroimagej.data_objects.CatalogSettings;
-import com.github.richardflee.astroimagej.data_objects.QueryResult;
 import com.github.richardflee.astroimagej.enums.CatalogsEnum;
 import com.github.richardflee.astroimagej.utils.AstroCoords;
 
@@ -61,9 +60,9 @@ public class CatalogUI extends JDialog {
 	private static final long serialVersionUID = 1L;
 
 	// references to catable tables data model and button click event handler
-	private CatalogTableModel catalogTableModel;
-	protected ActionHandler handler;
-	protected CatalogSettings settings;
+	protected CatalogTableModel catalogTableModel = null;
+	protected ActionHandler handler = null;
+	protected CatalogSettings settings = null;
 
 	/**
 	 * Initialises catalog_ui object references
