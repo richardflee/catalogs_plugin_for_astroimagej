@@ -34,7 +34,7 @@ public class ActionHandler {
 	private CatalogTableListener catalogTableListener;
 
 //TTDO remove
-	private List<FieldObject> sortedFilteredList = null;
+	// private List<FieldObject> sortedFilteredList = null;
 
 	/**
 	 * Parameterised constructor references CatalogUI to access form control values
@@ -43,17 +43,17 @@ public class ActionHandler {
 	 */
 	public ActionHandler(CatalogUI catalogUi) {
 		this.catalogUi = catalogUi;
-		
+
 		// default settings
 		this.settings = new CatalogSettings();
 
-		// TTD replace with read props or default query		
+		// TTD replace with read props or default query
 		query = new CatalogQuery();
-		
+
 		// TTD read target mag frm props file or deault settings value
 		double targetMag = 12.34;
 		settings.setTargetMagSpinnerValue(targetMag);
-		
+
 	}
 
 	/**
@@ -72,13 +72,13 @@ public class ActionHandler {
 		CatalogSettings s;
 		q = catalogUi.getCatalogUiQuerySettings();
 		s = catalogUi.getCatalogUiSortFilterSettings();
-		
+
 		q.setObjectId("fred");
 		s.setTotalLabelValue(101);
-		
+
 		catalogUi.setCatalogUiQuerySettings(q);
 		catalogUi.setCatalogUiSortFilterSettings(s);
-		
+
 	}
 
 	// TTDO
@@ -94,25 +94,23 @@ public class ActionHandler {
 	public void doCatalogQuery() {
 		// file read demo ..
 		ApassFileReader fr = new ApassFileReader();
-		
+
 		// resets sort filter settings and updates catalogui
 		// retain current targt mag vlaue
 		CatalogSettings settings = catalogUi.getCatalogUiSortFilterSettings();
 		double targtMag = settings.getTargetMagSpinnerValue();
 		settings.setDefaultSettings(targtMag);
 		catalogUi.setCatalogUiSortFilterSettings(settings);
-		
-		
-		// run query 
-		// TTD replace with online q		
+
+		// run query
+		// TTD replace with online q
 		QueryResult currentResult = fr.runQueryFromFile(query);
+		// updates field value
+		this.result = currentResult;
 
 		// applies selected sort & filtered options to QueryResult object and updates
 		// catalog tables
 		updateCatalogUiTable(currentResult);
-
-		// updates field value
-		this.result = currentResult;
 	}
 
 	/**
@@ -124,11 +122,12 @@ public class ActionHandler {
 	 */
 	public void doSaveRaDecFile() {
 		// filter selected records
-		//TTDO replace sorted list with sort process
-		List<FieldObject> selectedList = sortedFilteredList.stream().filter(p -> p.isSelected())
-				.collect(Collectors.toList());
-		RaDecFileWriter fw = new RaDecFileWriter();
-		fw.writeRaDecFile(selectedList, query);
+		// TTD apply filters to selected records & save
+//		// TTDO replace sorted list with sort process
+//		List<FieldObject> selectedList = sortedFilteredList.stream().filter(p -> p.isSelected())
+//				.collect(Collectors.toList());
+//		RaDecFileWriter fw = new RaDecFileWriter();
+//		fw.writeRaDecFile(selectedList, query);
 	}
 
 	/**
@@ -145,19 +144,19 @@ public class ActionHandler {
 			System.out.println("Cancel pressed");
 			return;
 		}
-		
+
 		// import query and table data
 		CatalogQuery query = fr.getQueryData();
 		QueryResult currentResult = fr.getTableData();
 
 		// query and filter settings
-		//updateCatalogSettings(null, query);
+		// updateCatalogSettings(null, query);
 
 		// table data
 		updateCatalogUiTable(currentResult);
-		
+
 		// assign field value
-		// this.result = currentResult;
+		this.result = currentResult;
 	}
 
 	/**
@@ -187,85 +186,88 @@ public class ActionHandler {
 
 		// result = null => reset sortedFilteredList field and exit method
 		if (result == null) {
-			this.sortedFilteredList = null;
 			return;
 		}
 
 		// current ui data
-		settings = catalogUi.getCatalogUiSortFilterSettings();
-		
+		CatalogSettings settings = catalogUi.getCatalogUiSortFilterSettings();
+
 		// field objects listed by sort order and applied filters
-		List<FieldObject> currentSortedFilteredList = null;
+		// List<FieldObject> currentSortedFilteredList = null;
 
 		// updates query result object with user-input target mag value
 		double targetMag = settings.getTargetMagSpinnerValue();
 		result.getTargetObject().setMag(targetMag);
-		
-		
 
 		// sort relative to target
 		// sort type from selected radio button: sorts radial distance or absolute
 		// difference
-		boolean sortByDistance = catalogUi.distanceRadioButton.isSelected();
-		List<FieldObject> sortedList =  applyTableSort(result, settings);
+		// boolean sortByDistance = catalogUi.distanceRadioButton.isSelected();
+		List<FieldObject> sortedFilteredList = result.getSortedList(settings);
 
 		// apply nObs limit
 		int numberObs = (int) catalogUi.nObsSpinner.getValue();
-		currentSortedFilteredList = sortedList.stream().filter(p -> ((p.getnObs() >= numberObs) || (p.isTarget())))
-				.collect(Collectors.toList());
+		sortedFilteredList = sortedFilteredList.stream()
+									.filter(p -> ((p.getnObs() >= numberObs) || (p.isTarget())))
+									.collect(Collectors.toList());
 
-		// option to apply mag difference filters
-		// if upper and/or lower limits < 0.1 (effectively 0) then limits are not
-		// applied (N/A)
-		double magUpperLimit = settings.getUpperLimitSpinnerValue();
-		double magLowerLimit = settings.getLowerLimitSpinnerValue();
-		
+		// apply mag limits filter
 		if (settings.isMagLimitsCheckBoxValue() == true) {
-			final double upperLimit =
-					((Math.abs(magUpperLimit) < 0.01) ? 100.0 : targetMag + magUpperLimit);
-			String limit = (Math.abs(magUpperLimit) < 0.01) ? "N/A" : String.format("%.1f", upperLimit);
-			catalogUi.upperLabel.setText(limit);
-
-			final double lowerLimit = ((Math.abs(magLowerLimit) < 0.01) ? -100.0 : targetMag + magLowerLimit);
-			limit = (Math.abs(magLowerLimit) < 0.01) ? "N/A" : String.format("%.1f", lowerLimit);
-			catalogUi.lowerLabel.setText(limit);
-
-			// apply mag upper & lower mag limits
-			currentSortedFilteredList = currentSortedFilteredList.stream().filter(p -> (p.getMag() >= lowerLimit))
-					.filter(p -> p.getMag() <= upperLimit).collect(Collectors.toList());
+			double magUpperLimit = settings.getUpperLimitSpinnerValue();
+			double magLowerLimit = settings.getLowerLimitSpinnerValue();
+			
+			sortedFilteredList = sortedFilteredList.stream()
+									.filter(p -> (Math.abs(magUpperLimit) < 0.01 || p.getMag() <= magUpperLimit))
+									.filter(p -> (Math.abs(magLowerLimit) < 0.01 || p.getMag() >= magLowerLimit))
+									.collect(Collectors.toList());
 		}
-
-		// update number of filtered records, clip to 0 if count is negative
-		int filteredRecords = currentSortedFilteredList.size() - 1;
-		filteredRecords = (filteredRecords > 0) ? filteredRecords : 0;
-		catalogUi.filteredLabel.setText(String.format("%3d", filteredRecords));
+		
+		settings = updateLabelValues(settings, sortedFilteredList.size());
+		
+		catalogUi.setCatalogUiSortFilterSettings(settings);
 
 		// run table update with sort / filter selections
-		catalogTableListener.updateTable(currentSortedFilteredList);
-
-		this.sortedFilteredList = currentSortedFilteredList;
+		catalogTableListener.updateTable(sortedFilteredList);
+		this.settings = settings;
 	}
 
-	/*
-	 * Sorts FieldObject array by user sort selection Distanc eor |Delta Ma|.
-	 * 
-	 * @param sortByDistance true if Distance radio button selected, false if |Delta
-	 *                       Mag| selected
-	 * @return FieldObject array sorted by selection type
-	 */
-	private List<FieldObject> applyTableSort(QueryResult result, CatalogSettings settings) {
+	private CatalogSettings updateLabelValues(CatalogSettings settings, int nFilteredRecords) {
+		CatalogSettings labelSettings = settings;
+
+		labelSettings.setTotalLabelValue(this.result.getRecordsTotal());
+		labelSettings.setFilteredLabelValue(nFilteredRecords - 1);
 		
-		boolean sortByDistance = settings.isDistanceRadioButtonValue();
-		double targetMag = settings.getTargetMagSpinnerValue();
+		double limitVal = settings.getUpperLimitSpinnerValue();
+		String limitStr = (Math.abs(limitVal) < 0.01) ? "N/A" : String.format("%.1f", limitVal);
+		labelSettings.setUpperLabelValue(limitStr);
 		
-		List<FieldObject> sortedList = null;
-		if (sortByDistance) {
-			sortedList = result.sortByDistance(targetMag);
-		} else {
-			sortedList = result.sortByDeltaMag(targetMag);
-		}
-		return sortedList;
+		limitVal = settings.getLowerLimitSpinnerValue();
+		limitStr = (Math.abs(limitVal) < 0.01) ? "N/A" : String.format("%.1f", limitVal);
+		labelSettings.setLowerLabelValue(limitStr);
+		
+		return labelSettings;
 	}
+
+//	private Double[] getMagLimitValues(CatalogSettings settings) {
+//		Double[] limitValues = new Double[2];
+//
+//		double magUpperLimit = settings.getUpperLimitSpinnerValue();
+//		double targetMag = settings.getTargetMagSpinnerValue();
+//		double magLowerLimit = settings.getLowerLimitSpinnerValue();
+//
+//		if (Math.abs(magUpperLimit) < 0.01) {
+//			limitValues[0] = "N/A";
+//		} else {
+//			limitValues[0] = String.format("%.1f", targetMag + magUpperLimit);
+//		}
+//
+//		if (Math.abs(magLowerLimit) < 0.01) {
+//			limitValues[1] = "N/A";
+//		} else {
+//			limitValues[1] = String.format("%.1f", targetMag + magLowerLimit);
+//		}
+//		return limitValues;
+//	}
 
 //	/*
 //	 * Import catalogUI sort and filter control values

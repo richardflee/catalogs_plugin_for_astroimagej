@@ -43,6 +43,25 @@ public class QueryResult {
 	}
 
 	/**
+	 * Applies catalog sort and filter settings to full catalog dataset. 
+	 * 
+	 * @param settings catalog ui nobs, and magnitude filter settings
+	 * @return field object list ordered by sort type and filtered selections 
+	 */
+	public List<FieldObject> getSortedList(CatalogSettings settings) {
+		List<FieldObject> sortedList = new ArrayList<>();
+		// sort list by distance or mag difference
+		double targetMag = settings.getTargetMagSpinnerValue();
+		if (settings.isDistanceRadioButtonValue() == true) {
+			sortedList = sortByDistance(targetMag);
+
+		} else if (settings.isDeltaMagRadioButtonValue() == true) {
+			sortedList = sortByDeltaMag(targetMag);
+		}
+		return sortedList;
+	}
+
+	/**
 	 * Sorts object list in order of increasing radial distance (arcmin) from target
 	 * star coordinates.
 	 * 
@@ -57,7 +76,10 @@ public class QueryResult {
 	 * Sorts object list in order of increasing absolute difference in reference an
 	 * target star magnitude.
 	 * 
-	 * <p>Nominal target magnitude entered by user in UI.</p>
+	 * <p>
+	 * Nominal target magnitude entered by user in UI.
+	 * </p>
+	 * 
 	 * @return list headed by target object then reference objects sorted by
 	 *         magnitude difference
 	 */
@@ -70,7 +92,7 @@ public class QueryResult {
 	 * 
 	 * @return total items
 	 */
-	public int getTotalRecords() {
+	public int getRecordsTotal() {
 		return fieldObjects.size() - 1;
 	}
 
@@ -163,32 +185,94 @@ public class QueryResult {
 		double targetMag = 12.345;
 
 		// sort by distance:
-		List<FieldObject> sorted = result.sortByDistance(targetMag);
+		List<FieldObject> sortedFilteredList = result.sortByDistance(targetMag);
 
 		// test: monotonic increase in distance to target object
 		boolean b = true;
-		for (int idx = 2; idx < sorted.size(); idx++) {
-			double rad1 = sorted.get(idx).getRadSepAmin();
-			double rad = sorted.get(idx - 1).getRadSepAmin();
+		for (int idx = 2; idx < sortedFilteredList.size(); idx++) {
+			double rad1 = sortedFilteredList.get(idx).getRadSepAmin();
+			double rad = sortedFilteredList.get(idx - 1).getRadSepAmin();
 			b = b && (rad1 > rad);
 		}
 		System.out.println("Sort by distance:");
 		System.out.println(String.format("Sorted in increasing distance: %b", b));
 		System.out.println();
 
-		sorted = result.sortByDeltaMag(targetMag);
+		sortedFilteredList = result.sortByDeltaMag(targetMag);
 
 		// test: monotonic increase in |obj_mag - tgtmag|
 		b = true;
-		for (int idx = 2; idx < sorted.size(); idx++) {
-			double mag1 = Math.abs(sorted.get(idx).getMag() - targetMag);
-			double mag = Math.abs(sorted.get(idx - 1).getMag() - targetMag);
+		for (int idx = 2; idx < sortedFilteredList.size(); idx++) {
+			double mag1 = Math.abs(sortedFilteredList.get(idx).getMag() - targetMag);
+			double mag = Math.abs(sortedFilteredList.get(idx - 1).getMag() - targetMag);
 			b = b && (mag1 > mag);
 		}
 		System.out.println(String.format("Target mag = %.3f", targetMag));
 		System.out.println(String.format("Sorted in increasing abs deltaMag: %b", b));
 
-		System.out.println(String.format("Total no records =  %02d", result.getTotalRecords()));
+		System.out.println(String.format("Total no records =  %02d", result.getRecordsTotal()));
 
+		// ***** getSortedFilteredList
+		// test sort by distance 
+		CatalogSettings settings = new CatalogSettings();
+		settings.setTargetMagSpinnerValue(targetMag);
+		sortedFilteredList = result.getSortedList(settings);
+
+		System.out.println("\nTest getSortedFileter:");
+		sortedFilteredList.stream().forEach(System.out::println);
+
+		b = true;
+		for (int idx = 2; idx < sortedFilteredList.size(); idx++) {
+			double rad1 = sortedFilteredList.get(idx).getRadSepAmin();
+			double rad = sortedFilteredList.get(idx - 1).getRadSepAmin();
+			b = b && (rad1 > rad);
+		}
+		System.out.println("\nSort by distance:");
+		System.out.println(String.format("SortedFilteredList in increasing distance: %b", b));
+		
+		// test  sort by mag diff
+		settings.setDistanceRadioButtonValue(false);
+		settings.setDeltaMagRadioButtonValue(true);
+		System.out.println("\nSort by delta mag:");
+		sortedFilteredList = result.getSortedList(settings);
+		sortedFilteredList.stream().forEach(System.out::println);
+		
+
+		// test: monotonic increase in |obj_mag - tgtmag|
+		b = true;
+		for (int idx = 2; idx < sortedFilteredList.size(); idx++) {
+			double mag1 = Math.abs(sortedFilteredList.get(idx).getMag() - targetMag);
+			double mag = Math.abs(sortedFilteredList.get(idx - 1).getMag() - targetMag);
+			b = b && (mag1 > mag);
+		}
+		System.out.println(String.format("Target mag = %.3f", targetMag));
+		System.out.println(String.format("Sorted in increasing abs deltaMag: %b", b));
+		
+//		
+//		// filter test
+//		settings.setDistanceRadioButtonValue(false);
+//		settings.setDeltaMagRadioButtonValue(true);
+//		
+//		settings.setUpperLimitSpinnerValue(4.5);
+//		settings.setTargetMagSpinnerValue(15.5);
+//		settings.setLowerLimitSpinnerValue(-3.5);
+//		settings.setnObsSpinnerValue(2);
+//		settings.setMagLimitsCheckBoxValue(true);
+//		
+//		System.out.println("\nFilter test:");
+//		System.out.println(String.format("Total number records: %d", settings.getTotalLabelValue()));
+//		System.out.println(String.format("Filtered number records: %d", settings.getFilteredLabelValue()));
+//		
+//		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 	}
 }

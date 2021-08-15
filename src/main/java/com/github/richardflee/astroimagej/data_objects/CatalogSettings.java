@@ -32,6 +32,10 @@ public class CatalogSettings {
 	// record totals
 	private int totalLabelValue;
 	private int filteredLabelValue;
+	
+	// upper & lower mag limits
+	private String upperLabelValue;
+	private String lowerLabelValue;
 
 	public CatalogSettings() {
 		setDefaultSettings(null);
@@ -61,6 +65,10 @@ public class CatalogSettings {
 		// record totals
 		totalLabelValue = 0;
 		filteredLabelValue = 0;
+		
+		// upper & lower mag limits
+		upperLabelValue ="N/A";
+		lowerLabelValue = "N/A";
 	}
 
 	
@@ -137,15 +145,33 @@ public class CatalogSettings {
 	public void setFilteredLabelValue(int filteredLabelValue) {
 		this.filteredLabelValue = filteredLabelValue;
 	}
+	
+	public String getUpperLabelValue() {
+		return upperLabelValue;
+	}
 
+	public void setUpperLabelValue(String upperLabelValue) {
+		this.upperLabelValue = upperLabelValue;
+	}
+
+	public String getLowerLabelValue() {
+		return lowerLabelValue;
+	}
+
+	public void setLowerLabelValue(String lowerLabelValue) {
+		this.lowerLabelValue = lowerLabelValue;
+	}
+
+	
 	@Override
 	public String toString() {
-		return "CatalogSetting [upperLimitSpinnerValue=" + upperLimitSpinnerValue + ", targetMagSpinnerValue="
+		return "CatalogSettings [upperLimitSpinnerValue=" + upperLimitSpinnerValue + ", targetMagSpinnerValue="
 				+ targetMagSpinnerValue + ", lowerLimitSpinnerValue=" + lowerLimitSpinnerValue
 				+ ", isMagLimitsCheckBoxValue=" + isMagLimitsCheckBoxValue + ", distanceRadioButtonValue="
 				+ distanceRadioButtonValue + ", deltaMagRadioButtonValue=" + deltaMagRadioButtonValue
 				+ ", nObsSpinnerValue=" + nObsSpinnerValue + ", totalLabelValue=" + totalLabelValue
-				+ ", filteredLabelValue=" + filteredLabelValue + "]";
+				+ ", filteredLabelValue=" + filteredLabelValue + ", upperLabelValue=" + upperLabelValue
+				+ ", lowerLabelValue=" + lowerLabelValue + "]";
 	}
 
 }

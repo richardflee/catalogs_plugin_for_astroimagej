@@ -182,12 +182,13 @@ public class FieldObject extends AbstractFieldObject {
 		this.selected = selected;
 	}
 
+	
 
 	@Override
 	public String toString() {
 		return "FieldObject [mag=" + mag + ", magErr=" + magErr + ", nObs=" + nObs + ", radSepAmin=" + radSepAmin
-				+ ", apertureId=" + apertureId + ", selected=" + selected + ", isTarget=" + isTarget + ", objectId="
-				+ objectId + ", raHr=" + raHr + ", decDeg=" + decDeg + "]";
+				+ ", apertureId=" + apertureId + ", selected=" + selected + ", isTarget=" + isTarget + ", deltaMag="
+				+ deltaMag + ", objectId=" + objectId + ", raHr=" + raHr + ", decDeg=" + decDeg + "]";
 	}
 
 
