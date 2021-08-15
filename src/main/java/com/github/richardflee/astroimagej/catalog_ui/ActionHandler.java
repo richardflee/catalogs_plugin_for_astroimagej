@@ -17,6 +17,10 @@ import com.github.richardflee.astroimagej.fileio.RaDecFileWriter;
  * update tale data and radec file read / write operations
  *
  */
+
+// TTDO load query + target mag from props file or default query
+// return string array & extract query & target
+// default settings
 public class ActionHandler {
 	// reference to CatalogUI, main user form
 	private CatalogUI catalogUi;
@@ -40,12 +44,16 @@ public class ActionHandler {
 	public ActionHandler(CatalogUI catalogUi) {
 		this.catalogUi = catalogUi;
 		
-		// TTDO load setting from props file, otherwise new
+		// default settings
 		this.settings = new CatalogSettings();
-		//this.settings = catalogUi.importCatalogUiSortFilter();
 
-		// TTD replace with cat query build method
+		// TTD replace with read props or default query		
 		query = new CatalogQuery();
+		
+		// TTD read target mag frm props file or deault settings value
+		double targetMag = 12.34;
+		settings.setTargetMagSpinnerValue(targetMag);
+		
 	}
 
 	/**
@@ -60,6 +68,17 @@ public class ActionHandler {
 	// TTDO
 	public void doSimbadQuery() {
 		System.out.println("Simbad Query");
+		CatalogQuery q;
+		CatalogSettings s;
+		q = catalogUi.getCatalogUiQuerySettings();
+		s = catalogUi.getCatalogUiSortFilterSettings();
+		
+		q.setObjectId("fred");
+		s.setTotalLabelValue(101);
+		
+		catalogUi.setCatalogUiQuerySettings(q);
+		catalogUi.setCatalogUiSortFilterSettings(s);
+		
 	}
 
 	// TTDO
@@ -75,13 +94,24 @@ public class ActionHandler {
 	public void doCatalogQuery() {
 		// file read demo ..
 		ApassFileReader fr = new ApassFileReader();
+		
+		// resets sort filter settings and updates catalogui
+		// retain current targt mag vlaue
+		CatalogSettings settings = catalogUi.getCatalogUiSortFilterSettings();
+		double targtMag = settings.getTargetMagSpinnerValue();
+		settings.setDefaultSettings(targtMag);
+		catalogUi.setCatalogUiSortFilterSettings(settings);
+		
+		
+		// run query 
+		// TTD replace with online q		
 		QueryResult currentResult = fr.runQueryFromFile(query);
 
 		// applies selected sort & filtered options to QueryResult object and updates
 		// catalog tables
 		updateCatalogUiTable(currentResult);
 
-		// update field value
+		// updates field value
 		this.result = currentResult;
 	}
 
@@ -162,7 +192,7 @@ public class ActionHandler {
 		}
 
 		// current ui data
-		settings = catalogUi.importCatalogUiSortFilter();
+		settings = catalogUi.getCatalogUiSortFilterSettings();
 		
 		// field objects listed by sort order and applied filters
 		List<FieldObject> currentSortedFilteredList = null;

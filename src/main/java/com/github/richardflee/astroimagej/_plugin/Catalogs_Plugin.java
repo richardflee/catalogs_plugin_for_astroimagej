@@ -4,6 +4,8 @@ import java.awt.EventQueue;
 
 import javax.swing.UIManager;
 
+import com.github.richardflee.astroimagej.catalog_ui.ActionHandler;
+import com.github.richardflee.astroimagej.catalog_ui.CatalogTableModel;
 import com.github.richardflee.astroimagej.catalog_ui.CatalogUI;
 
 import ij.IJ;
@@ -44,8 +46,12 @@ public class Catalogs_Plugin implements PlugIn {
 
 		// Opens catalog user interface with properties or default data
 		
+		CatalogTableModel catalogTableModel = new CatalogTableModel();
 		
-		CatalogUI catalogUi = new CatalogUI();
+		
+		CatalogUI catalogUi = new CatalogUI(catalogTableModel);
+		
+		//ActionHandler handler = new ActionHandler(catalogUi);
 		
 
 //		// sets up file writer as listeners to catalog query & save property file events

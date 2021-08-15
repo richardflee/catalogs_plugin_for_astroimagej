@@ -2,32 +2,68 @@ package com.github.richardflee.astroimagej.data_objects;
 
 /**
  * This class encapsulates catalog ui control data:
- * <p>target mag values</p>
- * <p>sort option</p>
- * <p>number of observations</p>
- * <p>table record numbers</p>
+ * <p>
+ * target mag values
+ * </p>
+ * <p>
+ * sort option
+ * </p>
+ * <p>
+ * number of observations
+ * </p>
+ * <p>
+ * table record numbers
+ * </p>
  */
 public class CatalogSettings {
 	// mag limits
-	private double upperLimitSpinnerValue = 0.0;
-	private double targetMagSpinnerValue = 12.0;
-	private double lowerLimitSpinnerValue = 0.0;
-	private boolean isMagLimitsCheckBoxValue = true;
+	private double upperLimitSpinnerValue;
+	private double targetMagSpinnerValue;
+	private double lowerLimitSpinnerValue;
+	private boolean isMagLimitsCheckBoxValue;
 
 	// sort option
-	private boolean distanceRadioButtonValue = true;
-	private boolean deltaMagRadioButtonValue = false;
+	private boolean distanceRadioButtonValue;
+	private boolean deltaMagRadioButtonValue;
 
 	// number observations / APASS
-	private int nObsSpinnerValue = 1;
-	
+	private int nObsSpinnerValue;
+
 	// record totals
-	private int totalLabelValue = 0;
-	private int filteredLabelValue = 0;
-	
+	private int totalLabelValue;
+	private int filteredLabelValue;
+
 	public CatalogSettings() {
+		setDefaultSettings(null);
+	}
+	
+	public void setDefaultSettings(Double targetMag) {
+		setDefaultSettings();
+		if (targetMag != null) {
+			targetMagSpinnerValue = targetMag;
+		}
 		
 	}
+
+	private void setDefaultSettings() {
+		upperLimitSpinnerValue = 0.0;
+		targetMagSpinnerValue = 12.0;
+		lowerLimitSpinnerValue = 0.0;
+		isMagLimitsCheckBoxValue = true;
+
+		// sort option
+		distanceRadioButtonValue = true;
+		deltaMagRadioButtonValue = false;
+
+		// number observations / APASS
+		nObsSpinnerValue = 1;
+
+		// record totals
+		totalLabelValue = 0;
+		filteredLabelValue = 0;
+	}
+
+	
 
 	// auto getter - setters
 	public double getUpperLimitSpinnerValue() {

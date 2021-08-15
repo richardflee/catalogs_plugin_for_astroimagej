@@ -61,23 +61,23 @@ public class CatalogUI extends JDialog {
 	private static final long serialVersionUID = 1L;
 
 	// references to catable tables data model and button click event handler
-	private CatalogTableModel model;
+	private CatalogTableModel catalogTableModel;
 	protected ActionHandler handler;
 	protected CatalogSettings settings;
 
 	/**
 	 * Initialises catalog_ui object references
 	 */
-	public CatalogUI() {
+	public CatalogUI(CatalogTableModel catalogTableModel) {
 		initComponents();
 
 		// catalog table & data model
-		model = new CatalogTableModel();
-		new CatalogTable(this, model);
+		this.catalogTableModel = catalogTableModel;
+		new CatalogTable(this, catalogTableModel);
 
 		// button click event handlers
 		handler = new ActionHandler(this);
-		handler.setCatalogTableListener(model);
+		handler.setCatalogTableListener(catalogTableModel);
 
 
 //		// TTDO replace with readpropsfile
@@ -100,7 +100,7 @@ public class CatalogUI extends JDialog {
 	 * 
 	 * @param query encapsulates user input query parameters
 	 */
-	protected void updateCatalogUiQuery(CatalogQuery query) {
+	protected void setCatalogUiQuerySettings(CatalogQuery query) {
 		objectIdField.setText(query.getObjectId());
 		raField.setText(AstroCoords.raHr_To_raHms(query.getRaHr()));
 		decField.setText(AstroCoords.decDeg_To_decDms(query.getDecDeg()));
@@ -111,7 +111,7 @@ public class CatalogUI extends JDialog {
 		filterCombo.setSelectedItem(query.getMagBand());
 	}
 	
-	protected CatalogQuery importCatalogUiQuery() {
+	protected CatalogQuery getCatalogUiQuerySettings() {
 		
 		CatalogQuery query = new CatalogQuery();
 		query.setObjectId(objectIdField.getText());
@@ -121,7 +121,7 @@ public class CatalogUI extends JDialog {
 		query.setMagLimit(Double.valueOf(magLimitField.getText()));
 		
 		query.setCatalogType(CatalogsEnum.getEnum(catalogCombo.getSelectedItem().toString()));
-		query.setMagBand(filterCombo.getSelectedItem().toString());
+		// query.setMagBand(filterCombo.getSelectedItem().toString());
 		
 		return query;
 	}
@@ -132,7 +132,7 @@ public class CatalogUI extends JDialog {
 	 * @param settings encapsulates sort and filter user input parameters
 	 */
 
-	protected void updateCatalogUiSortFilter(CatalogSettings settings) {
+	protected void setCatalogUiSortFilterSettings(CatalogSettings settings) {
 		// mag limits
 		upperLimitSpinner.setValue(settings.getUpperLimitSpinnerValue());
 		targetMagSpinner.setValue(settings.getTargetMagSpinnerValue());
@@ -151,7 +151,7 @@ public class CatalogUI extends JDialog {
 		filteredLabel.setText(String.format("%d", settings.getFilteredLabelValue()));
 	}
 
-	protected CatalogSettings importCatalogUiSortFilter() {
+	protected CatalogSettings getCatalogUiSortFilterSettings() {
 
 		CatalogSettings settings = new CatalogSettings();
 
@@ -177,7 +177,7 @@ public class CatalogUI extends JDialog {
 	 * Configures button event listeners and data/no-data button states
 	 */
 	private void setUpActionListeners() {
-		simbadButton.addActionListener(e -> System.out.println("Simbad"));
+		simbadButton.addActionListener(e -> handler.doSimbadQuery());
 
 		saveQueryButton.addActionListener(e -> System.out.println("save query"));
 
