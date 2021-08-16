@@ -38,18 +38,18 @@ public class CatalogSettings {
 	private String lowerLabelValue;
 
 	public CatalogSettings() {
-		setDefaultSettings(null);
+		resetToDefaultSettings(null);
 	}
 	
-	public void setDefaultSettings(Double targetMag) {
-		setDefaultSettings();
+	public void resetToDefaultSettings(Double targetMag) {
+		resetToDefaultSettings();
 		if (targetMag != null) {
 			targetMagSpinnerValue = targetMag;
 		}
 		
 	}
 
-	private void setDefaultSettings() {
+	private void resetToDefaultSettings() {
 		upperLimitSpinnerValue = 0.0;
 		targetMagSpinnerValue = 12.0;
 		lowerLimitSpinnerValue = 0.0;
@@ -71,21 +71,31 @@ public class CatalogSettings {
 		lowerLabelValue = "N/A";
 	}
 	
+	/**
+	 * Updates catalogui info label settings with current record numbers and reference mag limits
+	 * <p>Displays #N/A if user sets mag limit value < 0.01 => that limit is disabled</p> 
+	 * 
+	 * @param nTotalRecords number or reference records returned in on-line query (excludes target)
+	 * @param nFilteredRecords number of records after nobs & mag filters applied (excludes target)
+	 */
 	public void updateLabelValues(int nTotalRecords, int nFilteredRecords) {
-		
+		// update settings record numbers, clip negative values
+		nTotalRecords = (nTotalRecords >=0) ? nTotalRecords : 0;
+		nFilteredRecords = (nFilteredRecords >= 1) ? nFilteredRecords : 0;
 		this.setTotalLabelValue(nTotalRecords);
-		this.setFilteredLabelValue(nFilteredRecords - 1);
-
+		this.setFilteredLabelValue(nFilteredRecords);
+		
+		// upper & lower mag limit labels, N/A => disable
+		double targetMag = this.getTargetMagSpinnerValue();
 		double limitVal = this.getUpperLimitSpinnerValue();
-		String limitStr = (Math.abs(limitVal) < 0.01) ? "N/A" : String.format("%.1f", limitVal);
+		String limitStr = (Math.abs(limitVal) < 0.01) ? "N/A" : String.format("%.1f", limitVal + targetMag);
 		this.setUpperLabelValue(limitStr);
 
 		limitVal = this.getLowerLimitSpinnerValue();
-		limitStr = (Math.abs(limitVal) < 0.01) ? "N/A" : String.format("%.1f", limitVal);
+		limitStr = (Math.abs(limitVal) < 0.01) ? "N/A" : String.format("%.1f", limitVal + targetMag);
 		this.setLowerLabelValue(limitStr);
 	}
 
-	
 
 	// auto getter - setters
 	public double getUpperLimitSpinnerValue() {

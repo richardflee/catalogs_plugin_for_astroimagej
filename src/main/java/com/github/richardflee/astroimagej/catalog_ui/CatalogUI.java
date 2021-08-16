@@ -144,6 +144,10 @@ public class CatalogUI extends JDialog {
 
 		// number of observations
 		nObsSpinner.setValue(settings.getnObsSpinnerValue());
+		
+		// mag limit labels
+		upperLabel.setText(settings.getUpperLabelValue());
+		lowerLabel.setText(settings.getLowerLabelValue());
 
 		// record numbers
 		totalLabel.setText(String.format("%d", settings.getTotalLabelValue()));

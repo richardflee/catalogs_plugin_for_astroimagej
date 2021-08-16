@@ -32,9 +32,6 @@ public class ActionHandler {
 	// interface reference updateTable
 	private CatalogTableListener catalogTableListener;
 
-//TTDO remove
-	// private List<FieldObject> sortedFilteredList = null;
-
 	/**
 	 * Parameterised constructor references CatalogUI to access form control values
 	 * 
@@ -94,21 +91,20 @@ public class ActionHandler {
 		ApassFileReader fr = new ApassFileReader();
 
 		// resets sort filter settings and updates catalogui
-		// retain current targt mag vlaue
+		// retain current target mag value
 		CatalogSettings settings = catalogUi.getCatalogUiSortFilterSettings();
-		double targtMag = settings.getTargetMagSpinnerValue();
-		settings.setDefaultSettings(targtMag);
-		catalogUi.setCatalogUiSortFilterSettings(settings);
+		resetSettings(settings.getTargetMagSpinnerValue());
 
 		// run query
 		// TTD replace with online q
 		QueryResult currentResult = fr.runQueryFromFile(query);
-		// updates field value
-		this.result = currentResult;
 
 		// applies selected sort & filtered options to QueryResult object and updates
 		// catalog tables
 		updateCatalogUiTable(currentResult);
+
+		// updates field value
+		this.result = currentResult;
 	}
 
 	/**
@@ -119,16 +115,14 @@ public class ActionHandler {
 	 * </p>
 	 */
 	public void doSaveRaDecFile() {
-		// filter selected records
-		// TTD apply filters to selected records & save
-		// TTDO replace sorted list with sort process
-		
+		// current tcatalog table dataset
 		List<FieldObject> sortedFilteredList = updateCatalogUiTable(result);
-		
-		List<FieldObject> selectedList = sortedFilteredList.stream()
-						.filter(p -> p.isSelected())
-						.collect(Collectors.toList());
-		
+
+		// filter user selected records
+		List<FieldObject> selectedList = sortedFilteredList.stream().filter(p -> p.isSelected())
+				.collect(Collectors.toList());
+
+		// writes sorted_filtered_selected data to radec file
 		RaDecFileWriter fw = new RaDecFileWriter();
 		fw.writeRaDecFile(selectedList, query);
 	}
@@ -137,12 +131,9 @@ public class ActionHandler {
 	 * Reads user-selected radec file, maps data to catalog table and ui control and
 	 * creates a new query object.
 	 */
-
 	public void doImportRaDecFile() {
-		System.out.println("import radec");
+		// exit of Cancel pressed => no file selected
 		RaDecFileReader fr = new RaDecFileReader();
-
-		// exit of Cancel pressed => no file delected
 		if (!fr.getFileSelected()) {
 			System.out.println("Cancel pressed");
 			return;
@@ -152,13 +143,10 @@ public class ActionHandler {
 		CatalogQuery query = fr.getQueryData();
 		QueryResult currentResult = fr.getTableData();
 
-		// query and filter settings
-		// updateCatalogSettings(null, query);
-
 		// table data
 		updateCatalogUiTable(currentResult);
 
-		// assign field value
+		// update field value
 		this.result = currentResult;
 	}
 
@@ -170,11 +158,17 @@ public class ActionHandler {
 	}
 
 	/**
-	 * Clears catalog table and resets totals
+	 * Clears catalog table and resets catalogui settings
 	 */
 	public void doClearTable() {
-		// TTDO updateSettings (clear)
 		updateCatalogUiTable(null);
+		resetSettings(settings.getTargetMagSpinnerValue());
+	}
+
+	// reset sort & filter settings, retains current target mag value
+	private void resetSettings(double targetMag) {
+		settings.resetToDefaultSettings(targetMag);
+		catalogUi.setCatalogUiSortFilterSettings(settings);
 	}
 
 	/*
@@ -184,61 +178,49 @@ public class ActionHandler {
 	 * @return FieldObject list sorted and filtered as specified by user settings
 	 */
 	private List<FieldObject> updateCatalogUiTable(QueryResult result) {
-		// clears table
-		catalogTableListener.updateTable(null);
 
-		// result = null => reset sortedFilteredList field and exit method
+		// clears table and exits if result = null
+		catalogTableListener.updateTable(null);
 		if (result == null) {
 			return null;
 		}
 
-		// current ui data
+		// import current ui data & sort by distance or mag diff
 		CatalogSettings currentSettings = catalogUi.getCatalogUiSortFilterSettings();
-
-		// field objects listed by sort order and applied filters
-		// List<FieldObject> currentSortedFilteredList = null;
-
-		// updates query result object with user-input target mag value
-		// double targetMag = currentSettings.getTargetMagSpinnerValue();
-		
-
-		// sort relative to target
-		// sort type from selected radio button: sorts radial distance or absolute
-		// difference
-		// boolean sortByDistance = catalogUi.distanceRadioButton.isSelected();
 		List<FieldObject> sortedFilteredList = result.getSortedList(currentSettings);
 
-		// apply nObs limit
+		// apply nObs limit to reference object records
 		int numberObs = (int) catalogUi.nObsSpinner.getValue();
 		sortedFilteredList = sortedFilteredList.stream().filter(p -> ((p.getnObs() >= numberObs) || (p.isTarget())))
 				.collect(Collectors.toList());
 
 		// apply mag limits filter
 		if (currentSettings.isMagLimitsCheckBoxValue() == true) {
-			double magUpperLimit = currentSettings.getUpperLimitSpinnerValue();
-			double magLowerLimit = currentSettings.getLowerLimitSpinnerValue();
-			
+			double upperLimit = currentSettings.getUpperLimitSpinnerValue();
 			double targetMag = currentSettings.getTargetMagSpinnerValue();
-			result.getTargetObject().setMag(targetMag);
-			
+			double lowerLimit = currentSettings.getLowerLimitSpinnerValue();
 
+			// apply filter range targetmag + lowerLimit to tagetMg + upperLimit
+			// if lower or upper limit < 0.01 disable respective filter
 			sortedFilteredList = sortedFilteredList.stream()
-					.filter(p -> (Math.abs(magUpperLimit) < 0.01 || p.getMag() <= magUpperLimit + targetMag))
-					.filter(p -> (Math.abs(magLowerLimit) < 0.01 || p.getMag() >= magLowerLimit + targetMag))
+					.filter(p -> (Math.abs(upperLimit) < 0.01 || p.getMag() <= upperLimit + targetMag))
+					.filter(p -> (Math.abs(lowerLimit) < 0.01 || p.getMag() >= lowerLimit + targetMag))
 					.collect(Collectors.toList());
 		}
 
-		currentSettings.updateLabelValues(result.getRecordsTotal(), sortedFilteredList.size());
-
+		// update record and mag limit label values and update catalogui display
+		currentSettings.updateLabelValues(result.getRecordsTotal(), sortedFilteredList.size() - 1);
 		catalogUi.setCatalogUiSortFilterSettings(currentSettings);
 
 		// run table update with sort / filter selections
 		catalogTableListener.updateTable(sortedFilteredList);
+
+		// update field value
 		this.settings = currentSettings;
-		
+
+		// returns sorted-filtered list to export to radec file
 		return sortedFilteredList;
 	}
-
 
 	public static void main(String args[]) {
 
@@ -261,7 +243,7 @@ public class ActionHandler {
 //		double magUpperLimit = settings.getUpperLimitSpinnerValue();
 //		double magLowerLimit = settings.getLowerLimitSpinnerValue();
 
-	//	List<FieldObject> sortedFilteredList = result.getSortedList(settings);
+		// List<FieldObject> sortedFilteredList = result.getSortedList(settings);
 
 //		sortedFilteredList.stream()
 //				.filter(p -> (Math.abs(magUpperLimit) < 0.01 || p.getMag() <= magUpperLimit))
