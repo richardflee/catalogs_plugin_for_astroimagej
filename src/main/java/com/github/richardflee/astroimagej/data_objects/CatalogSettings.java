@@ -38,18 +38,18 @@ public class CatalogSettings {
 	private String lowerLabelValue;
 
 	public CatalogSettings() {
-		resetToDefaultSettings(null);
+		resetDefaultSettings(null);
 	}
 	
-	public void resetToDefaultSettings(Double targetMag) {
-		resetToDefaultSettings();
+	public void resetDefaultSettings(Double targetMag) {
+		resetDefaultSettings();
 		if (targetMag != null) {
 			targetMagSpinnerValue = targetMag;
 		}
 		
 	}
 
-	private void resetToDefaultSettings() {
+	private void resetDefaultSettings() {
 		upperLimitSpinnerValue = 0.0;
 		targetMagSpinnerValue = 12.0;
 		lowerLimitSpinnerValue = 0.0;

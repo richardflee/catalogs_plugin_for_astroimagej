@@ -182,7 +182,7 @@ public class CatalogUI extends JDialog {
 	private void setUpActionListeners() {
 		simbadButton.addActionListener(e -> handler.doSimbadQuery());
 
-		saveQueryButton.addActionListener(e -> System.out.println("save query"));
+		saveQueryButton.addActionListener(e -> handler.doSaveQuerySettingsData());
 
 		catalogQueryButton.addActionListener(e -> {
 			handler.doCatalogQuery();

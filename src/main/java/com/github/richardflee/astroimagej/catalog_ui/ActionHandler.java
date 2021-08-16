@@ -8,6 +8,7 @@ import com.github.richardflee.astroimagej.data_objects.CatalogSettings;
 import com.github.richardflee.astroimagej.data_objects.FieldObject;
 import com.github.richardflee.astroimagej.data_objects.QueryResult;
 import com.github.richardflee.astroimagej.fileio.ApassFileReader;
+import com.github.richardflee.astroimagej.fileio.PropertiesFileIO;
 import com.github.richardflee.astroimagej.fileio.RaDecFileReader;
 import com.github.richardflee.astroimagej.fileio.RaDecFileWriter;
 
@@ -76,9 +77,15 @@ public class ActionHandler {
 
 	}
 
-	// TTDO
-	public void doSaveQueryData() {
-		System.out.println("Save Query data");
+	/**
+	 * Imports and writes to properties file current catalog Ui query parameters, plus subset 
+	 * settings parameters
+	 */
+	public void doSaveQuerySettingsData() {
+		PropertiesFileIO pf = new PropertiesFileIO();
+		CatalogQuery query = catalogUi.getCatalogUiQuerySettings();
+		CatalogSettings settings = catalogUi.getCatalogUiSortFilterSettings();
+		pf.setPropertiesFileData(query, settings);
 	}
 
 	/**
@@ -140,7 +147,7 @@ public class ActionHandler {
 		}
 
 		// import query and table data
-		CatalogQuery query = fr.getQueryData();
+		// CatalogQuery query = fr.getQueryData();
 		QueryResult currentResult = fr.getTableData();
 
 		// table data
@@ -167,7 +174,7 @@ public class ActionHandler {
 
 	// reset sort & filter settings, retains current target mag value
 	private void resetSettings(double targetMag) {
-		settings.resetToDefaultSettings(targetMag);
+		settings.resetDefaultSettings(targetMag);
 		catalogUi.setCatalogUiSortFilterSettings(settings);
 	}
 
