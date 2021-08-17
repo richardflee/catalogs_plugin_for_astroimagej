@@ -1,5 +1,6 @@
 package com.github.richardflee.astroimagej.catalog_ui;
 
+import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,6 +12,7 @@ import com.github.richardflee.astroimagej.fileio.ApassFileReader;
 import com.github.richardflee.astroimagej.fileio.PropertiesFileIO;
 import com.github.richardflee.astroimagej.fileio.RaDecFileReader;
 import com.github.richardflee.astroimagej.fileio.RaDecFileWriter;
+import com.github.richardflee.astroimagej.utils.AstroCoords;
 
 /**
  * This class handles catalog_ui button click events to command database query,
@@ -26,6 +28,7 @@ public class ActionHandler {
 	private CatalogUI catalogUi;
 
 	// references to catalog database query and result objects
+	private PropertiesFileIO propertiesFile = null;
 	private CatalogQuery query = null;
 	private QueryResult result = null;
 	private CatalogSettings settings = null;
@@ -41,15 +44,12 @@ public class ActionHandler {
 	public ActionHandler(CatalogUI catalogUi) {
 		this.catalogUi = catalogUi;
 
-		// default settings
-		this.settings = new CatalogSettings();
-
-		// TTD replace with read props or default query
-		query = new CatalogQuery();
-
-		// TTD read target mag frm props file or deault settings value
-		double targetMag = 12.34;
-		settings.setTargetMagSpinnerValue(targetMag);
+		propertiesFile = new PropertiesFileIO();
+		
+		this.query = propertiesFile.getPropertiesQueryData();
+		this.settings = propertiesFile.getPropertiesSettingsData();
+		catalogUi.setQueryData(query);
+		catalogUi.setSettingsData(settings);
 	}
 
 	/**
@@ -66,25 +66,25 @@ public class ActionHandler {
 		System.out.println("Simbad Query");
 		CatalogQuery q;
 		CatalogSettings s;
-		q = catalogUi.getCatalogUiQuerySettings();
-		s = catalogUi.getCatalogUiSortFilterSettings();
+		q = catalogUi.getQueryData();
+		s = catalogUi.getSettingsData();
 
 		q.setObjectId("fred");
 		s.setTotalLabelValue(101);
 
-		catalogUi.setCatalogUiQuerySettings(q);
-		catalogUi.setCatalogUiSortFilterSettings(s);
+		catalogUi.setQueryData(q);
+		
 
 	}
 
 	/**
-	 * Imports and writes to properties file current catalog Ui query parameters, plus subset 
-	 * settings parameters
+	 * Imports and writes to properties file current catalog Ui query parameters,
+	 * plus subset settings parameters
 	 */
 	public void doSaveQuerySettingsData() {
 		PropertiesFileIO pf = new PropertiesFileIO();
-		CatalogQuery query = catalogUi.getCatalogUiQuerySettings();
-		CatalogSettings settings = catalogUi.getCatalogUiSortFilterSettings();
+		CatalogQuery query = catalogUi.getQueryData();
+		CatalogSettings settings = catalogUi.getSettingsData();
 		pf.setPropertiesFileData(query, settings);
 	}
 
@@ -99,7 +99,7 @@ public class ActionHandler {
 
 		// resets sort filter settings and updates catalogui
 		// retain current target mag value
-		CatalogSettings settings = catalogUi.getCatalogUiSortFilterSettings();
+		CatalogSettings settings = catalogUi.getSettingsData();
 		resetSettings(settings.getTargetMagSpinnerValue());
 
 		// run query
@@ -175,7 +175,7 @@ public class ActionHandler {
 	// reset sort & filter settings, retains current target mag value
 	private void resetSettings(double targetMag) {
 		settings.resetDefaultSettings(targetMag);
-		catalogUi.setCatalogUiSortFilterSettings(settings);
+		catalogUi.setSettingsData(settings);
 	}
 
 	/*
@@ -193,7 +193,7 @@ public class ActionHandler {
 		}
 
 		// import current ui data & sort by distance or mag diff
-		CatalogSettings currentSettings = catalogUi.getCatalogUiSortFilterSettings();
+		CatalogSettings currentSettings = catalogUi.getSettingsData();
 		List<FieldObject> sortedFilteredList = result.getSortedList(currentSettings);
 
 		// apply nObs limit to reference object records
@@ -217,7 +217,7 @@ public class ActionHandler {
 
 		// update record and mag limit label values and update catalogui display
 		currentSettings.updateLabelValues(result.getRecordsTotal(), sortedFilteredList.size() - 1);
-		catalogUi.setCatalogUiSortFilterSettings(currentSettings);
+		catalogUi.setSettingsData(currentSettings);
 
 		// run table update with sort / filter selections
 		catalogTableListener.updateTable(sortedFilteredList);
@@ -231,58 +231,32 @@ public class ActionHandler {
 
 	public static void main(String args[]) {
 
-		ApassFileReader fr = new ApassFileReader();
-		CatalogQuery query = new CatalogQuery();
-		QueryResult result = fr.runQueryFromFile(query);
-		CatalogSettings settings = new CatalogSettings();
+		// property file tests: new file, default values, modified values
+		
+		// roundabout way to delete properties file ..
+		PropertiesFileIO pf = new PropertiesFileIO();
+		File f = new File(pf.getPropertiesFilePath());
+		f.delete();
+		
+		// .. then make a new one with default values
+		pf = new PropertiesFileIO();
+		CatalogQuery q0 = pf.getPropertiesQueryData();
+		CatalogSettings s0 = pf.getPropertiesSettingsData();
 
-		settings.setTargetMagSpinnerValue(15.0);
-		settings.setUpperLimitSpinnerValue(0.5);
-		settings.setLowerLimitSpinnerValue(-1.5);
+		// modify q0 and s0 & update properties file
+		q0.setObjectId("freddy");
+		q0.setDecDeg(-23.456);
+		s0.resetDefaultSettings(7.89);
+		pf.setPropertiesFileData(q0, s0);
 
-		System.out.println(result.toString());
+		CatalogQuery q1 = pf.getPropertiesQueryData();
+		CatalogSettings s1 = pf.getPropertiesSettingsData();
+		
+		System.out.println(String.format("Default object WASP 12: %s", q0.getObjectId()));
+		System.out.println(String.format("Default decDms +29:40:20.27: %s", AstroCoords.decDeg_To_decDms(q0.getDecDeg())));
 
-//		List<FieldObject> fieldObjects = result.getFieldObjects();
-//		FieldObject target = fieldObjects.stream().filter(p -> p.isTarget()).findFirst().get();
-//		fieldObjects.remove(target);
-//		target.setApertureId("T01");
-
-//		double magUpperLimit = settings.getUpperLimitSpinnerValue();
-//		double magLowerLimit = settings.getLowerLimitSpinnerValue();
-
-		// List<FieldObject> sortedFilteredList = result.getSortedList(settings);
-
-//		sortedFilteredList.stream()
-//				.filter(p -> (Math.abs(magUpperLimit) < 0.01 || p.getMag() <= magUpperLimit))
-//				.collect(Collectors.toList());
-
-//		// sort by distance
-//		List<FieldObject> sortByRadSep = fieldObjects.stream()
-//				.sorted(Comparator.comparingDouble(FieldObject::getRadSepAmin)).collect(Collectors.toList());
-//
-//		int idx = 2;
-//		for (FieldObject fo : sortByRadSep) {
-//			String apNumber = (fo.isSelected()) ? String.format("C%02d", idx++) : "";
-//			fo.setApertureId(apNumber);
-//		}
-//		sortByRadSep.add(0, target);
-//		System.out.println("here");
-//
-//		double tgtMag = 16.046;
-//
-//		List<FieldObject> sortByDeltaMag = fieldObjects.stream()
-//				.sorted(Comparator.comparingDouble(p -> Math.abs((p.getMag() - tgtMag)))).collect(Collectors.toList());
-//		idx = 2;
-//		for (FieldObject fo : sortByDeltaMag) {
-//			String apNumber = (fo.isSelected()) ? String.format("C%02d", idx++) : "";
-//			fo.setApertureId(apNumber);
-//		}
-//
-//		sortByDeltaMag.add(0, target);
-//		for (FieldObject fo : sortByDeltaMag) {
-//			System.out.println(fo.toString());
-//		}
-//		
-
+		System.out.println(String.format("\nModified query object freddy: %s", q1.getObjectId()));
+		System.out.println(String.format("Modified query decDeg -23.456: %.3f", q1.getDecDeg()));
+		System.out.println(String.format("Modified settings targetMag 7.89: %.2f", s1.getTargetMagSpinnerValue()));
 	}
 }

@@ -99,7 +99,7 @@ public class CatalogUI extends JDialog {
 	 * 
 	 * @param query encapsulates user input query parameters
 	 */
-	protected void setCatalogUiQuerySettings(CatalogQuery query) {
+	protected void setQueryData(CatalogQuery query) {
 		objectIdField.setText(query.getObjectId());
 		raField.setText(AstroCoords.raHr_To_raHms(query.getRaHr()));
 		decField.setText(AstroCoords.decDeg_To_decDms(query.getDecDeg()));
@@ -110,7 +110,7 @@ public class CatalogUI extends JDialog {
 		filterCombo.setSelectedItem(query.getMagBand());
 	}
 	
-	protected CatalogQuery getCatalogUiQuerySettings() {
+	protected CatalogQuery getQueryData() {
 		
 		CatalogQuery query = new CatalogQuery();
 		query.setObjectId(objectIdField.getText());
@@ -131,7 +131,7 @@ public class CatalogUI extends JDialog {
 	 * @param settings encapsulates sort and filter user input parameters
 	 */
 
-	protected void setCatalogUiSortFilterSettings(CatalogSettings settings) {
+	protected void setSettingsData(CatalogSettings settings) {
 		// mag limits
 		upperLimitSpinner.setValue(settings.getUpperLimitSpinnerValue());
 		targetMagSpinner.setValue(settings.getTargetMagSpinnerValue());
@@ -154,7 +154,7 @@ public class CatalogUI extends JDialog {
 		filteredLabel.setText(String.format("%d", settings.getFilteredLabelValue()));
 	}
 
-	protected CatalogSettings getCatalogUiSortFilterSettings() {
+	protected CatalogSettings getSettingsData() {
 
 		CatalogSettings settings = new CatalogSettings();
 
