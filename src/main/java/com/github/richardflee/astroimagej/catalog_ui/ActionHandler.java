@@ -73,19 +73,16 @@ public class ActionHandler {
 		s.setTotalLabelValue(101);
 
 		catalogUi.setQueryData(q);
-		
-
 	}
 
 	/**
 	 * Imports and writes to properties file current catalog Ui query parameters,
-	 * plus subset settings parameters
+	 * plus a subset settings parameters
 	 */
 	public void doSaveQuerySettingsData() {
-		PropertiesFileIO pf = new PropertiesFileIO();
 		CatalogQuery query = catalogUi.getQueryData();
 		CatalogSettings settings = catalogUi.getSettingsData();
-		pf.setPropertiesFileData(query, settings);
+		this.propertiesFile.setPropertiesFileData(query, settings);
 	}
 
 	/**
@@ -94,6 +91,10 @@ public class ActionHandler {
 	 */
 	// TTDO replace apass file read with on-line q
 	public void doCatalogQuery() {
+		
+		// save current query & target mag data
+		doSaveQuerySettingsData();
+		
 		// file read demo ..
 		ApassFileReader fr = new ApassFileReader();
 
