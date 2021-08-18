@@ -4,8 +4,12 @@ import java.awt.EventQueue;
 
 import javax.swing.UIManager;
 
+import com.github.richardflee.astroimagej.catalog_ui.ActionHandler;
 import com.github.richardflee.astroimagej.catalog_ui.CatalogTableModel;
 import com.github.richardflee.astroimagej.catalog_ui.CatalogUI;
+import com.github.richardflee.astroimagej.data_objects.CatalogQuery;
+import com.github.richardflee.astroimagej.data_objects.CatalogSettings;
+import com.github.richardflee.astroimagej.fileio.PropertiesFileIO;
 
 import ij.IJ;
 import ij.plugin.PlugIn;
@@ -45,12 +49,24 @@ public class Catalogs_Plugin implements PlugIn {
 
 		// Opens catalog user interface with properties or default data
 		
-		CatalogTableModel catalogTableModel = new CatalogTableModel();
+		PropertiesFileIO pf = new PropertiesFileIO();
 		
+		CatalogTableModel ctm = new CatalogTableModel();
 		
-		CatalogUI catalogUi = new CatalogUI(catalogTableModel);
+		ActionHandler handler = new ActionHandler(pf);
 		
-		//ActionHandler handler = new ActionHandler(catalogUi);
+		CatalogUI catalogUi = new CatalogUI(handler, ctm);
+		
+		handler.setCatalogTableListener(ctm);
+		
+		handler.setCatalogDataListener(catalogUi);
+		
+		CatalogQuery query = pf.getPropertiesQueryData();
+		catalogUi.setQueryData(query);
+		
+		// apply properties target mag
+		CatalogSettings settings = pf.getPropertiesSettingsData();
+		catalogUi.setSettingsData(settings);
 		
 
 //		// sets up file writer as listeners to catalog query & save property file events

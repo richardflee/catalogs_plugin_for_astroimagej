@@ -25,31 +25,20 @@ import com.github.richardflee.astroimagej.utils.AstroCoords;
 // default settings
 public class ActionHandler {
 	// reference to CatalogUI, main user form
-	private CatalogUI catalogUi;
+	private CatalogTableListener tableListener;
+	private CatalogDataListener dataListener;
 
 	// references to catalog database query and result objects
 	private PropertiesFileIO propertiesFile = null;
-	private CatalogQuery query = null;
 	private QueryResult result = null;
-	private CatalogSettings settings = null;
-
-	// interface reference updateTable
-	private CatalogTableListener catalogTableListener;
 
 	/**
 	 * Parameterised constructor references CatalogUI to access form control values
 	 * 
-	 * @param catalogUi reference to main user form interface
+	 * @param tableListener reference to main user form interface
 	 */
-	public ActionHandler(CatalogUI catalogUi) {
-		this.catalogUi = catalogUi;
-
-		propertiesFile = new PropertiesFileIO();
-		
-		this.query = propertiesFile.getPropertiesQueryData();
-		this.settings = propertiesFile.getPropertiesSettingsData();
-		catalogUi.setQueryData(query);
-		catalogUi.setSettingsData(settings);
+	public ActionHandler(PropertiesFileIO propertiesFile) {
+		this.propertiesFile = propertiesFile;
 	}
 
 	/**
@@ -58,7 +47,11 @@ public class ActionHandler {
 	 * @param catalogTableListener reference to CataTableListner interface
 	 */
 	public void setCatalogTableListener(CatalogTableListener catalogTableListener) {
-		this.catalogTableListener = catalogTableListener;
+		this.tableListener = catalogTableListener;
+	}
+	
+	public void setCatalogDataListener(CatalogDataListener catalogDataListener) {
+		this.dataListener = catalogDataListener;
 	}
 
 	// TTDO
@@ -66,13 +59,13 @@ public class ActionHandler {
 		System.out.println("Simbad Query");
 		CatalogQuery q;
 		CatalogSettings s;
-		q = catalogUi.getQueryData();
-		s = catalogUi.getSettingsData();
+		q = dataListener.getQueryData();
+		s = dataListener.getSettingsData();
 
 		q.setObjectId("fred");
 		s.setTotalLabelValue(101);
 
-		catalogUi.setQueryData(q);
+		dataListener.setQueryData(q);
 	}
 
 	/**
@@ -80,8 +73,8 @@ public class ActionHandler {
 	 * plus a subset settings parameters
 	 */
 	public void doSaveQuerySettingsData() {
-		CatalogQuery query = catalogUi.getQueryData();
-		CatalogSettings settings = catalogUi.getSettingsData();
+		CatalogQuery query = dataListener.getQueryData();
+		CatalogSettings settings = dataListener.getSettingsData();
 		this.propertiesFile.setPropertiesFileData(query, settings);
 	}
 
@@ -100,11 +93,12 @@ public class ActionHandler {
 
 		// resets sort filter settings and updates catalogui
 		// retain current target mag value
-		CatalogSettings settings = catalogUi.getSettingsData();
+		CatalogSettings settings = dataListener.getSettingsData();
 		resetSettings(settings.getTargetMagSpinnerValue());
 
 		// run query
 		// TTD replace with online q
+		CatalogQuery query = dataListener.getQueryData();
 		QueryResult currentResult = fr.runQueryFromFile(query);
 
 		// applies selected sort & filtered options to QueryResult object and updates
@@ -132,6 +126,8 @@ public class ActionHandler {
 
 		// writes sorted_filtered_selected data to radec file
 		RaDecFileWriter fw = new RaDecFileWriter();
+		
+		CatalogQuery query = dataListener.getQueryData();
 		fw.writeRaDecFile(selectedList, query);
 	}
 
@@ -170,13 +166,14 @@ public class ActionHandler {
 	 */
 	public void doClearTable() {
 		updateCatalogUiTable(null);
+		CatalogSettings settings = dataListener.getSettingsData();
 		resetSettings(settings.getTargetMagSpinnerValue());
 	}
 
 	// reset sort & filter settings, retains current target mag value
 	private void resetSettings(double targetMag) {
-		settings.resetDefaultSettings(targetMag);
-		catalogUi.setSettingsData(settings);
+		CatalogSettings settings = new CatalogSettings(targetMag); 
+		dataListener.setSettingsData(settings);
 	}
 
 	/*
@@ -188,25 +185,27 @@ public class ActionHandler {
 	private List<FieldObject> updateCatalogUiTable(QueryResult result) {
 
 		// clears table and exits if result = null
-		catalogTableListener.updateTable(null);
+		tableListener.updateTable(null);
 		if (result == null) {
 			return null;
 		}
 
 		// import current ui data & sort by distance or mag diff
-		CatalogSettings currentSettings = catalogUi.getSettingsData();
-		List<FieldObject> sortedFilteredList = result.getSortedList(currentSettings);
+		CatalogSettings settings = dataListener.getSettingsData();
+		List<FieldObject> sortedFilteredList = result.getSortedList(settings);
+		
+		// get pesky targetMag value
+		double targetMag = settings.getTargetMagSpinnerValue();
 
 		// apply nObs limit to reference object records
-		int numberObs = (int) catalogUi.nObsSpinner.getValue();
+		int numberObs = settings.getnObsSpinnerValue();
 		sortedFilteredList = sortedFilteredList.stream().filter(p -> ((p.getnObs() >= numberObs) || (p.isTarget())))
 				.collect(Collectors.toList());
 
 		// apply mag limits filter
-		if (currentSettings.isMagLimitsCheckBoxValue() == true) {
-			double upperLimit = currentSettings.getUpperLimitSpinnerValue();
-			double targetMag = currentSettings.getTargetMagSpinnerValue();
-			double lowerLimit = currentSettings.getLowerLimitSpinnerValue();
+		if (settings.isMagLimitsCheckBoxValue() == true) {
+			double upperLimit = settings.getUpperLimitSpinnerValue();
+			double lowerLimit = settings.getLowerLimitSpinnerValue();
 
 			// apply filter range targetmag + lowerLimit to tagetMg + upperLimit
 			// if lower or upper limit < 0.01 disable respective filter
@@ -217,14 +216,14 @@ public class ActionHandler {
 		}
 
 		// update record and mag limit label values and update catalogui display
-		currentSettings.updateLabelValues(result.getRecordsTotal(), sortedFilteredList.size() - 1);
-		catalogUi.setSettingsData(currentSettings);
+		settings.updateLabelValues(result.getRecordsTotal(), sortedFilteredList.size() - 1);
+		dataListener.setSettingsData(settings);
 
 		// run table update with sort / filter selections
-		catalogTableListener.updateTable(sortedFilteredList);
+		tableListener.updateTable(sortedFilteredList);
 
 		// update field value
-		this.settings = currentSettings;
+		//this.settings = currentSettings;
 
 		// returns sorted-filtered list to export to radec file
 		return sortedFilteredList;

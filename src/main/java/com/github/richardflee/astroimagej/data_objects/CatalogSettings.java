@@ -36,9 +36,13 @@ public class CatalogSettings {
 	// upper & lower mag limits
 	private String upperLabelValue;
 	private String lowerLabelValue;
-
+	
 	public CatalogSettings() {
 		resetDefaultSettings(null);
+	}
+
+	public CatalogSettings(Double targetMag) {
+		resetDefaultSettings(targetMag);
 	}
 	
 	public void resetDefaultSettings(Double targetMag) {
