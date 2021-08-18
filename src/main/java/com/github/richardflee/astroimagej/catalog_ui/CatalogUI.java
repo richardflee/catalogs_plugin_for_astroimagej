@@ -487,7 +487,7 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 					);
 					panel2Layout.setVerticalGroup(
 						panel2Layout.createParallelGroup()
-							.addComponent(tableScrollPane)
+							.addComponent(tableScrollPane, GroupLayout.DEFAULT_SIZE, 782, Short.MAX_VALUE)
 					);
 				}
 
@@ -869,10 +869,6 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 					//---- totalLabel ----
 					totalLabel.setText("0");
 
-					//---- statusTextField ----
-					statusTextField.setEditable(false);
-					statusTextField.setToolTipText("<html>\nStatus line\n</html>");
-
 					GroupLayout panel8Layout = new GroupLayout(panel8);
 					panel8.setLayout(panel8Layout);
 					panel8Layout.setHorizontalGroup(
@@ -880,16 +876,13 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 							.addGroup(panel8Layout.createSequentialGroup()
 								.addContainerGap()
 								.addGroup(panel8Layout.createParallelGroup()
-									.addGroup(panel8Layout.createSequentialGroup()
-										.addGroup(panel8Layout.createParallelGroup()
-											.addComponent(label19, GroupLayout.Alignment.TRAILING)
-											.addComponent(label20, GroupLayout.Alignment.TRAILING))
-										.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-										.addGroup(panel8Layout.createParallelGroup()
-											.addComponent(totalLabel)
-											.addComponent(filteredLabel, GroupLayout.PREFERRED_SIZE, 61, GroupLayout.PREFERRED_SIZE))
-										.addContainerGap(318, Short.MAX_VALUE))
-									.addComponent(statusTextField, GroupLayout.DEFAULT_SIZE, 481, Short.MAX_VALUE)))
+									.addComponent(label19, GroupLayout.Alignment.TRAILING)
+									.addComponent(label20, GroupLayout.Alignment.TRAILING))
+								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+								.addGroup(panel8Layout.createParallelGroup()
+									.addComponent(totalLabel)
+									.addComponent(filteredLabel, GroupLayout.PREFERRED_SIZE, 61, GroupLayout.PREFERRED_SIZE))
+								.addContainerGap(318, Short.MAX_VALUE))
 					);
 					panel8Layout.setVerticalGroup(
 						panel8Layout.createParallelGroup()
@@ -902,11 +895,14 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 								.addGroup(panel8Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 									.addComponent(label20)
 									.addComponent(filteredLabel, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE))
-								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-								.addComponent(statusTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addContainerGap(31, Short.MAX_VALUE))
+								.addContainerGap(21, Short.MAX_VALUE))
 					);
 				}
+
+				//---- statusTextField ----
+				statusTextField.setEditable(false);
+				statusTextField.setToolTipText("/html>\nStatus line\n<html>");
+				statusTextField.setBackground(new Color(240, 240, 240));
 
 				GroupLayout contentPanelLayout = new GroupLayout(contentPanel);
 				contentPanel.setLayout(contentPanelLayout);
@@ -932,27 +928,32 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 									.addComponent(panel8, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
 							.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 							.addComponent(panel2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+						.addComponent(statusTextField, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 1261, Short.MAX_VALUE)
 				);
 				contentPanelLayout.setVerticalGroup(
 					contentPanelLayout.createParallelGroup()
 						.addGroup(contentPanelLayout.createSequentialGroup()
-							.addContainerGap()
-							.addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
-								.addComponent(panel7, GroupLayout.Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addGroup(contentPanelLayout.createParallelGroup()
 								.addGroup(contentPanelLayout.createSequentialGroup()
-									.addComponent(panel1, GroupLayout.PREFERRED_SIZE, 279, GroupLayout.PREFERRED_SIZE)
+									.addContainerGap()
+									.addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
+										.addComponent(panel7, GroupLayout.Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+										.addGroup(contentPanelLayout.createSequentialGroup()
+											.addComponent(panel1, GroupLayout.PREFERRED_SIZE, 279, GroupLayout.PREFERRED_SIZE)
+											.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+											.addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
+												.addComponent(panel4, GroupLayout.DEFAULT_SIZE, 141, Short.MAX_VALUE)
+												.addComponent(panel3, GroupLayout.DEFAULT_SIZE, 141, Short.MAX_VALUE))
+											.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+											.addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
+												.addComponent(panel5, GroupLayout.PREFERRED_SIZE, 159, GroupLayout.PREFERRED_SIZE)
+												.addComponent(panel6, GroupLayout.PREFERRED_SIZE, 159, GroupLayout.PREFERRED_SIZE))))
 									.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-									.addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
-										.addComponent(panel4, GroupLayout.DEFAULT_SIZE, 141, Short.MAX_VALUE)
-										.addComponent(panel3, GroupLayout.DEFAULT_SIZE, 141, Short.MAX_VALUE))
-									.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-									.addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
-										.addComponent(panel5, GroupLayout.PREFERRED_SIZE, 159, GroupLayout.PREFERRED_SIZE)
-										.addComponent(panel6, GroupLayout.PREFERRED_SIZE, 159, GroupLayout.PREFERRED_SIZE))))
-							.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-							.addComponent(panel8, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addGap(23, 23, 23))
-						.addComponent(panel2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+									.addComponent(panel8, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+									.addGap(0, 84, Short.MAX_VALUE))
+								.addComponent(panel2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+							.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+							.addComponent(statusTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 				);
 			}
 			dialogPane.add(contentPanel, BorderLayout.CENTER);

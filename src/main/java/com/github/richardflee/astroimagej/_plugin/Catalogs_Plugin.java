@@ -27,7 +27,7 @@ public class Catalogs_Plugin implements PlugIn {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception ex) {
-			System.err.println("Failed to initialize Windows Look-Feel");
+			IJ.showMessage("Failed to initialize Windows Look-Feel");
 		}
 
 		EventQueue.invokeLater(() -> {

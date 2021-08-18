@@ -40,22 +40,24 @@ public class RaDecFileWriter extends AbstractRaDecFile {
 	 * @param selectedList list of target and selected reference objects in
 	 *                     user-specified sort order
 	 * @param query        parameters of on-line database query
-	 * @return message with result of file write operation.
+	 * @return message  result of file write operation. 
 	 */
-	public void writeRaDecFile(List<FieldObject> selectedList, CatalogQuery query) {
+	public String writeRaDecFile(List<FieldObject> selectedList, CatalogQuery query) {
 		// converts query data to string list to write to radec file
 		List<String> lines = compileRaDecList(selectedList, query);
 
 		// write new radec file and update message
 		File file = getFile(query);
 		String filePath = file.toString();
+		String message = String.format("Saved radec file: %s", filePath);
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(file, false))) {
 			for (String line : lines) {
 				bw.append(line);
 			}
 		} catch (IOException e) {
-			System.out.println(String.format("Error in writing file: %s", filePath));
+			message = String.format("Error: Failed to save radec file: %s", filePath);
 		}
+		return message;
 	}
 
 	/*

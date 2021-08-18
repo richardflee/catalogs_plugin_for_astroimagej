@@ -75,7 +75,8 @@ public class ActionHandler {
 	public void doSaveQuerySettingsData() {
 		CatalogQuery query = dataListener.getQueryData();
 		CatalogSettings settings = dataListener.getSettingsData();
-		this.propertiesFile.setPropertiesFileData(query, settings);
+		String message = propertiesFile.setPropertiesFileData(query, settings);
+		dataListener.updateStatus(message, false);
 	}
 
 	/**
@@ -128,7 +129,8 @@ public class ActionHandler {
 		RaDecFileWriter fw = new RaDecFileWriter();
 		
 		CatalogQuery query = dataListener.getQueryData();
-		fw.writeRaDecFile(selectedList, query);
+		String message = fw.writeRaDecFile(selectedList, query);
+		dataListener.updateStatus(message, message.contains("Error:"));
 	}
 
 	/**
