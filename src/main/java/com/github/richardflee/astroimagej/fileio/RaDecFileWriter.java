@@ -23,7 +23,10 @@ import com.github.richardflee.astroimagej.utils.AstroCoords;
 public class RaDecFileWriter extends AbstractRaDecFile {
 
 	// flag data block
-	private boolean isDataBlock;
+	private boolean isDataBlock = true;
+	
+	// result of of operation
+	private String statusMessage = null;
 
 	public RaDecFileWriter() {
 		// compile data lines first
@@ -49,14 +52,16 @@ public class RaDecFileWriter extends AbstractRaDecFile {
 		// write new radec file and update message
 		File file = getFile(query);
 		String filePath = file.toString();
-		String message = String.format("Saved radec file: %s", filePath);
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(file, false))) {
 			for (String line : lines) {
 				bw.append(line);
 			}
 		} catch (IOException e) {
-			message = String.format("Error: Failed to save radec file: %s", filePath);
+			String message = String.format("ERROR: Error saving radec file: %s", filePath);
+			setStatusMessage(message);
 		}
+		String message = String.format("Saved radec file: %s", filePath);
+		setStatusMessage(message);
 		return message;
 	}
 
@@ -137,6 +142,15 @@ public class RaDecFileWriter extends AbstractRaDecFile {
 		lines.add(query.toFormattedString()[0]);  // query item names 
 		lines.add(query.toFormattedString()[1]);  // query data  
 		return lines;
+	}
+	
+	// status line message gett & setter
+	public String getStatusMessage() {
+		return statusMessage;
+	}
+
+	public void setStatusMessage(String statusMessage) {
+		this.statusMessage = statusMessage;
 	}
 
 	public static void main(String[] args) {

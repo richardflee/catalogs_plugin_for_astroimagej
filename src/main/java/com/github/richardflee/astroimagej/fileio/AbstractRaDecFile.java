@@ -13,6 +13,10 @@ import com.github.richardflee.astroimagej.utils.AstroCoords;
  * table data read / write operations</p>
  */
 class AbstractRaDecFile {
+	
+	// result of of operation
+		private String statusMessage = null;
+
 	/*
 	 * Returns single row of catalog table data in a comma-delimited string
 	 * <p>Evaluates ColumnsEnum getIndex() to assign array indices</p>
