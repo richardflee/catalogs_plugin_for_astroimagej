@@ -27,13 +27,48 @@ public class QueryResult {
 		SORT_BY_DIST, SORT_BY_DELTA_MAG
 	}
 
+	// query settings associated with current QueryResult
+	private CatalogQuery query = null;
+
+	// list of target and refrence field objects
 	private List<FieldObject> fieldObjects;
 
-	public QueryResult() {
+	/**
+	 * Constructor for QueryResult objects created by query of on-line astronomical database or importing
+	 * radec dataset.
+	 * <p>A QueryResult object comprises the database query object and a list of FieldObjects 
+	 * initialised with a single target object. </p>
+	 * <p>Target fields are extracted from the query catalog query.</p>
+	 * 
+	 * @param query parameters for on-line database query
+	 */
+	public QueryResult(CatalogQuery query) {
+		// copy query
+		this.query = new CatalogQuery(query);
+		
+		// creates target field object from query and saves target 1st item in FieldObjects array
 		fieldObjects = new ArrayList<>();
+		FieldObject target = new FieldObject(query.getObjectId(), query.getRaHr(), query.getDecDeg(), 0.0, 0.0);
+		target.setTarget(true);
+		target.setSelected(true);
+		target.setApertureId("T01");
+
+		target.setRadSepAmin(0.0);
+		target.setDeltaMag(0.0);
+		target.setnObs(1);
+		fieldObjects.add(target);
 	}
 
 	// getters / setters
+
+	public CatalogQuery getQuery() {
+		return query;
+	}
+
+	public void setQuery(CatalogQuery query) {
+		this.query = query;
+	}
+
 	public List<FieldObject> getFieldObjects() {
 		return fieldObjects;
 	}
@@ -43,10 +78,10 @@ public class QueryResult {
 	}
 
 	/**
-	 * Applies catalog sort and filter settings to full catalog dataset. 
+	 * Applies catalog sort and filter settings to full catalog dataset.
 	 * 
 	 * @param settings catalog ui nobs, and magnitude filter settings
-	 * @return field object list ordered by sort type and filtered selections 
+	 * @return field object list ordered by sort type and filtered selections
 	 */
 	public List<FieldObject> getSortedList(CatalogSettings settings) {
 		List<FieldObject> sortedList = new ArrayList<>();
@@ -180,8 +215,13 @@ public class QueryResult {
 
 		// compile result object from file
 		ApassFileReader fr = new ApassFileReader();
+
 		CatalogQuery query = new CatalogQuery();
+		
+		//QueryResult result = new QueryResult(query);
+
 		QueryResult result = fr.runQueryFromFile(query);
+
 		double targetMag = 12.345;
 
 		// sort by distance:
@@ -213,7 +253,7 @@ public class QueryResult {
 		System.out.println(String.format("Total no records =  %02d", result.getRecordsTotal()));
 
 		// ***** getSortedFilteredList
-		// test sort by distance 
+		// test sort by distance
 		CatalogSettings settings = new CatalogSettings();
 		settings.setTargetMagSpinnerValue(targetMag);
 		sortedFilteredList = result.getSortedList(settings);
@@ -229,14 +269,13 @@ public class QueryResult {
 		}
 		System.out.println("\nSort by distance:");
 		System.out.println(String.format("SortedFilteredList in increasing distance: %b", b));
-		
-		// test  sort by mag diff
+
+		// test sort by mag diff
 		settings.setDistanceRadioButtonValue(false);
 		settings.setDeltaMagRadioButtonValue(true);
 		System.out.println("\nSort by delta mag:");
 		sortedFilteredList = result.getSortedList(settings);
 		sortedFilteredList.stream().forEach(System.out::println);
-		
 
 		// test: monotonic increase in |obj_mag - tgtmag|
 		b = true;
@@ -247,7 +286,7 @@ public class QueryResult {
 		}
 		System.out.println(String.format("Target mag = %.3f", targetMag));
 		System.out.println(String.format("Sorted in increasing abs deltaMag: %b", b));
-		
+
 //		
 //		// filter test
 //		settings.setDistanceRadioButtonValue(false);
@@ -264,15 +303,6 @@ public class QueryResult {
 //		System.out.println(String.format("Filtered number records: %d", settings.getFilteredLabelValue()));
 //		
 //		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+
 	}
 }

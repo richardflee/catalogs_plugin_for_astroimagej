@@ -1,7 +1,6 @@
 package com.github.richardflee.astroimagej.catalog_ui;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -151,40 +150,30 @@ public class ActionHandler {
 	 * @return true if file read operation was successful
 	 */
 	public boolean doImportRaDecFile() {
-		RaDecFileReader fr = null;
+		RaDecFileReader fr = new RaDecFileReader();
 		
-		// exit return false if fail to open radec file with error message
-		try {
-			fr = new RaDecFileReader();
-		} catch (IOException e) {
-			String message = e.getMessage();
+		QueryResult currentResult = fr.readRaDecData();
+		if (currentResult == null) {
+			String message = fr.getStatusMessage();
 			dataListener.updateStatus(message);
-			return false;
+			return (this.result != null);
 		}
-
-		// exit return false if Cancel pressed with info message no file selected
-		if (!fr.isRaDecFileSelected()) {
-			String message = "Cancel pressed, no file selected";
-			dataListener.updateStatus(message);
-			return false;
-		}
-
-		// import query and table data
-		CatalogQuery query = fr.getQueryData();
-		QueryResult currentResult = fr.getTableData();
-
-		// table data
-		updateCatalogTable(currentResult);
 		
+		CatalogQuery query = currentResult.getQuery();
+
 		// update cataloguo query
 		dataListener.setQueryData(query);
 
+		// table data
+		updateCatalogTable(currentResult);
+
+		// status line
+		String message = fr.getStatusMessage();
+		dataListener.updateStatus(message);
+		
 		// update field value
 		this.result = currentResult;
 		
-		// status line
-		String message = String.format("Imported file: %s", fr.getRadecFilepath());
-		dataListener.updateStatus(message);
 		return true;
 	}
 
@@ -202,15 +191,20 @@ public class ActionHandler {
 		updateCatalogTable(null);
 		CatalogSettings settings = dataListener.getSettingsData();
 		resetSettings(settings.getTargetMagSpinnerValue());
+		
+		// clear result field
+		this.result = null;
 
 		// status line
 		String message = "Cleared catalog result table, reset sort and filter settings";
-		dataListener.updateStatus(message);
+		dataListener.updateStatus(message);		
 	}
 
 	// reset sort & filter settings, retains current target mag value
 	private void resetSettings(double targetMag) {
 		CatalogSettings settings = new CatalogSettings(targetMag);
+		
+		// TTD get query from result
 		dataListener.setSettingsData(settings);
 	}
 

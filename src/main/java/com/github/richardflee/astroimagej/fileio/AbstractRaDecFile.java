@@ -92,6 +92,16 @@ class AbstractRaDecFile {
 	}
 	
 	
+	//status message getter , setter
+	
+	public String getStatusMessage() {
+		return statusMessage;
+	}
+
+	public void setStatusMessage(String statusMessage) {
+		this.statusMessage = statusMessage;
+	}
+
 	public static void main(String[] args) {
 		String[] dataLines = 
 			{"#T01, wasp12, 06:30:32.80, +29:40:20.27, 10.000, 0.567, 0.000, 0.00,  1",

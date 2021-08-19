@@ -37,9 +37,9 @@ import com.github.richardflee.astroimagej.data_objects.QueryResult;
  */
 public class RaDecFileReader extends AbstractRaDecFile {
 
-	private List<String> lines = null;
+	// private List<String> lines = null;
 	private String radecFilepath = null;
-	private boolean raDecFileSelected = false;
+	//private boolean raDecFileSelected = false;
 
 	/**
 	 * Opens file dialog in ./astroimgej/radec folder with txt file filter.
@@ -51,25 +51,79 @@ public class RaDecFileReader extends AbstractRaDecFile {
 	 * @throws IOException pass file error message to ActionHandler
 	 *                     doImportRaDecFile method
 	 */
-	public RaDecFileReader() throws IOException {
-		File file = radecFileDialog();
-		
-		// sets field raDecFileSelected flag = true if user selects file in dialog 
-		this.raDecFileSelected = (file != null);
-		if (raDecFileSelected) {
-			this.lines = readRaDecFile(file);
+	public RaDecFileReader() {
+		// sets ui theme
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception ex) {
+			String statusMessage = "ERROR: Failed to initialize Windows Look-Feel";
+			setStatusMessage(statusMessage);
 		}
+	}
+
+	
+	public QueryResult readRaDecData() {
+		// radec file into line array
+		List<String> raDecLines = null;
+
+		// open file dialog, file = null => cancel
+		// sets field raDecFileSelected flag = true if user selects file in dialog
+		File file = radecFileDialog();
+		if (file == null) {
+			String statusMessage = "Cancel pressed, no file selected";
+			setStatusMessage(statusMessage);
+			return null;
+		}
+
+		raDecLines = loadRaDecLines(file);
+		
+		// extracts query data from the last array line
+		CatalogQuery query = getQueryData(raDecLines);
+
+		// initialise new result and add radec records
+		QueryResult result = new QueryResult(query);
+
+		// block 2 radec data
+		List<String> resultLines = getResultLines(raDecLines);
+		for (String resultLine : resultLines) {
+			FieldObject fo = compileFieldObject(resultLine);
+			if (!fo.isTarget()) {
+				fo.setApertureId(fo.getApertureId().replace("#", ""));
+				result.getFieldObjects().add(fo);
+			}
+		}
+		
+		String statusMessage = String.format("Imported radec file: %s",  file.getAbsoluteFile());
+		setStatusMessage(statusMessage);
+		
+		return result;
+	}
+
+	/**
+	 * Compiles a QueryResult object from blocks 2 and 3 radec data
+	 * 
+	 * @return catalog table data mapped to a QueryResult object
+	 */
+
+	/**
+	 * Compiles a CatalogQuery object from block 3 radec data
+	 * 
+	 * @return CatalogQuery object
+	 */
+	private CatalogQuery getQueryData(List<String> lines) {
+		// locate single data line and convert to a new query object
+		String dataLine = getQueryLine(lines);
+		return CatalogQuery.fromFormattedString(dataLine);
 	}
 
 	/*
 	 * Converts user selected radec text file to text list
 	 * 
 	 * @param file reference to selected file
+	 * 
 	 * @return text file contents copied to String array
-	 * @throws IOException pass file error message to ActionHandler
-	 * doImportRaDecFile method
 	 */
-	private List<String> readRaDecFile(File file) throws IOException {
+	private List<String> loadRaDecLines(File file) {
 		List<String> lines = new ArrayList<>();
 
 		Path path = file.toPath();
@@ -78,52 +132,8 @@ public class RaDecFileReader extends AbstractRaDecFile {
 		} catch (IOException e) {
 			// handle status line eror mmessage in doImportRaDec
 			String message = String.format("Error reading radec file: %s", path.toString());
-			throw new IOException(message);
 		}
 		return lines;
-	}
-
-	/**
-	 * Compiles a QueryResult object from block 2 radec data
-	 * 
-	 * @return FieldObject array encapsulated in QueryResult object
-	 */
-	public QueryResult getTableData() {
-		// check user selected a file
-		if (!raDecFileSelected) {
-			return null;
-		}
-		// block 2 radec data
-		List<String> tableLines = getTableLines(lines);
-
-		// convert data set to QueryResult object array FieldObjects
-		QueryResult currentResult = new QueryResult();
-		List<FieldObject> fieldObjects = currentResult.getFieldObjects();
-		for (String tableLine : tableLines) {
-			FieldObject fo = compileFieldObject(tableLine);
-			fieldObjects.add(fo);
-		}
-		return currentResult;
-	}
-
-	/**
-	 * Compiles a CatalogQuery object from block 3 radec data
-	 * 
-	 * @return CatalogQuery object
-	 */
-	public CatalogQuery getQueryData() {
-		// check user selected a file
-		if (!raDecFileSelected) {
-			return null;
-		}
-		// locate single data line and convert to a new query object
-		String dataLine = getQueryLine(lines);
-		return CatalogQuery.fromFormattedString(dataLine);
-	}
-
-	// file selected getter
-	public boolean isRaDecFileSelected() {
-		return raDecFileSelected;
 	}
 
 	/*
@@ -132,12 +142,12 @@ public class RaDecFileReader extends AbstractRaDecFile {
 	 * @return file reference to selected file, or null if Cancel pressed
 	 */
 	private File radecFileDialog() {
-		// sets ui theme
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (Exception ex) {
-			System.err.println("Failed to initialize Windows Look-Feel");
-		}
+//		// sets ui theme
+//		try {
+//			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+//		} catch (Exception ex) {
+//			System.err.println("Failed to initialize Windows Look-Feel");
+//		}
 
 		// configures file chooser dialog start folder and file type
 		File file = new File(System.getProperty("user.dir"), "radec");
@@ -164,22 +174,22 @@ public class RaDecFileReader extends AbstractRaDecFile {
 	 * 
 	 * @return text array comprising radec table data set
 	 */
-	private List<String> getTableLines(List<String> lines) {
+	private List<String> getResultLines(List<String> allTableLines) {
 		int idx = 0;
 		// first "#" marks start of radec block 2
-		while (!(lines.get(idx).equals("#"))) {
+		while (!(allTableLines.get(idx).equals("#"))) {
 			idx++;
 		}
 		// fromIndex marks start of table data, skips marker and header lines
 		int fromIndex = idx + 2;
 
 		// reverse search for 2nd "#" char, marks end of block 2 data
-		idx = lines.size() - 1;
-		while (!(lines.get(idx).equals("#"))) {
+		idx = allTableLines.size() - 1;
+		while (!(allTableLines.get(idx).equals("#"))) {
 			idx--;
 		}
 		int toIndex = idx;
-		return lines.subList(fromIndex, toIndex);
+		return allTableLines.subList(fromIndex, toIndex);
 	}
 
 	/*
@@ -189,15 +199,15 @@ public class RaDecFileReader extends AbstractRaDecFile {
 	 * 
 	 * @return text text line compring radec query data set
 	 */
-	private String getQueryLine(List<String> lines) {
+	private String getQueryLine(List<String> allTableLines) {
 		// reverse search to find last "#" marker
-		int idx = lines.size() - 1;
-		while (!(lines.get(idx).equals("#"))) {
+		int idx = allTableLines.size() - 1;
+		while (!(allTableLines.get(idx).equals("#"))) {
 			idx--;
 		}
 		// skips marker and header and returns data line
 		int dataIndex = idx + 2;
-		return lines.get(dataIndex);
+		return allTableLines.get(dataIndex);
 	}
 
 	// radec filepath getter
@@ -209,26 +219,24 @@ public class RaDecFileReader extends AbstractRaDecFile {
 		this.radecFilepath = radecFilepath;
 	}
 
+	// file selected getter
+//	public boolean isRaDecFileSelected() {
+//		return raDecFileSelected;
+//	}
+
 	public static void main(String[] args) {
-
-		RaDecFileReader fr = null;
-		try {
-			fr = new RaDecFileReader();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		System.out.println(String.format("RaDec filepath: %s\n\n", fr.getRadecFilepath()));
-		QueryResult currentResult = fr.getTableData();
-		CatalogQuery query = fr.getQueryData();
-
-		if (fr.lines != null) {
-			currentResult.getFieldObjects().stream().forEach(p -> System.out.println(p.toString()));
+		RaDecFileReader fr  = new RaDecFileReader();
+		
+		QueryResult result = fr.readRaDecData();
+		if (result != null) {
+			result.getFieldObjects().stream().forEach(System.out::println);
+			System.out.println();
+			
+			CatalogQuery query = result.getQuery();
 			System.out.println(query.toString());
 		} else {
-			System.out.println("No file selected");
+			System.out.println("cancel pressed");
 		}
-
 	}
 
 }

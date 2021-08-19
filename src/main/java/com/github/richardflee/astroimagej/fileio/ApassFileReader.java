@@ -23,11 +23,10 @@ public class ApassFileReader {
 	// => catalog.runQuery
 	public QueryResult runQueryFromFile(CatalogQuery query) {
 
-		QueryResult result = new QueryResult();
-		FieldObject target = null;
+		QueryResult result = new QueryResult(query);
 		List<FieldObject> fieldObjects = new ArrayList<>();
+		FieldObject target = result.getTargetObject();
 
-		boolean isTarget = true;
 		String line = "";
 		try (BufferedReader br = new BufferedReader(new FileReader(new File(src)))) {
 			while ((line = br.readLine()) != null) {
@@ -52,18 +51,18 @@ public class ApassFileReader {
 						fo.setnObs(Integer.parseInt(term));
 					}
 				}
-				if (isTarget) {
-					target = fo;
-					fo.setRadSepAmin(target);
-					fo.setTarget(true);
-					isTarget = false;
-					fieldObjects.add(fo);
-				} else {
-					// fo.setObjectId(null);
-					fo.setRadSepAmin(target);
-					fo.setTarget(false);
-					fieldObjects.add(fo);
-				}
+//				if (isTarget) {
+//					target = fo;
+//					fo.setRadSepAmin(target);
+//					fo.setTarget(true);
+//					isTarget = false;
+//					fieldObjects.add(fo);
+//				} else {
+				// fo.setObjectId(null);
+				fo.setRadSepAmin(target);
+				fo.setTarget(false);
+				fieldObjects.add(fo);
+
 			}
 
 		} catch (IOException e1) {
@@ -74,7 +73,6 @@ public class ApassFileReader {
 				.forEach(fo -> result.setFieldObject(fo));
 		return result;
 	}
-	
 
 	public static void main(String[] args) {
 
