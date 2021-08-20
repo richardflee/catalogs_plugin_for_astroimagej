@@ -1,6 +1,7 @@
 package com.github.richardflee.astroimagej.catalog_ui;
 
 import java.io.File;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -101,13 +102,13 @@ public class ActionHandler {
 		// TTD replace with online q
 		CatalogQuery query = dataListener.getQueryData();
 		QueryResult currentResult = fr.runQueryFromFile(query);
+		
+		// updates field value
+		this.result = currentResult;
 
 		// applies selected sort & filtered options to QueryResult object and updates
 		// catalog tables
-		updateCatalogTable(currentResult);
-
-		// updates field value
-		this.result = currentResult;
+		updateCatalogTable();
 	}
 
 	/**
@@ -119,7 +120,7 @@ public class ActionHandler {
 	 */
 	public void doSaveRaDecFile() {
 		// current tcatalog table dataset
-		List<FieldObject> sortedFilteredList = updateCatalogTable(this.result);
+		List<FieldObject> sortedFilteredList = updateCatalogTable();
 
 		// filter user selected records
 		List<FieldObject> selectedList = sortedFilteredList.stream().filter(p -> p.isSelected())
@@ -164,8 +165,6 @@ public class ActionHandler {
 		// update cataloguo query
 		dataListener.setQueryData(query);
 
-		// table data
-		updateCatalogTable(currentResult);
 
 		// status line
 		String message = fr.getStatusMessage();
@@ -174,6 +173,9 @@ public class ActionHandler {
 		// update field value
 		this.result = currentResult;
 		
+		// table data
+		updateCatalogTable();
+		
 		return true;
 	}
 
@@ -181,23 +183,26 @@ public class ActionHandler {
 	 * Updates table with current user filter and sort settings
 	 */
 	public void doUpdateTable() {
-		updateCatalogTable(result);
+		updateCatalogTable();
 	}
 
 	/**
 	 * Clears catalog table and resets catalogui settings
 	 */
 	public void doClearTable() {
-		updateCatalogTable(null);
-		CatalogSettings settings = dataListener.getSettingsData();
-		resetSettings(settings.getTargetMagSpinnerValue());
 		
 		// clear result field
 		this.result = null;
+		
+		CatalogSettings settings = dataListener.getSettingsData();
+		resetSettings(settings.getTargetMagSpinnerValue());
 
 		// status line
 		String message = "Cleared catalog result table, reset sort and filter settings";
 		dataListener.updateStatus(message);		
+		
+		// clears table with null result
+		updateCatalogTable();
 	}
 
 	// reset sort & filter settings, retains current target mag value
@@ -214,7 +219,7 @@ public class ActionHandler {
 	 * 
 	 * @return FieldObject list sorted and filtered as specified by user settings
 	 */
-	private List<FieldObject> updateCatalogTable(QueryResult result) {
+	private List<FieldObject> updateCatalogTable() {
 
 		// clears table and exits if result = null
 		tableListener.updateTable(null);
@@ -224,10 +229,27 @@ public class ActionHandler {
 
 		// import current ui data & sort by distance or mag diff
 		CatalogSettings settings = dataListener.getSettingsData();
-		List<FieldObject> sortedFilteredList = result.getSortedList(settings);
-
+		
 		// get pesky targetMag value
 		double targetMag = settings.getTargetMagSpinnerValue();
+		
+		// update delta mag column with current target mag value
+		result.updateDeltaMags(targetMag);
+		
+		// reference to field object list
+		List<FieldObject> sortedFilteredList = result.getFieldObjects();
+		
+		// sort by distance option
+		if (settings.isDistanceRadioButtonValue() == true) {
+			sortedFilteredList = sortedFilteredList.stream()
+									.sorted(Comparator.comparingDouble(FieldObject::getRadSepAmin))
+									.collect(Collectors.toList());
+		// sort by delta mag option
+		} else if (settings.isDeltaMagRadioButtonValue() == true) {
+			sortedFilteredList = sortedFilteredList.stream()
+									.sorted(Comparator.comparingDouble(p -> Math.abs(p.getDeltaMag())))
+									.collect(Collectors.toList());
+		}
 
 		// apply nObs limit to reference object records
 		int numberObs = settings.getnObsSpinnerValue();
