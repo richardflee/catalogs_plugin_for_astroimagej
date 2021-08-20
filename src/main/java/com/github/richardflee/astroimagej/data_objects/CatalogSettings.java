@@ -85,7 +85,7 @@ public class CatalogSettings {
 	public void updateLabelValues(int nTotalRecords, int nFilteredRecords) {
 		// update settings record numbers, clip negative values
 		nTotalRecords = (nTotalRecords >=0) ? nTotalRecords : 0;
-		nFilteredRecords = (nFilteredRecords >= 1) ? nFilteredRecords : 0;
+		nFilteredRecords = (nFilteredRecords >= 0) ? nFilteredRecords: 0;
 		this.setTotalLabelValue(nTotalRecords);
 		this.setFilteredLabelValue(nFilteredRecords);
 		

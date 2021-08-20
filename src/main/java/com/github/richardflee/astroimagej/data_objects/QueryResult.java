@@ -76,8 +76,6 @@ public class QueryResult {
 		fieldObjects.add(fieldObject);
 	}
 
-
-
 	/**
 	 * Total number of list items
 	 * 
@@ -95,6 +93,14 @@ public class QueryResult {
 	public FieldObject getTargetObject() {
 		return fieldObjects.stream().filter(p -> p.isTarget()).findFirst().get();
 	}
+	
+	public double getTargetMag() {
+		return getTargetObject().getMag();
+	}
+	
+	public void setTargetMag(double targetMag) {
+		getTargetObject().setMag(targetMag);
+	}
 
 	/**
 	 * Updates field object delta mag fields: delatMag = obj_mag - tgt_mag
@@ -102,7 +108,7 @@ public class QueryResult {
 	 * @param targetMag target object nominal mag
 	 */
 	public void updateDeltaMags(double targetMag) {
-		getTargetObject().setMag(targetMag);
+		setTargetMag(targetMag);
 		fieldObjects.forEach(p -> p.setDeltaMag(targetMag));
 	}
 
@@ -124,10 +130,13 @@ public class QueryResult {
 		QueryResult result = fr.runQueryFromFile(query);
 
 		// update delta mag
-		result.updateDeltaMags(targetMag);
-		
+		result.updateDeltaMags(targetMag);		
 		result.getFieldObjects().stream().forEach(System.out::println);
+		System.out.println(String.format("\nTarget mag expected 12.345: %.3f", result.getTargetMag()));
 		
+		targetMag = 9.875;
+		result.setTargetMag(targetMag);
+		System.out.println(String.format("Target mag expected 9.875: %.3f", result.getTargetMag()));
 
 //		// sort by distance:
 //		List<FieldObject> sortedFilteredList = result.sortByDistance(targetMag);
