@@ -13,5 +13,5 @@ public interface CatalogDataListener {
 	
 	public CatalogSettings getSettingsData();
 	
-	public void updateStatus(String message);
+	public void updateStatus(String statusMessage);
 }

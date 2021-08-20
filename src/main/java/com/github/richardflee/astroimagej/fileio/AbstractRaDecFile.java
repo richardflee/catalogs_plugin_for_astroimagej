@@ -74,8 +74,8 @@ class AbstractRaDecFile {
 		double magErr = Double.valueOf(terms[ColumnsEnum.MAG_ERR_COL.getIndex()]);
 		fo.setMagErr(magErr);
 		
-		int deltaMag1000 = (int) (1000 * Double.valueOf(terms[ColumnsEnum.MAG_DIFF_COL.getIndex()]));
-		fo.setDeltaMag(deltaMag1000);
+		double deltaMag = Double.valueOf(terms[ColumnsEnum.MAG_DIFF_COL.getIndex()]);
+		fo.copyDeltaMag(deltaMag);
 		
 		double radSepAmin = Double.valueOf(terms[ColumnsEnum.DIST_AMIN_COL.getIndex()]);
 		fo.setRadSepAmin(radSepAmin);

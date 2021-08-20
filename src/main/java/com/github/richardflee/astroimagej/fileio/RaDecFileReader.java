@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.swing.JFileChooser;
-import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import com.github.richardflee.astroimagej.data_objects.CatalogQuery;
@@ -39,7 +38,7 @@ public class RaDecFileReader extends AbstractRaDecFile {
 
 	// private List<String> lines = null;
 	private String radecFilepath = null;
-	//private boolean raDecFileSelected = false;
+	// private boolean raDecFileSelected = false;
 
 	/**
 	 * Opens file dialog in ./astroimgej/radec folder with txt file filter.
@@ -52,19 +51,11 @@ public class RaDecFileReader extends AbstractRaDecFile {
 	 *                     doImportRaDecFile method
 	 */
 	public RaDecFileReader() {
-		// sets ui theme
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (Exception ex) {
-			String statusMessage = "ERROR: Failed to initialize Windows Look-Feel";
-			setStatusMessage(statusMessage);
-		}
 	}
 
-	
 	public QueryResult readRaDecData() {
 		// radec file into line array
-		List<String> raDecLines = null;
+		List<String> radecLines = null;
 
 		// open file dialog, file = null => cancel
 		// sets field raDecFileSelected flag = true if user selects file in dialog
@@ -75,27 +66,29 @@ public class RaDecFileReader extends AbstractRaDecFile {
 			return null;
 		}
 
-		raDecLines = loadRaDecLines(file);
-		
+		radecLines = loadRaDecLines(file);
+
 		// extracts query data from the last array line
-		CatalogQuery query = getQueryData(raDecLines);
+		CatalogQuery query = getQueryData(radecLines);
 
 		// initialise new result and add radec records
 		QueryResult result = new QueryResult(query);
 
 		// block 2 radec data
-		List<String> resultLines = getResultLines(raDecLines);
+		List<String> resultLines = getResultLines(radecLines);
 		for (String resultLine : resultLines) {
 			FieldObject fo = compileFieldObject(resultLine);
-			if (!fo.isTarget()) {
+			if (fo.isTarget()) {
+				result.setTargetObject(fo);
+			} else {
 				fo.setApertureId(fo.getApertureId().replace("#", ""));
 				result.getFieldObjects().add(fo);
 			}
 		}
-		
-		String statusMessage = String.format("Imported radec file: %s",  file.getAbsoluteFile());
+
+		String statusMessage = String.format("Imported radec file: %s", file.getAbsoluteFile());
 		setStatusMessage(statusMessage);
-		
+
 		return result;
 	}
 
@@ -131,7 +124,8 @@ public class RaDecFileReader extends AbstractRaDecFile {
 			lines = stream.collect(Collectors.toList());
 		} catch (IOException e) {
 			// handle status line eror mmessage in doImportRaDec
-			String message = String.format("Error reading radec file: %s", path.toString());
+			String statusMessage = String.format("ERROR: Error reading radec file: %s", path.toString());
+			setStatusMessage(statusMessage);
 		}
 		return lines;
 	}
@@ -225,13 +219,13 @@ public class RaDecFileReader extends AbstractRaDecFile {
 //	}
 
 	public static void main(String[] args) {
-		RaDecFileReader fr  = new RaDecFileReader();
-		
+		RaDecFileReader fr = new RaDecFileReader();
+
 		QueryResult result = fr.readRaDecData();
 		if (result != null) {
 			result.getFieldObjects().stream().forEach(System.out::println);
 			System.out.println();
-			
+
 			CatalogQuery query = result.getQuery();
 			System.out.println(query.toString());
 		} else {

@@ -26,8 +26,8 @@ import com.github.richardflee.astroimagej.utils.AstroCoords;
 // default settings
 public class ActionHandler {
 	// reference to CatalogUI, main user form
-	private CatalogTableListener tableListener;
-	private CatalogDataListener dataListener;
+	private CatalogTableListener catalogTableListener;
+	private CatalogDataListener catalogDataListener;
 
 	// references to catalog database query and result objects
 	private PropertiesFileIO propertiesFile = null;
@@ -44,7 +44,7 @@ public class ActionHandler {
 	/**
 	 * Parameterised constructor references CatalogUI to access form control values
 	 * 
-	 * @param tableListener reference to main user form interface
+	 * @param catalogTableListener reference to main user form interface
 	 */
 	public ActionHandler(PropertiesFileIO propertiesFile) {
 		this.propertiesFile = propertiesFile;
@@ -57,18 +57,18 @@ public class ActionHandler {
 	 * @param catalogTableListener reference to CataTableListner interface
 	 */
 	public void setCatalogTableListener(CatalogTableListener catalogTableListener) {
-		this.tableListener = catalogTableListener;
+		this.catalogTableListener = catalogTableListener;
 	}
 
 	public void setCatalogDataListener(CatalogDataListener catalogDataListener) {
-		this.dataListener = catalogDataListener;
+		this.catalogDataListener = catalogDataListener;
 	}
 
 	// TTDO
 	public void doSimbadQuery() {
 
 		String message = "ERROR: SIMBAD Query";
-		dataListener.updateStatus(message);
+		catalogDataListener.updateStatus(message);
 	}
 
 	/**
@@ -76,12 +76,12 @@ public class ActionHandler {
 	 * plus a subset settings parameters
 	 */
 	public void doSaveQuerySettingsData() {
-		CatalogQuery query = dataListener.getQueryData();
-		CatalogSettings settings = dataListener.getSettingsData();
+		CatalogQuery query = catalogDataListener.getQueryData();
+		CatalogSettings settings = catalogDataListener.getSettingsData();
 
 		// update properties file
 		String statusMessage = propertiesFile.setPropertiesFileData(query, settings);
-		dataListener.updateStatus(statusMessage);
+		catalogDataListener.updateStatus(statusMessage);
 	}
 
 	/**
@@ -99,12 +99,12 @@ public class ActionHandler {
 
 		// resets sort filter settings and updates catalogui
 		// retain current target mag value
-		CatalogSettings settings = dataListener.getSettingsData();
+		CatalogSettings settings = catalogDataListener.getSettingsData();
 		resetSettings(settings.getTargetMagSpinnerValue());
 
 		// run query
 		// TTD replace with online q
-		CatalogQuery query = dataListener.getQueryData();
+		CatalogQuery query = catalogDataListener.getQueryData();
 		QueryResult currentResult = fr.runQueryFromFile(query);
 
 		// updates field value
@@ -142,42 +142,50 @@ public class ActionHandler {
 		settings.updateLabelValues(result.getRecordsTotal(), nFilteredRecords);
 		
 		// apply updates
-		dataListener.setQueryData(query);
-		dataListener.setSettingsData(settings);
+		catalogDataListener.setQueryData(query);
+		catalogDataListener.setSettingsData(settings);
 		
 
 		// status line
 		String message = fileWriter.getStatusMessage();
-		dataListener.updateStatus(message);
+		catalogDataListener.updateStatus(message);
 	}
 
 	/**
 	 * Reads user-selected radec file, maps data to catalog table and ui control and
 	 * creates a new query object.
 	 * 
-	 * @return true if file read operation was successful
+	 * @return true if catalog table is populated, false if table is clear
 	 */
 	public boolean doImportRaDecFile() {
 		RaDecFileReader fr = new RaDecFileReader();
 
-		QueryResult currentResult = fr.readRaDecData();
-		if (currentResult == null) {
+		QueryResult radecResult = fr.readRaDecData();
+		if (radecResult == null) {
 			String message = fr.getStatusMessage();
-			dataListener.updateStatus(message);
+			catalogDataListener.updateStatus(message);
+			
+			// return true if result is not null, false otherwise
 			return (this.result != null);
 		}
 
-		CatalogQuery query = currentResult.getQuery();
+		// extract radec query
+		CatalogQuery radecQuery = radecResult.getQuery();
+		
+		double targetMag = radecResult.getTargetMag();
+		CatalogSettings radecSettings = new CatalogSettings(targetMag);
 
 		// update cataloguo query
-		dataListener.setQueryData(query);
+		catalogDataListener.setQueryData(radecQuery);
+		catalogDataListener.setSettingsData(radecSettings);
+		
 
 		// status line
 		String message = fr.getStatusMessage();
-		dataListener.updateStatus(message);
+		catalogDataListener.updateStatus(message);
 
 		// update field value
-		this.result = currentResult;
+		this.result = radecResult;
 
 		// table data
 		updateCatalogTable();
@@ -190,6 +198,8 @@ public class ActionHandler {
 	 */
 	public void doUpdateTable() {
 		updateCatalogTable();
+		String statusMessage = "Catalog table updated with current sort and filter settings";
+		catalogDataListener.updateStatus(statusMessage);
 	}
 
 	/**
@@ -203,12 +213,12 @@ public class ActionHandler {
 		// clear sortedFiltered list
 		this.sortedFilteredList = null;
 
-		CatalogSettings settings = dataListener.getSettingsData();
+		CatalogSettings settings = catalogDataListener.getSettingsData();
 		resetSettings(settings.getTargetMagSpinnerValue());
 
 		// status line
 		String message = "Cleared catalog result table, reset sort and filter settings";
-		dataListener.updateStatus(message);
+		catalogDataListener.updateStatus(message);
 
 		// clears table with null result
 		updateCatalogTable();
@@ -219,7 +229,7 @@ public class ActionHandler {
 		CatalogSettings settings = new CatalogSettings(targetMag);
 
 		// TTD get query from result
-		dataListener.setSettingsData(settings);
+		catalogDataListener.setSettingsData(settings);
 	}
 
 	/*
@@ -231,13 +241,13 @@ public class ActionHandler {
 	private void updateCatalogTable() {
 
 		// clears table and exits if result = null
-		tableListener.updateTable(null);
+		catalogTableListener.updateTable(null);
 		if (result == null) {
 			return;
 		}
 
 		// import current ui data
-		CatalogSettings settings = dataListener.getSettingsData();
+		CatalogSettings settings = catalogDataListener.getSettingsData();
 
 		// get pesky targetMag value
 		double targetMag = settings.getTargetMagSpinnerValue();
@@ -279,10 +289,10 @@ public class ActionHandler {
 		// update record and mag limit label values and update catalogui display
 		int nFilteredRecords = currentSortedFilteredList.size() - 1;
 		settings.updateLabelValues(result.getRecordsTotal(), nFilteredRecords);
-		dataListener.setSettingsData(settings);
+		catalogDataListener.setSettingsData(settings);
 
 		// run table update with sort / filter selections
-		tableListener.updateTable(currentSortedFilteredList);
+		catalogTableListener.updateTable(currentSortedFilteredList);
 
 		this.sortedFilteredList = currentSortedFilteredList;
 	}

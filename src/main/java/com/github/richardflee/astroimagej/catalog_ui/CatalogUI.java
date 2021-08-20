@@ -93,12 +93,12 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 	}
 
 	@Override
-	public void updateStatus(String message) {
+	public void updateStatus(String statusMessage) {
 		
-		Color fontColor = message.toUpperCase().contains("ERROR") ? Color.RED : Color.BLACK;
+		Color fontColor = statusMessage.toUpperCase().contains("ERROR") ? Color.RED : Color.BLACK;
 		statusTextField.setForeground(fontColor);
 		statusTextField.setFont(font);
-		statusTextField.setText(message);
+		statusTextField.setText(statusMessage);
 	}
 
 	/*

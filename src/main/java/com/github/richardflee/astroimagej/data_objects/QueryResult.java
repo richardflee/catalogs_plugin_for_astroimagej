@@ -94,6 +94,25 @@ public class QueryResult {
 		return fieldObjects.stream().filter(p -> p.isTarget()).findFirst().get();
 	}
 	
+	public void setTargetObject(FieldObject fo) {
+		FieldObject target= getTargetObject();
+		
+		// data
+		target.setObjectId(fo.getObjectId());
+		target.setRaHr(fo.getRaHr());
+		target.setDecDeg(fo.getDecDeg());
+		target.setMag(fo.getMag());
+		
+		// presets
+		target.setTarget(true);
+		target.setApertureId("T01");
+		target.setMagErr(0.00);
+		target.copyDeltaMag(0.0);		
+		target.setRadSepAmin(0.0);
+		target.setnObs(1);
+		target.setSelected(true);
+	}
+	
 	public double getTargetMag() {
 		return getTargetObject().getMag();
 	}
