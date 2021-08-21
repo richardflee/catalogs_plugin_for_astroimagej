@@ -35,6 +35,7 @@ import javax.swing.border.TitledBorder;
 import com.github.richardflee.astroimagej.data_objects.CatalogQuery;
 import com.github.richardflee.astroimagej.data_objects.CatalogSettings;
 import com.github.richardflee.astroimagej.enums.CatalogsEnum;
+import com.github.richardflee.astroimagej.listeners.CatalogDataListener;
 import com.github.richardflee.astroimagej.utils.AstroCoords;
 
 /**
@@ -68,6 +69,9 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 	protected CatalogTableModel catalogTableModel = null;
 	protected ActionHandler handler = null;
 	protected CatalogSettings settings = null;
+	
+	
+
 
 	/**
 	 * Initialises catalog_ui object references
@@ -94,7 +98,7 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 
 	@Override
 	public void updateStatus(String statusMessage) {
-		
+
 		Color fontColor = statusMessage.toUpperCase().contains("ERROR") ? Color.RED : Color.BLACK;
 		statusTextField.setForeground(fontColor);
 		statusTextField.setFont(font);
@@ -212,7 +216,16 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		});
 
 		closeButton.addActionListener(e -> System.exit(0));
+		
+		// verifies user inputs in query text fields
+		JTextVerifier inputVerifier = new JTextVerifier(this);
+		objectIdField.addActionListener(e -> inputVerifier.verifyObjectId(objectIdField.getText()));
+		raField.addActionListener(e -> inputVerifier.verifyRaHms(raField.getText()));
+		decField.addActionListener(e -> inputVerifier.verifyDecDms(decField.getText()));
+		fovField.addActionListener(e -> inputVerifier.verifyFov(fovField.getText()));
+		magLimitField.addActionListener(e -> inputVerifier.verifyMagLimit(magLimitField.getText()));
 	}
+	
 
 	/*
 	 * Enables or disables [Update] and [Clear] buttons

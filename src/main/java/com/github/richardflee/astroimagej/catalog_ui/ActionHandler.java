@@ -13,6 +13,8 @@ import com.github.richardflee.astroimagej.fileio.ApassFileReader;
 import com.github.richardflee.astroimagej.fileio.PropertiesFileIO;
 import com.github.richardflee.astroimagej.fileio.RaDecFileReader;
 import com.github.richardflee.astroimagej.fileio.RaDecFileWriter;
+import com.github.richardflee.astroimagej.listeners.CatalogDataListener;
+import com.github.richardflee.astroimagej.listeners.CatalogTableListener;
 import com.github.richardflee.astroimagej.utils.AstroCoords;
 
 /**

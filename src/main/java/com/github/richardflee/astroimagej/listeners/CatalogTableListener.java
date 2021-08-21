@@ -1,4 +1,4 @@
-package com.github.richardflee.astroimagej.catalog_ui;
+package com.github.richardflee.astroimagej.listeners;
 
 import java.util.List;
 
