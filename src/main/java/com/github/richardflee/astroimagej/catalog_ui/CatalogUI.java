@@ -10,9 +10,9 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.ItemEvent;
 
 import javax.swing.ButtonGroup;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -69,9 +69,6 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 	protected CatalogTableModel catalogTableModel = null;
 	protected ActionHandler handler = null;
 	protected CatalogSettings settings = null;
-	
-	
-
 
 	/**
 	 * Initialises catalog_ui object references
@@ -89,24 +86,54 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		this.handler = handler;
 		// handler.setCatalogTableListener(catalogTableModel);
 
-		// configures button click events
+		// configures button click events and query text input verifiers
 		setUpActionListeners();
+
+		// populate catalog combo
+		catalogCombo.addItem(CatalogsEnum.APASS.toString());
+		catalogCombo.addItem(CatalogsEnum.VSP.toString());
 
 		// start in "no data" state
 		setButtonsEnabled(false);
+
+	}
+	
+	
+	/*
+	 * Handles change in catalogCombo selection. 
+	 * Clears existing filterCombo list and loads a new list based on CatalogType enum
+	 * 
+	 * @param ie event indicates an item was selected in the catalogCombo control 
+	 */
+	private void selectCatalog(ItemEvent ie) {
+		if (ie.getStateChange() == ItemEvent.SELECTED) {
+			// get current catalogCombo selection & catalog type
+			String selectedCatalog = catalogCombo.getSelectedItem().toString().toUpperCase();
+			CatalogsEnum en = CatalogsEnum.valueOf(selectedCatalog);
+
+			// populate filterCombo and select first item 
+			populateFilterCombo(selectedCatalog, en.getMagBands().get(0));
+		}
 	}
 
+	/**
+	 * Prints status message line, error messages indicated by ERROR in text line
+	 * 
+	 * @param statusMessage red text if message contains ERROR, otherwise black text
+	 *                      for info messages
+	 */
 	@Override
 	public void updateStatus(String statusMessage) {
-
+		// sets text colour and font
 		Color fontColor = statusMessage.toUpperCase().contains("ERROR") ? Color.RED : Color.BLACK;
 		statusTextField.setForeground(fontColor);
 		statusTextField.setFont(font);
 		statusTextField.setText(statusMessage);
 	}
 
-	/*
-	 * Updates catalog query settings section with current query object data
+
+	/**
+	 * Updates catalog UI query settings section with current query object data
 	 * 
 	 * @param query encapsulates user input query parameters
 	 */
@@ -117,8 +144,15 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		decField.setText(AstroCoords.decDeg_To_decDms(query.getDecDeg()));
 		fovField.setText(String.format("%.1f", query.getFovAmin()));
 		magLimitField.setText(String.format("%.1f", query.getMagLimit()));
-
-		catalogCombo.setSelectedItem(query.getCatalogType().toString());
+		
+		// selected catalog
+		CatalogsEnum en = query.getCatalogType();
+		String selectedCatalog = en.toString().toUpperCase();
+		catalogCombo.setSelectedItem(selectedCatalog);
+		
+		// populate filterCombo
+		String selectedFilter = query.getMagBand();
+		populateFilterCombo(selectedCatalog, selectedFilter);
 		filterCombo.setSelectedItem(query.getMagBand());
 	}
 
@@ -187,9 +221,27 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 
 		return settings;
 	}
+	
+	/*
+	 * Clears current and imports new filter list in the filter selection combo
+	 * 
+	 * @param selectedCatalog uppercase name of current catalog selected in catalog combo
+	 * @param selectedFilter filter name of current filter selection in filter combo
+	 */
+	private void populateFilterCombo(String selectedCatalog, String selectedFilter) {
+		// clear filters list
+		filterCombo.removeAllItems();
 
-	/**
-	 * Configures button event listeners and data/no-data button states
+		// retrieve catalog from enum
+		CatalogsEnum en = CatalogsEnum.valueOf(selectedCatalog);
+
+		// import filter list for selected catalog & select specified filter
+		en.getMagBands().forEach(item -> filterCombo.addItem(item));
+		filterCombo.setSelectedItem(selectedFilter);
+	}
+
+	/*
+	 * Configures button and combo event listeners and sets data/no-data button states
 	 */
 	private void setUpActionListeners() {
 		simbadButton.addActionListener(e -> handler.doSimbadQuery());
@@ -216,7 +268,7 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		});
 
 		closeButton.addActionListener(e -> System.exit(0));
-		
+
 		// verifies user inputs in query text fields
 		JTextVerifier inputVerifier = new JTextVerifier(this);
 		objectIdField.addActionListener(e -> inputVerifier.verifyObjectId(objectIdField.getText()));
@@ -224,8 +276,10 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		decField.addActionListener(e -> inputVerifier.verifyDecDms(decField.getText()));
 		fovField.addActionListener(e -> inputVerifier.verifyFov(fovField.getText()));
 		magLimitField.addActionListener(e -> inputVerifier.verifyMagLimit(magLimitField.getText()));
+		
+		// handles change in selected catalog (VSP, APASS ..)
+		catalogCombo.addItemListener(ie -> selectCatalog(ie));
 	}
-	
 
 	/*
 	 * Enables or disables [Update] and [Clear] buttons
@@ -386,7 +440,6 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 					label10.setText("mag");
 
 					// ---- catalogCombo ----
-					catalogCombo.setModel(new DefaultComboBoxModel<>(new String[] { "VSP", "APASS" }));
 					catalogCombo.setToolTipText("<html>\nSelect on-line astronomical database from list\n</html>");
 
 					// ---- label11 ----

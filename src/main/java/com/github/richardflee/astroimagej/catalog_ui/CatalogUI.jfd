@@ -101,11 +101,6 @@ new FormModel {
 						} )
 						add( new FormComponent( "javax.swing.JComboBox" ) {
 							name: "catalogCombo"
-							"model": new javax.swing.DefaultComboBoxModel {
-								selectedItem: "VSP"
-								addElement( "VSP" )
-								addElement( "APASS" )
-							}
 							"toolTipText": "<html>\nSelect on-line astronomical database from list\n</html>"
 							auxiliary() {
 								"JavaCodeGenerator.typeParameters": "String"

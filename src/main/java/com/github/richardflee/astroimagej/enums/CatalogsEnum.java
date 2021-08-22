@@ -57,6 +57,8 @@ public enum CatalogsEnum {
 			System.out.println(String.format("VSP MagBand: %s", magBand));			
 		}
 		
+		CatalogsEnum.VSP.getMagBands().stream().forEach(p -> System.out.println(String.format("VSP %s",  p)));
+		
 		System.out.println();
 		for (String magBand : CatalogsEnum.APASS.getMagBands()) {
 			System.out.println(String.format("APASS MagBand: %s", magBand));			

@@ -16,7 +16,11 @@ public class JTextVerifier {
 		this.catalogUi = catalogUi;
 	}
 
-	
+	/*
+	 * verifies user input objectId format
+	 * 
+	 * @param input objectId in alphanumeric format
+	 */
 	protected void verifyObjectId(String input) {
 		boolean isValid = DataVerifier.isValidObjectId(input);
 		if (isValid) {
@@ -27,6 +31,11 @@ public class JTextVerifier {
 		}
 	}
 	
+	/*
+	 * Verifies user input RA format and in range
+	 * 
+	 * @param input RA in sexagesimal format
+	 */
 	protected void verifyRaHms(String input) {
 		boolean isValid = DataVerifier.isValidCoords(input, QueryEnum.RA_HMS);
 		if (isValid) {
@@ -37,6 +46,11 @@ public class JTextVerifier {
 		}
 	}
 	
+	/*
+	 * Verifies user input Dec format and in range
+	 * 
+	 * @param input Dec in sexagesimal format
+	 */
 	protected void verifyDecDms(String input) {
 		boolean isValid = DataVerifier.isValidCoords(input, QueryEnum.DEC_DMS);
 		if (isValid) {
@@ -47,6 +61,11 @@ public class JTextVerifier {
 		}
 	}
 	
+	/*
+	 * Verifies user input FOV format and in range
+	 * 
+	 * @param input FOV in numeric format
+	 */	
 	protected void verifyFov(String input) {
 		boolean isValid = DataVerifier.isValidFov(input);
 		if (isValid) {
@@ -57,6 +76,11 @@ public class JTextVerifier {
 		}
 	}
 	
+	/*
+	 * Verifies user input magLimit format and in range
+	 * 
+	 * @param input magLimit in numeric format
+	 */	
 	protected void verifyMagLimit(String input) {
 		boolean isValid = DataVerifier.isValidMagLimit(input);
 		if (isValid) {
