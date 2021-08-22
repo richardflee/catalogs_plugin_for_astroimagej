@@ -36,8 +36,10 @@ import com.github.richardflee.astroimagej.data_objects.CatalogQuery;
 import com.github.richardflee.astroimagej.data_objects.CatalogSettings;
 import com.github.richardflee.astroimagej.data_objects.SimbadResult;
 import com.github.richardflee.astroimagej.enums.CatalogsEnum;
+import com.github.richardflee.astroimagej.enums.QueryEnum;
 import com.github.richardflee.astroimagej.listeners.CatalogDataListener;
 import com.github.richardflee.astroimagej.utils.AstroCoords;
+import com.github.richardflee.astroimagej.utils.InputsVerifier;
 
 /**
  * This class creates the main catalogs_plugin user interface. User options are:
@@ -133,9 +135,16 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		statusTextField.setText(statusMessage);
 	}
 	
+	/**
+	 * Populates SIMBAD Data and Filter Mag sections with result of Simbad query. 
+	 * Marks fields "." if no dat found.
+	 * 
+	 * @param simbadResult coordinates and catalog mags for user specified objectId; null if no Simbad match
+	 */
+	
 	@Override
 	public void setSimbadData(SimbadResult simbadResult) {
-		// resets simmbad data
+		// null => reset simbad data
 		if (simbadResult == null) {
 			simbadIdLabel.setText(".");
 			simbadRaLabel.setText(".");
@@ -148,7 +157,6 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		}
 		
 		// Simbad catalog match for user objectId
-		
 		// update catalog ra
 		String raHms = AstroCoords.raHr_To_raHms(simbadResult.getSimbadRaHr());
 		raField.setText(raHms);
@@ -205,6 +213,10 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 
 	@Override
 	public CatalogQuery getQueryData() {
+		
+		if (!verifyAllInputs()) {
+			return null;
+		}
 		CatalogQuery query = new CatalogQuery();
 		query.setObjectId(objectIdField.getText());
 		query.setRaHr(AstroCoords.raHms_To_raHr(raField.getText()));
@@ -213,6 +225,8 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		query.setMagLimit(Double.valueOf(magLimitField.getText()));
 
 		query.setCatalogType(CatalogsEnum.getEnum(catalogCombo.getSelectedItem().toString()));
+		query.setMagBand(filterCombo.getSelectedItem().toString());
+		
 		return query;
 	}
 
@@ -326,6 +340,21 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		
 		// handles change in selected catalog (VSP, APASS ..)
 		catalogCombo.addItemListener(ie -> selectCatalog(ie));
+	}
+	
+	/*
+	 * Tests all input fileds are in range before compiling on-line database query
+	 * 
+	 * @return true of all query data inputs are in range, false otherwise
+	 */
+	private boolean verifyAllInputs() {
+		boolean isValid = InputsVerifier.isValidObjectId(objectIdField.getText());
+		isValid = isValid && InputsVerifier.isValidCoords(raField.getText(), QueryEnum.RA_HMS);
+		isValid = isValid && InputsVerifier.isValidCoords(decField.getText(), QueryEnum.DEC_DMS);
+		isValid = isValid && InputsVerifier.isValidFov(fovField.getText());
+		isValid = isValid && InputsVerifier.isValidMagLimit(magLimitField.getText());		
+		return isValid;
+		
 	}
 
 	/*

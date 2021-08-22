@@ -43,7 +43,7 @@ public class ActionHandler {
 
 	// catalog table dataset compiled running updateCatalogTable
 	private List<FieldObject> sortedFilteredList = null;
-	
+
 	private RaDecFileWriter fileWriter;
 
 	/**
@@ -69,27 +69,26 @@ public class ActionHandler {
 		this.catalogDataListener = catalogDataListener;
 	}
 
-	// TTDO status msg
+	
 	public void doSimbadQuery() {
-
-		
 		SimbadCatalog simbad = new SimbadCatalog();
 		SimbadResult simbadResult = null;
-		
+		String statusMessage = null;
+
 		CatalogQuery query = catalogDataListener.getQueryData();
-		
-		try {
-			simbadResult = simbad.runQuery(query);
-			catalogDataListener.setSimbadData(simbadResult);
-		} catch (SimbadNotFoundException se) {
-			catalogDataListener.setSimbadData(null);
+		if (query != null) {
+			try {
+				simbadResult = simbad.runQuery(query);
+				catalogDataListener.setSimbadData(simbadResult);
+			} catch (SimbadNotFoundException se) {
+				catalogDataListener.setSimbadData(null);
+			}
+			statusMessage = simbad.getStatusMessage();
+		} else {
+			statusMessage = "ERROR: Invalid text input";
 		}
-		
-		
-		String message = "ERROR: SIMBAD Query";
-		catalogDataListener.updateStatus(message);
-		
-		
+
+		catalogDataListener.updateStatus(statusMessage);
 	}
 
 	/**
@@ -97,11 +96,15 @@ public class ActionHandler {
 	 * plus a subset settings parameters
 	 */
 	public void doSaveQuerySettingsData() {
+		String statusMessage = null;
+		
 		CatalogQuery query = catalogDataListener.getQueryData();
-		CatalogSettings settings = catalogDataListener.getSettingsData();
-
-		// update properties file
-		String statusMessage = propertiesFile.setPropertiesFileData(query, settings);
+		if (query != null) {
+			CatalogSettings settings = catalogDataListener.getSettingsData();
+			statusMessage = propertiesFile.setPropertiesFileData(query, settings);
+		} else {
+			statusMessage = "ERROR: Invalid text input";
+		}
 		catalogDataListener.updateStatus(statusMessage);
 	}
 
@@ -146,26 +149,24 @@ public class ActionHandler {
 	public void doSaveRaDecFile() {
 
 		// filter user selected records
-		List<FieldObject> selectedList = sortedFilteredList.stream()
-				.filter(p -> p.isSelected())
+		List<FieldObject> selectedList = sortedFilteredList.stream().filter(p -> p.isSelected())
 				.collect(Collectors.toList());
 
 		// writes sorted_filtered_selected data to radec file
 		CatalogQuery query = this.result.getQuery();
 		this.fileWriter.writeRaDecFile(selectedList, query);
-		
+
 		// reset catalog ui query and sort-fileter settings
 		double targetMag = result.getTargetMag();
 		CatalogSettings settings = new CatalogSettings(targetMag);
-		
+
 		// record numbers
 		int nFilteredRecords = sortedFilteredList.size() - 1;
 		settings.updateLabelValues(result.getRecordsTotal(), nFilteredRecords);
-		
+
 		// apply updates
 		catalogDataListener.setQueryData(query);
 		catalogDataListener.setSettingsData(settings);
-		
 
 		// status line
 		String message = fileWriter.getStatusMessage();
@@ -185,21 +186,20 @@ public class ActionHandler {
 		if (radecResult == null) {
 			String message = fr.getStatusMessage();
 			catalogDataListener.updateStatus(message);
-			
+
 			// return true if result is not null, false otherwise
 			return (this.result != null);
 		}
 
 		// extract radec query
 		CatalogQuery radecQuery = radecResult.getQuery();
-		
+
 		double targetMag = radecResult.getTargetMag();
 		CatalogSettings radecSettings = new CatalogSettings(targetMag);
 
 		// update cataloguo query
 		catalogDataListener.setQueryData(radecQuery);
 		catalogDataListener.setSettingsData(radecSettings);
-		
 
 		// status line
 		String message = fr.getStatusMessage();

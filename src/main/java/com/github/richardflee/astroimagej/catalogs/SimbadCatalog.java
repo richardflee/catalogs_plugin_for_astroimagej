@@ -3,7 +3,6 @@ package com.github.richardflee.astroimagej.catalogs;
 
 import java.io.IOException;
 
-import javax.swing.JOptionPane;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -25,8 +24,9 @@ import com.github.richardflee.astroimagej.utils.CatalogUrls;
 
 
 public class SimbadCatalog {
-	private DocumentBuilder builder;
+	private DocumentBuilder builder = null;
 	private final String NO_DATA = "*****";
+	private String statusMessage = null;
 
 	/**
 	 * Configure XPath to parse xml.  Note: Ignores xml namespace.
@@ -39,9 +39,9 @@ public class SimbadCatalog {
 			factory.setNamespaceAware(false);
 			this.builder = factory.newDocumentBuilder();
 		} catch (ParserConfigurationException e1) {
-			String message = "Error compiling SIMBAD query\n";
-			message += e1.getMessage();
-			JOptionPane.showMessageDialog(null, message, "Simbad", JOptionPane.INFORMATION_MESSAGE);
+			String statusMessage = "ERROR: Error compiling SIMBAD query | ";
+			statusMessage += e1.getMessage();
+			setStatusMessage(statusMessage);
 		}
 	}
 	
@@ -62,53 +62,54 @@ public class SimbadCatalog {
 	public SimbadResult runQuery(CatalogQuery query) throws SimbadNotFoundException {
 		
 		// run Simbad query
-		SimbadResult result = new SimbadResult(query.getObjectId());
+		SimbadResult simbadResult = new SimbadResult(query.getObjectId());
 		
 		// search database for user input object name
 		// throws SimbadNotFoundException if no match found
 		String data = downloadSimbadItem(query, SimbadUrlType.USER_TARGET_NAME);
-		result.setSimbadId(data);
+		simbadResult.setSimbadId(data);
 		
 		// no checks on coordinate data, assumed good
 		// object J2000 RA converted deg -> hrs
 		data = downloadSimbadItem(query, SimbadUrlType.RA_HR);
-		result.setSimbadRaHr(Double.parseDouble(data) / 15.0);
+		simbadResult.setSimbadRaHr(Double.parseDouble(data) / 15.0);
 		
 		// object J2000 Dec in deg
 		data = downloadSimbadItem(query, SimbadUrlType.DEC_DEG);
-		result.setSimbadDecDeg(Double.parseDouble(data));
+		simbadResult.setSimbadDecDeg(Double.parseDouble(data));
 		
 		// object magnitude for filters B, V, Rc and Ic.
 		// return null if no magnitude data for this filter
 		data = downloadSimbadItem(query, SimbadUrlType.MAG_B);
 		Double num = (data.equals(NO_DATA)) ? null : Double.parseDouble(data);
-		result.setMagB(num);
+		simbadResult.setMagB(num);
 		
 		data = downloadSimbadItem(query, SimbadUrlType.MAG_V);
 		num = (data.equals(NO_DATA)) ? null : Double.parseDouble(data);
-		result.setMagV(num);
+		simbadResult.setMagV(num);
 		
 		data = downloadSimbadItem(query, SimbadUrlType.MAG_R);
 		num = (data.equals(NO_DATA)) ? null : Double.parseDouble(data);
-		result.setMagR(num);
+		simbadResult.setMagR(num);
 		
 		data = downloadSimbadItem(query, SimbadUrlType.MAG_I);
 		num = (data.equals(NO_DATA)) ? null : Double.parseDouble(data);
-		result.setMagI(num);
+		simbadResult.setMagI(num);
 		
-		return result;
+		String statusMessage = String.format("Simbad query successful for ObjectID: %s",  query.getObjectId());
+		setStatusMessage(statusMessage);
+		
+		return simbadResult;
 	}
 
 	/*
 	 * Queries the SIMBAD database for single SimbadDataType data item. Applies 250
 	 * ms delay after query returns to buffer successive queries
 	 * 
-	 * Refer reference above for details Xpath xml parser
+	 * <p>Refer reference above for details Xpath xml parser</p>
 	 * 
 	 * @param dataType query data type, SimbadId, coordinates or filter magnitudes	 
-	 * 
 	 * @return text data value 
-	 * 
 	 * @throws SimbadNotFoundException thrown if specified object name is not found
 	 * in SIMBAD database
 	 */
@@ -130,9 +131,9 @@ public class SimbadCatalog {
 			// buffer successive queries
 			Thread.sleep(250);
 		} catch (SAXException | IOException | XPathExpressionException | InterruptedException e1) {
-			String message = "Error running SIMBAD query\n";
-			message += e1.getMessage();
-			JOptionPane.showMessageDialog(null, message, "Simbad", JOptionPane.INFORMATION_MESSAGE);
+			String statusMessage = "ERROR: Error running SIMBAD query | ";
+			statusMessage += e1.getMessage();
+			setStatusMessage(statusMessage);
 		}
 		
 		// node item 0 is SimbadId name. 
@@ -141,14 +142,25 @@ public class SimbadCatalog {
 			try {
 				result = nodes.item(0).getNodeValue();
 			} catch (NullPointerException npe) {
-				String message = 
-						String.format("Identifier not found in the SIMBAD database: %s ", query.getObjectId());
-				throw new SimbadNotFoundException(message);
+				String statusMessage =  
+						String.format("No match found for ObjectID %s in the SIMBAD database", query.getObjectId());
+				setStatusMessage(statusMessage);
+				throw new SimbadNotFoundException(null);
 			}
 			// other data is node item 1. Null check manages missing magnitude data  
 		} else {
 			result = (nodes.getLength() == 1) ? NO_DATA : nodes.item(1).getNodeValue();
 		}
 		return result;
+	}
+
+	public String getStatusMessage() {
+		return statusMessage;
+	}
+
+	public void setStatusMessage(String statusMessage) {
+		this.statusMessage = statusMessage;
 	}	
+	
+	
 }
