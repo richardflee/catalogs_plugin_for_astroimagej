@@ -2,7 +2,7 @@ package com.github.richardflee.astroimagej.utils;
 
 import com.github.richardflee.astroimagej.enums.QueryEnum;
 
-public class DataVerifier {
+public class InputsVerifier {
 	
 	// append regex trailing decimal places up to .nnnn
 		private static String rxDecimal = "(?:[.]\\d{0,4})?";

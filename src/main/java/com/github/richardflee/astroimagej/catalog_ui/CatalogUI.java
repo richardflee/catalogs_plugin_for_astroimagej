@@ -34,6 +34,7 @@ import javax.swing.border.TitledBorder;
 
 import com.github.richardflee.astroimagej.data_objects.CatalogQuery;
 import com.github.richardflee.astroimagej.data_objects.CatalogSettings;
+import com.github.richardflee.astroimagej.data_objects.SimbadResult;
 import com.github.richardflee.astroimagej.enums.CatalogsEnum;
 import com.github.richardflee.astroimagej.listeners.CatalogDataListener;
 import com.github.richardflee.astroimagej.utils.AstroCoords;
@@ -60,7 +61,8 @@ import com.github.richardflee.astroimagej.utils.AstroCoords;
  */
 public class CatalogUI extends JDialog implements CatalogDataListener {
 	private static final long serialVersionUID = 1L;
-
+	
+	// statusLine font
 	private final String fontName = "Tahoma";
 	private final int fontSize = 13;
 	private Font font;
@@ -69,7 +71,7 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 	protected CatalogTableModel catalogTableModel = null;
 	protected ActionHandler handler = null;
 	protected CatalogSettings settings = null;
-
+	
 	/**
 	 * Initialises catalog_ui object references
 	 */
@@ -129,6 +131,51 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		statusTextField.setForeground(fontColor);
 		statusTextField.setFont(font);
 		statusTextField.setText(statusMessage);
+	}
+	
+	@Override
+	public void setSimbadData(SimbadResult simbadResult) {
+		// resets simmbad data
+		if (simbadResult == null) {
+			simbadIdLabel.setText(".");
+			simbadRaLabel.setText(".");
+			simbadDecLabel.setText(".");
+			simbadMagBLabel.setText(".");
+			simbadMagVLabel.setText(".");
+			simbadMagRLabel.setText(".");
+			simbadMagILabel.setText(".");
+			return;
+		}
+		
+		// Simbad catalog match for user objectId
+		
+		// update catalog ra
+		String raHms = AstroCoords.raHr_To_raHms(simbadResult.getSimbadRaHr());
+		raField.setText(raHms);
+		raField.setForeground(Color.black);
+		
+		// update catalog dec
+		String decDms = AstroCoords.decDeg_To_decDms(simbadResult.getSimbadDecDeg());
+		decField.setText(decDms);
+		decField.setForeground(Color.black);
+
+		// update info labels
+		simbadIdLabel.setText(simbadResult.getSimbadId());
+		simbadRaLabel.setText(raHms);
+		simbadDecLabel.setText(decDms);
+
+		// handle no data, usually R and I bands
+		String mag = (simbadResult.getMagB() == null) ? "." : simbadResult.getMagB().toString();
+		simbadMagBLabel.setText(mag);
+
+		mag = (simbadResult.getMagV() == null) ? "." : simbadResult.getMagV().toString();
+		simbadMagVLabel.setText(mag);
+
+		mag = (simbadResult.getMagR() == null) ? "." : simbadResult.getMagR().toString();
+		simbadMagRLabel.setText(mag);
+
+		mag = (simbadResult.getMagI() == null) ? "." : simbadResult.getMagI().toString();
+		simbadMagILabel.setText(mag);
 	}
 
 
@@ -270,7 +317,7 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		closeButton.addActionListener(e -> System.exit(0));
 
 		// verifies user inputs in query text fields
-		JTextVerifier inputVerifier = new JTextVerifier(this);
+		CatalogInputsVerifier inputVerifier = new CatalogInputsVerifier(this);
 		objectIdField.addActionListener(e -> inputVerifier.verifyObjectId(objectIdField.getText()));
 		raField.addActionListener(e -> inputVerifier.verifyRaHms(raField.getText()));
 		decField.addActionListener(e -> inputVerifier.verifyDecDms(decField.getText()));
@@ -1089,4 +1136,5 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 	protected JLabel totalLabel;
 	private JTextField statusTextField;
 	// JFormDesigner - End of variables declaration //GEN-END:variables
+
 }

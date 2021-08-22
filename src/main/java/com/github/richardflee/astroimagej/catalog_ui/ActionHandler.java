@@ -5,10 +5,13 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.github.richardflee.astroimagej.catalogs.SimbadCatalog;
 import com.github.richardflee.astroimagej.data_objects.CatalogQuery;
 import com.github.richardflee.astroimagej.data_objects.CatalogSettings;
 import com.github.richardflee.astroimagej.data_objects.FieldObject;
 import com.github.richardflee.astroimagej.data_objects.QueryResult;
+import com.github.richardflee.astroimagej.data_objects.SimbadResult;
+import com.github.richardflee.astroimagej.exceptions.SimbadNotFoundException;
 import com.github.richardflee.astroimagej.fileio.ApassFileReader;
 import com.github.richardflee.astroimagej.fileio.PropertiesFileIO;
 import com.github.richardflee.astroimagej.fileio.RaDecFileReader;
@@ -66,11 +69,27 @@ public class ActionHandler {
 		this.catalogDataListener = catalogDataListener;
 	}
 
-	// TTDO
+	// TTDO status msg
 	public void doSimbadQuery() {
 
+		
+		SimbadCatalog simbad = new SimbadCatalog();
+		SimbadResult simbadResult = null;
+		
+		CatalogQuery query = catalogDataListener.getQueryData();
+		
+		try {
+			simbadResult = simbad.runQuery(query);
+			catalogDataListener.setSimbadData(simbadResult);
+		} catch (SimbadNotFoundException se) {
+			catalogDataListener.setSimbadData(null);
+		}
+		
+		
 		String message = "ERROR: SIMBAD Query";
 		catalogDataListener.updateStatus(message);
+		
+		
 	}
 
 	/**

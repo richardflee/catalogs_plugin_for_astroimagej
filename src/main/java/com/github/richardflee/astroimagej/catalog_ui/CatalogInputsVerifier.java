@@ -3,16 +3,16 @@ package com.github.richardflee.astroimagej.catalog_ui;
 import java.awt.Color;
 
 import com.github.richardflee.astroimagej.enums.QueryEnum;
-import com.github.richardflee.astroimagej.utils.DataVerifier;
+import com.github.richardflee.astroimagej.utils.InputsVerifier;
 
 /**
  * Verifies user inputs to catalog dialog text fields.
  */
-public class JTextVerifier {
+public class CatalogInputsVerifier {
 	
 	private CatalogUI catalogUi;
 	
-	public JTextVerifier(CatalogUI catalogUi) {
+	public CatalogInputsVerifier(CatalogUI catalogUi) {
 		this.catalogUi = catalogUi;
 	}
 
@@ -22,7 +22,7 @@ public class JTextVerifier {
 	 * @param input objectId in alphanumeric format
 	 */
 	protected void verifyObjectId(String input) {
-		boolean isValid = DataVerifier.isValidObjectId(input);
+		boolean isValid = InputsVerifier.isValidObjectId(input);
 		if (isValid) {
 			catalogUi.objectIdField.setForeground(Color.BLACK);
 			catalogUi.raField.requestFocus();
@@ -37,7 +37,7 @@ public class JTextVerifier {
 	 * @param input RA in sexagesimal format
 	 */
 	protected void verifyRaHms(String input) {
-		boolean isValid = DataVerifier.isValidCoords(input, QueryEnum.RA_HMS);
+		boolean isValid = InputsVerifier.isValidCoords(input, QueryEnum.RA_HMS);
 		if (isValid) {
 			catalogUi.raField.setForeground(Color.BLACK);
 			catalogUi.decField.requestFocus();
@@ -52,7 +52,7 @@ public class JTextVerifier {
 	 * @param input Dec in sexagesimal format
 	 */
 	protected void verifyDecDms(String input) {
-		boolean isValid = DataVerifier.isValidCoords(input, QueryEnum.DEC_DMS);
+		boolean isValid = InputsVerifier.isValidCoords(input, QueryEnum.DEC_DMS);
 		if (isValid) {
 			catalogUi.decField.setForeground(Color.BLACK);
 			catalogUi.fovField.requestFocus();
@@ -67,7 +67,7 @@ public class JTextVerifier {
 	 * @param input FOV in numeric format
 	 */	
 	protected void verifyFov(String input) {
-		boolean isValid = DataVerifier.isValidFov(input);
+		boolean isValid = InputsVerifier.isValidFov(input);
 		if (isValid) {
 			catalogUi.fovField.setForeground(Color.BLACK);
 			catalogUi.magLimitField.requestFocus();
@@ -82,7 +82,7 @@ public class JTextVerifier {
 	 * @param input magLimit in numeric format
 	 */	
 	protected void verifyMagLimit(String input) {
-		boolean isValid = DataVerifier.isValidMagLimit(input);
+		boolean isValid = InputsVerifier.isValidMagLimit(input);
 		if (isValid) {
 			catalogUi.magLimitField.setForeground(Color.BLACK);
 			catalogUi.objectIdField.requestFocus();
