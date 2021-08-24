@@ -65,8 +65,10 @@ public class CatalogTableModel extends AbstractTableModel implements CatalogTabl
 		if (currentTableRows != null) {
 			int idx = 0;
 			for (FieldObject tableRow : currentTableRows) {
-				addItem(idx, tableRow);
-				idx++;
+				if (tableRow.isAccepted()) {
+					addItem(idx, tableRow);
+					idx++;
+				}
 			}
 			updateApertureId();
 		}

@@ -259,8 +259,8 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		lowerLabel.setText(settings.getLowerLabelValue());
 
 		// record numbers
-		totalLabel.setText(String.format("%d", settings.getTotalLabelValue()));
-		filteredLabel.setText(String.format("%d", settings.getFilteredLabelValue()));
+		totalLabel.setText(String.format("%s", settings.getTotalLabelValue()));
+		filteredLabel.setText(String.format("%s", settings.getFilteredLabelValue()));
 	}
 
 	@Override

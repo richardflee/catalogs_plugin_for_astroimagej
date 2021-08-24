@@ -18,6 +18,7 @@ public class FieldObject extends AbstractFieldObject {
 
 	private String apertureId = "Cnn"; 
 	private boolean selected = true;
+	private boolean accepted = true;
 	private boolean isTarget = false;
 	
 	private double deltaMag = 0.0;
@@ -193,13 +194,22 @@ public class FieldObject extends AbstractFieldObject {
 		this.selected = selected;
 	}
 
+	public boolean isAccepted() {
+		return accepted;
+	}
+
+
+	public void setAccepted(boolean accepted) {
+		this.accepted = accepted;
+	}
 	
 
 	@Override
 	public String toString() {
 		return "FieldObject [mag=" + mag + ", magErr=" + magErr + ", nObs=" + nObs + ", radSepAmin=" + radSepAmin
-				+ ", apertureId=" + apertureId + ", selected=" + selected + ", isTarget=" + isTarget + ", deltaMag="
-				+ deltaMag + ", objectId=" + objectId + ", raHr=" + raHr + ", decDeg=" + decDeg + "]";
+				+ ", apertureId=" + apertureId + ", selected=" + selected + ", accepted=" + accepted + ", isTarget="
+				+ isTarget + ", deltaMag=" + deltaMag + ", objectId=" + objectId + ", raHr=" + raHr + ", decDeg="
+				+ decDeg + "]";
 	}
 
 

@@ -34,8 +34,8 @@ public class CatalogSettings {
 	private int filteredLabelValue;
 	
 	// upper & lower mag limits
-	private String upperLabelValue;
-	private String lowerLabelValue;
+	//private double upperLabelValue;
+	//private double lowerLabelValue;
 	
 	public CatalogSettings() {
 		resetDefaultSettings(null);
@@ -71,8 +71,8 @@ public class CatalogSettings {
 		filteredLabelValue = 0;
 		
 		// upper & lower mag limits
-		upperLabelValue ="N/A";
-		lowerLabelValue = "N/A";
+		//upperLabelValue = 0.0;
+		//lowerLabelValue = 0.0;
 	}
 	
 	/**
@@ -82,24 +82,13 @@ public class CatalogSettings {
 	 * @param nTotalRecords number or reference records returned in on-line query (excludes target)
 	 * @param nFilteredRecords number of records after nobs & mag filters applied (excludes target)
 	 */
-	public void updateLabelValues(int nTotalRecords, int nFilteredRecords) {
-		// update settings record numbers, clip negative values
-		nTotalRecords = (nTotalRecords >=0) ? nTotalRecords : 0;
-		nFilteredRecords = (nFilteredRecords >= 0) ? nFilteredRecords: 0;
-		this.setTotalLabelValue(nTotalRecords);
-		this.setFilteredLabelValue(nFilteredRecords);
-		
-		// upper & lower mag limit labels, N/A => disable
-		double targetMag = this.getTargetMagSpinnerValue();
-		double limitVal = this.getUpperLimitSpinnerValue();
-		String limitStr = (Math.abs(limitVal) < 0.01) ? "N/A" : String.format("%.1f", limitVal + targetMag);
-		this.setUpperLabelValue(limitStr);
-
-		limitVal = this.getLowerLimitSpinnerValue();
-		limitStr = (Math.abs(limitVal) < 0.01) ? "N/A" : String.format("%.1f", limitVal + targetMag);
-		this.setLowerLabelValue(limitStr);
-	}
-
+//	public void updateLabelValues(int nTotalRecords, int nFilteredRecords) {
+//		// update settings record numbers, clip negative values
+//		nTotalRecords = (nTotalRecords >=0) ? nTotalRecords : 0;
+//		nFilteredRecords = (nFilteredRecords >= 0) ? nFilteredRecords: 0;
+//		this.setTotalLabelValue(nTotalRecords);
+//		this.setFilteredLabelValue(nFilteredRecords);
+//	}
 
 	// auto getter - setters
 	public double getUpperLimitSpinnerValue() {
@@ -158,36 +147,51 @@ public class CatalogSettings {
 		this.nObsSpinnerValue = nObsSpinnerValue;
 	}
 
-	public int getTotalLabelValue() {
-		return totalLabelValue;
+	public String getTotalLabelValue() {
+		return Integer.toString(totalLabelValue);
 	}
 
-	public void setTotalLabelValue(int totalLabelValue) {
-		this.totalLabelValue = totalLabelValue;
+	public void setTotalLabelValue(int nTotalRecords) {		
+		this.totalLabelValue =  (nTotalRecords >=0) ? nTotalRecords : 0;
 	}
 
-	public int getFilteredLabelValue() {
-		return filteredLabelValue;
+	public String getFilteredLabelValue() {
+		return Integer.toString(filteredLabelValue);
 	}
 
-	public void setFilteredLabelValue(int filteredLabelValue) {
-		this.filteredLabelValue = filteredLabelValue;
+	public void setFilteredLabelValue(int nFilteredRecords) {
+		this.filteredLabelValue = (nFilteredRecords >= 0) ? nFilteredRecords: 0;
 	}
 	
+	// Upper mag limit label: sum target + upperlimit if limit > 0.01, N/A otherwise
+	/**
+	 * 
+	 */
+	
+	/**
+	 * Upper limit magnitude band; upper limit < 0.01 disables this limit
+	 * <p>Note: upper limit value is positive</p>
+	 * 
+	 * @return limit > 0.01 => sum of target and upper limit values, N/A otherwise
+	 */
 	public String getUpperLabelValue() {
-		return upperLabelValue;
+		double limit = this.upperLimitSpinnerValue;
+		double targetMag = this.targetMagSpinnerValue;
+		String labelStr = (Math.abs(limit) < 0.01) ? "N/A" : String.format("%.1f", limit + targetMag);
+		return labelStr;
 	}
 
-	public void setUpperLabelValue(String upperLabelValue) {
-		this.upperLabelValue = upperLabelValue;
-	}
-
+	/**
+	 * Lower limit magnitude band; lower limit < 0.01 disables this limit
+	 * <p>Note: lower limit value is negative</p>
+	 * 
+	 * @return |limit| > 0.01 => sum of target and lower limit values, N/A otherwise
+	 */
 	public String getLowerLabelValue() {
-		return lowerLabelValue;
-	}
-
-	public void setLowerLabelValue(String lowerLabelValue) {
-		this.lowerLabelValue = lowerLabelValue;
+		double limit = this.lowerLimitSpinnerValue;
+		double targetMag = this.targetMagSpinnerValue;
+		String labelStr = (Math.abs(limit) < 0.01) ? "N/A" : String.format("%.1f", limit + targetMag);
+		return labelStr;
 	}
 
 	
@@ -198,8 +202,23 @@ public class CatalogSettings {
 				+ ", isMagLimitsCheckBoxValue=" + isMagLimitsCheckBoxValue + ", distanceRadioButtonValue="
 				+ distanceRadioButtonValue + ", deltaMagRadioButtonValue=" + deltaMagRadioButtonValue
 				+ ", nObsSpinnerValue=" + nObsSpinnerValue + ", totalLabelValue=" + totalLabelValue
-				+ ", filteredLabelValue=" + filteredLabelValue + ", upperLabelValue=" + upperLabelValue
-				+ ", lowerLabelValue=" + lowerLabelValue + "]";
+				+ ", filteredLabelValue=" + filteredLabelValue + "]";
+	}
+	
+	
+	public static void main(String[] args) {
+		
+		double targetMag = 10.0;
+		CatalogSettings settings = new CatalogSettings(targetMag);
+		
+		settings.setUpperLimitSpinnerValue(1.2);
+		settings.setLowerLimitSpinnerValue(0.00);
+		
+		System.out.println(String.format("Target value %.3f", targetMag));
+		System.out.println(String.format("Upper limit spinner = 1.2, upper label: %s", settings.getUpperLabelValue()));
+		System.out.println(String.format("Lower limit spinner = 0.00, lower label: %s", settings.getLowerLabelValue()));
+		
+		
 	}
 
 }
