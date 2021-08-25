@@ -61,7 +61,7 @@ public class CatalogTableModel extends AbstractTableModel implements CatalogTabl
 		}
 		fireTableRowsDeleted(0, LastRow);
 		
-		// update table with current data
+		// update table with accept = true field objects
 		if (currentTableRows != null) {
 			int idx = 0;
 			for (FieldObject tableRow : currentTableRows) {

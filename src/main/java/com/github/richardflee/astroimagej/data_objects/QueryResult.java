@@ -64,13 +64,13 @@ public class QueryResult {
 	 * 
 	 * @return new ArrayList full copy of FieldObjects list 
 	 */
-	public List<FieldObject> copyFieldObjects() {
-		List<FieldObject> copyList = new ArrayList<>();
-		for (FieldObject fo : this.getFieldObjects()) {
-			copyList.add(new FieldObject(fo));
-		}
-		return copyList;
-	}
+//	public List<FieldObject> copyFieldObjects() {
+//		List<FieldObject> copyList = new ArrayList<>();
+//		for (FieldObject fo : this.getFieldObjects()) {
+//			copyList.add(new FieldObject(fo));
+//		}
+//		return copyList;
+//	}
 
 	// getters / setters
 
@@ -91,12 +91,22 @@ public class QueryResult {
 	}
 
 	/**
-	 * Total number of list items
+	 * Total number of reference field objects, excludes target object
 	 * 
-	 * @return total items
+	 * @return total reference field objects
 	 */
 	public int getRecordsTotal() {
 		return fieldObjects.size() - 1;
+	}
+	
+	/**
+	 * Number of reference field objects within filter limits, excludes target object
+	 * 
+	 * @return total accepted field objects
+	 */	
+	public int getAcceptedTotal() {
+		long count = getFieldObjects().stream().filter(p -> p.isAccepted()).count() - 1;
+		return Math.toIntExact(count);
 	}
 
 	/**
@@ -172,10 +182,14 @@ public class QueryResult {
 		result.setTargetMag(targetMag);
 		System.out.println(String.format("Target mag expected 9.875: %.3f", result.getTargetMag()));
 		
-	//	List<FieldObject> tableList = result.copyFieldObjects();
+		List<FieldObject> acceptedList = result.getFieldObjects();
+		long counter = acceptedList.stream().filter(p -> p.isAccepted()).count();
+		System.out.println(String.format("Start accepted field objects: %d", counter));
+		
+		acceptedList.get(1).setAccepted(false);
+		counter = acceptedList.stream().filter(p -> p.isAccepted()).count();
+		System.out.println(String.format("Accepted field objects after filter one: %d", counter));
 		
 		result = null;
-		
-
 	}
 }
