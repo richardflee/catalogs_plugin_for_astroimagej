@@ -11,10 +11,10 @@ import java.util.Properties;
 
 import javax.swing.JOptionPane;
 
-import com.github.richardflee.astroimagej.data_objects.CatalogQuery;
-import com.github.richardflee.astroimagej.data_objects.CatalogSettings;
 import com.github.richardflee.astroimagej.enums.CatalogsEnum;
 import com.github.richardflee.astroimagej.enums.QueryEnum;
+import com.github.richardflee.astroimagej.query_objects.CatalogQuery;
+import com.github.richardflee.astroimagej.query_objects.CatalogSettings;
 import com.github.richardflee.astroimagej.utils.AstroCoords;
 
 /**

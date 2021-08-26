@@ -1,4 +1,4 @@
-package com.github.richardflee.astroimagej.data_objects;
+package com.github.richardflee.astroimagej.query_objects;
 
 /**
  * This class encapsulates catalog ui control data:
@@ -16,9 +16,11 @@ package com.github.richardflee.astroimagej.data_objects;
  * </p>
  */
 public class CatalogSettings {
+	// target mag value
+	private double targetMagSpinnerValue;
+
 	// mag limits
 	private double upperLimitSpinnerValue;
-	private double targetMagSpinnerValue;
 	private double lowerLimitSpinnerValue;
 	private boolean isMagLimitsCheckBoxValue;
 
@@ -32,11 +34,36 @@ public class CatalogSettings {
 	// record totals
 	private int totalLabelValue;
 	private int filteredLabelValue;
-	
-	// upper & lower mag limits
-	//private double upperLabelValue;
-	//private double lowerLabelValue;
-	
+
+	/**
+	 * Copy constructor
+	 * 
+	 * @param settings source object to copy
+	 */
+	public CatalogSettings(CatalogSettings settings) {
+		// target mag value
+		this.targetMagSpinnerValue = settings.getTargetMagSpinnerValue();
+		
+		// mag limits
+		this.upperLimitSpinnerValue = settings.getUpperLimitSpinnerValue();
+		this.lowerLimitSpinnerValue = settings.getLowerLimitSpinnerValue();
+		this.isMagLimitsCheckBoxValue = settings.isMagLimitsCheckBoxValue();
+				
+
+		// sort option
+		this.distanceRadioButtonValue = settings.isDistanceRadioButtonValue();
+		this.deltaMagRadioButtonValue = settings.isDeltaMagRadioButtonValue();
+
+		// number observations / APASS
+		this.nObsSpinnerValue = settings.getnObsSpinnerValue();
+
+		// record totals
+		this.totalLabelValue = Integer.valueOf(settings.getTotalLabelValue());
+		this.filteredLabelValue = Integer.valueOf(settings.getFilteredLabelValue());
+		
+	}
+
+	// TTD reduce / remove multiple settings constructors
 	public CatalogSettings() {
 		resetDefaultSettings(null);
 	}
@@ -44,13 +71,14 @@ public class CatalogSettings {
 	public CatalogSettings(Double targetMag) {
 		resetDefaultSettings(targetMag);
 	}
-	
+
 	public void resetDefaultSettings(Double targetMag) {
 		resetDefaultSettings();
+
+		// update targetmagspinner setting if targetMag not null
 		if (targetMag != null) {
 			targetMagSpinnerValue = targetMag;
 		}
-		
 	}
 
 	private void resetDefaultSettings() {
@@ -69,26 +97,11 @@ public class CatalogSettings {
 		// record totals
 		totalLabelValue = 0;
 		filteredLabelValue = 0;
-		
+
 		// upper & lower mag limits
-		//upperLabelValue = 0.0;
-		//lowerLabelValue = 0.0;
+		// upperLabelValue = 0.0;
+		// lowerLabelValue = 0.0;
 	}
-	
-	/**
-	 * Updates catalogui info label settings with current record numbers and reference mag limits
-	 * <p>Displays #N/A if user sets mag limit value < 0.01 => that limit is disabled</p> 
-	 * 
-	 * @param nTotalRecords number or reference records returned in on-line query (excludes target)
-	 * @param nFilteredRecords number of records after nobs & mag filters applied (excludes target)
-	 */
-//	public void updateLabelValues(int nTotalRecords, int nFilteredRecords) {
-//		// update settings record numbers, clip negative values
-//		nTotalRecords = (nTotalRecords >=0) ? nTotalRecords : 0;
-//		nFilteredRecords = (nFilteredRecords >= 0) ? nFilteredRecords: 0;
-//		this.setTotalLabelValue(nTotalRecords);
-//		this.setFilteredLabelValue(nFilteredRecords);
-//	}
 
 	// auto getter - setters
 	public double getUpperLimitSpinnerValue() {
@@ -151,8 +164,8 @@ public class CatalogSettings {
 		return Integer.toString(totalLabelValue);
 	}
 
-	public void setTotalLabelValue(int nTotalRecords) {		
-		this.totalLabelValue =  (nTotalRecords >=0) ? nTotalRecords : 0;
+	public void setTotalLabelValue(int nTotalRecords) {
+		this.totalLabelValue = (nTotalRecords >= 0) ? nTotalRecords : 0;
 	}
 
 	public String getFilteredLabelValue() {
@@ -160,17 +173,14 @@ public class CatalogSettings {
 	}
 
 	public void setFilteredLabelValue(int nFilteredRecords) {
-		this.filteredLabelValue = (nFilteredRecords >= 0) ? nFilteredRecords: 0;
+		this.filteredLabelValue = (nFilteredRecords >= 0) ? nFilteredRecords : 0;
 	}
-	
-	// Upper mag limit label: sum target + upperlimit if limit > 0.01, N/A otherwise
-	/**
-	 * 
-	 */
-	
+
 	/**
 	 * Upper limit magnitude band; upper limit < 0.01 disables this limit
-	 * <p>Note: upper limit value is positive</p>
+	 * <p>
+	 * Note: upper limit value is positive
+	 * </p>
 	 * 
 	 * @return limit > 0.01 => sum of target and upper limit values, N/A otherwise
 	 */
@@ -183,7 +193,9 @@ public class CatalogSettings {
 
 	/**
 	 * Lower limit magnitude band; lower limit < 0.01 disables this limit
-	 * <p>Note: lower limit value is negative</p>
+	 * <p>
+	 * Note: lower limit value is negative
+	 * </p>
 	 * 
 	 * @return |limit| > 0.01 => sum of target and lower limit values, N/A otherwise
 	 */
@@ -194,7 +206,6 @@ public class CatalogSettings {
 		return labelStr;
 	}
 
-	
 	@Override
 	public String toString() {
 		return "CatalogSettings [upperLimitSpinnerValue=" + upperLimitSpinnerValue + ", targetMagSpinnerValue="
@@ -204,20 +215,29 @@ public class CatalogSettings {
 				+ ", nObsSpinnerValue=" + nObsSpinnerValue + ", totalLabelValue=" + totalLabelValue
 				+ ", filteredLabelValue=" + filteredLabelValue + "]";
 	}
-	
-	
+
 	public static void main(String[] args) {
-		
-		double targetMag = 10.0;
-		CatalogSettings settings = new CatalogSettings(targetMag);
-		
-		settings.setUpperLimitSpinnerValue(1.2);
-		settings.setLowerLimitSpinnerValue(0.00);
-		
+
+		double targetMag = 12.3;
+		CatalogSettings set0 = new CatalogSettings(targetMag);
+
+		set0.setUpperLimitSpinnerValue(1.2);
 		System.out.println(String.format("Target value %.3f", targetMag));
-		System.out.println(String.format("Upper limit spinner = 1.2, upper label: %s", settings.getUpperLabelValue()));
-		System.out.println(String.format("Lower limit spinner = 0.00, lower label: %s", settings.getLowerLabelValue()));
 		
+		System.out.println("Spinner value:");
+		set0.setLowerLimitSpinnerValue(0.00);
+		System.out.println(String.format("Upper limit spinner = 1.2, upper label: %s", set0.getUpperLabelValue()));
+		System.out.println(String.format("Lower limit spinner = 0.00, lower label: %s", set0.getLowerLabelValue()));
+		
+		System.out.println("\nCopy constructor:");
+		CatalogSettings set1 = new CatalogSettings(set0);
+		set1.setUpperLimitSpinnerValue(0.00);
+		set1.setLowerLimitSpinnerValue(-1.3);
+		System.out.println(String.format("Upper limit spinner = 0.0, upper label: %s", set1.getUpperLabelValue()));
+		System.out.println(String.format("Lower limit spinner = -1.3, lower label: %s", set1.getLowerLabelValue()));
+		System.out.println(String.format("Confirm equal target values = 12.3 %.1f, %b",
+							set1.getTargetMagSpinnerValue(),
+							set0.getTargetMagSpinnerValue() == set1.getTargetMagSpinnerValue()));
 		
 	}
 

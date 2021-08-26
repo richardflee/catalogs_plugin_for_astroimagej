@@ -1,8 +1,8 @@
 package com.github.richardflee.astroimagej.utils;
 
-import com.github.richardflee.astroimagej.data_objects.CatalogQuery;
 import com.github.richardflee.astroimagej.enums.CatalogsEnum;
 import com.github.richardflee.astroimagej.enums.SimbadUrlType;
+import com.github.richardflee.astroimagej.query_objects.CatalogQuery;
 
 /**
  * Class methods to compiling url for on-line database queries.

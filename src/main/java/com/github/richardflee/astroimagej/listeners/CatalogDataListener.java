@@ -1,8 +1,8 @@
 package com.github.richardflee.astroimagej.listeners;
 
-import com.github.richardflee.astroimagej.data_objects.CatalogQuery;
-import com.github.richardflee.astroimagej.data_objects.CatalogSettings;
-import com.github.richardflee.astroimagej.data_objects.SimbadResult;
+import com.github.richardflee.astroimagej.query_objects.CatalogQuery;
+import com.github.richardflee.astroimagej.query_objects.CatalogSettings;
+import com.github.richardflee.astroimagej.query_objects.SimbadResult;
 
 public interface CatalogDataListener {
 	

@@ -12,9 +12,9 @@ import java.util.stream.Stream;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import com.github.richardflee.astroimagej.data_objects.CatalogQuery;
-import com.github.richardflee.astroimagej.data_objects.FieldObject;
-import com.github.richardflee.astroimagej.data_objects.QueryResult;
+import com.github.richardflee.astroimagej.query_objects.CatalogQuery;
+import com.github.richardflee.astroimagej.query_objects.FieldObject;
+import com.github.richardflee.astroimagej.query_objects.QueryResult;
 
 /**
  * Imports radec file data and populates catlog table and creates new query

@@ -3,8 +3,8 @@ package com.github.richardflee.astroimagej.fileio;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import com.github.richardflee.astroimagej.data_objects.FieldObject;
 import com.github.richardflee.astroimagej.enums.ColumnsEnum;
+import com.github.richardflee.astroimagej.query_objects.FieldObject;
 import com.github.richardflee.astroimagej.utils.AstroCoords;
 
 /**

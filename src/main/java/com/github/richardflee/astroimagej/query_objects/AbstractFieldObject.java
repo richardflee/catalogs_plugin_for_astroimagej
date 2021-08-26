@@ -1,4 +1,4 @@
-package com.github.richardflee.astroimagej.data_objects;
+package com.github.richardflee.astroimagej.query_objects;
 
 import com.github.richardflee.astroimagej.utils.AstroCoords;
 

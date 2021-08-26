@@ -6,11 +6,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.github.richardflee.astroimagej.catalogs.SimbadCatalog;
-import com.github.richardflee.astroimagej.data_objects.CatalogQuery;
-import com.github.richardflee.astroimagej.data_objects.CatalogSettings;
-import com.github.richardflee.astroimagej.data_objects.FieldObject;
-import com.github.richardflee.astroimagej.data_objects.QueryResult;
-import com.github.richardflee.astroimagej.data_objects.SimbadResult;
 import com.github.richardflee.astroimagej.exceptions.SimbadNotFoundException;
 import com.github.richardflee.astroimagej.fileio.ApassFileReader;
 import com.github.richardflee.astroimagej.fileio.PropertiesFileIO;
@@ -18,6 +13,11 @@ import com.github.richardflee.astroimagej.fileio.RaDecFileReader;
 import com.github.richardflee.astroimagej.fileio.RaDecFileWriter;
 import com.github.richardflee.astroimagej.listeners.CatalogDataListener;
 import com.github.richardflee.astroimagej.listeners.CatalogTableListener;
+import com.github.richardflee.astroimagej.query_objects.CatalogQuery;
+import com.github.richardflee.astroimagej.query_objects.CatalogSettings;
+import com.github.richardflee.astroimagej.query_objects.FieldObject;
+import com.github.richardflee.astroimagej.query_objects.QueryResult;
+import com.github.richardflee.astroimagej.query_objects.SimbadResult;
 import com.github.richardflee.astroimagej.utils.AstroCoords;
 
 /**
@@ -120,23 +120,48 @@ public class ActionHandler {
 	 */
 	// TTDO replace apass file read with on-line q
 	public void doCatalogQuery() {
-		// save current query & target mag data
-		doSaveQuerySettingsData();
-
-		// get current query & settings data
+		
+		// compile CatalogQuery object from catalog ui Query Settings data
 		CatalogQuery query = catalogDataListener.getQueryData();
-
-		// resets settings to default, null => retain current settings targtMag value
-		CatalogSettings settings = catalogDataListener.getSettingsData();
-		settings.resetDefaultSettings(null);
-
-		// run query -- TTD replace file read demo ..
-		// new catalog result field encapsulates results for on-line query
+		
+		// reference result field to a new QueryResult object
+		this.result = new QueryResult(query);
+		
+		// default settings with catalog ui target mag
+		double targetMag = catalogDataListener.getSettingsData().getTargetMagSpinnerValue();
+		CatalogSettings defaultSettings = new CatalogSettings(targetMag);
+		
+		// copy default settings
+		result.setSettings(defaultSettings);
+		
+		// run query
+		// TTD replace with online query 
 		ApassFileReader fr = new ApassFileReader();
-		this.result = fr.runQueryFromFile(query);
-
-		// updates catalog table with full dataset (acceted = selected = true)
-		updateCatalogTable(settings);
+		List<FieldObject> referenceFields = fr.runQueryFromFile(query);
+		result.getFieldObjects().addAll(referenceFields);
+		
+		
+		
+		
+		
+		
+//		// save current query & target mag data
+//		doSaveQuerySettingsData();
+//
+//		// get current query & settings data
+//		CatalogQuery query = catalogDataListener.getQueryData();
+//
+//		// resets settings to default, null => retain current settings targtMag value
+//		CatalogSettings settings = catalogDataListener.getSettingsData();
+//		settings.resetDefaultSettings(null);
+//
+//		// run query -- TTD replace file read demo ..
+//		// new catalog result field encapsulates results for on-line query
+//		ApassFileReader fr = new ApassFileReader();
+//		this.result = fr.runQueryFromFile(query);
+//
+//		// updates catalog table with full dataset (acceted = selected = true)
+//		updateCatalogTable(settings);
 	}
 
 	/**

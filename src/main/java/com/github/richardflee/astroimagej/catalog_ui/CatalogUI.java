@@ -32,12 +32,12 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
-import com.github.richardflee.astroimagej.data_objects.CatalogQuery;
-import com.github.richardflee.astroimagej.data_objects.CatalogSettings;
-import com.github.richardflee.astroimagej.data_objects.SimbadResult;
 import com.github.richardflee.astroimagej.enums.CatalogsEnum;
 import com.github.richardflee.astroimagej.enums.QueryEnum;
 import com.github.richardflee.astroimagej.listeners.CatalogDataListener;
+import com.github.richardflee.astroimagej.query_objects.CatalogQuery;
+import com.github.richardflee.astroimagej.query_objects.CatalogSettings;
+import com.github.richardflee.astroimagej.query_objects.SimbadResult;
 import com.github.richardflee.astroimagej.utils.AstroCoords;
 import com.github.richardflee.astroimagej.utils.InputsVerifier;
 

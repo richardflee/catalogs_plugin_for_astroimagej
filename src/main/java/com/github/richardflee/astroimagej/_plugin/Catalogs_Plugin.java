@@ -7,9 +7,9 @@ import javax.swing.UIManager;
 import com.github.richardflee.astroimagej.catalog_ui.ActionHandler;
 import com.github.richardflee.astroimagej.catalog_ui.CatalogTableModel;
 import com.github.richardflee.astroimagej.catalog_ui.CatalogUI;
-import com.github.richardflee.astroimagej.data_objects.CatalogQuery;
-import com.github.richardflee.astroimagej.data_objects.CatalogSettings;
 import com.github.richardflee.astroimagej.fileio.PropertiesFileIO;
+import com.github.richardflee.astroimagej.query_objects.CatalogQuery;
+import com.github.richardflee.astroimagej.query_objects.CatalogSettings;
 
 import ij.IJ;
 import ij.plugin.PlugIn;

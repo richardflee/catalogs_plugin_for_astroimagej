@@ -8,10 +8,10 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import com.github.richardflee.astroimagej.data_objects.CatalogQuery;
-import com.github.richardflee.astroimagej.data_objects.FieldObject;
-import com.github.richardflee.astroimagej.data_objects.QueryResult;
 import com.github.richardflee.astroimagej.enums.ColumnsEnum;
+import com.github.richardflee.astroimagej.query_objects.CatalogQuery;
+import com.github.richardflee.astroimagej.query_objects.FieldObject;
+import com.github.richardflee.astroimagej.query_objects.QueryResult;
 
 public class ApassFileReader {
 
@@ -21,12 +21,9 @@ public class ApassFileReader {
 	}
 
 	// => catalog.runQuery
-	public QueryResult runQueryFromFile(CatalogQuery query) {
+	public List<FieldObject> runQueryFromFile(CatalogQuery query) {
 
-		QueryResult result = new QueryResult(query);
 		List<FieldObject> fieldObjects = new ArrayList<>();
-		FieldObject target = result.getTargetObject();
-
 		String line = "";
 		try (BufferedReader br = new BufferedReader(new FileReader(new File(src)))) {
 			while ((line = br.readLine()) != null) {
@@ -51,39 +48,27 @@ public class ApassFileReader {
 						fo.setnObs(Integer.parseInt(term));
 					}
 				}
-//				if (isTarget) {
-//					target = fo;
-//					fo.setRadSepAmin(target);
-//					fo.setTarget(true);
-//					isTarget = false;
-//					fieldObjects.add(fo);
-//				} else {
-				// fo.setObjectId(null);
-				fo.setRadSepAmin(target);
 				fo.setTarget(false);
 				fieldObjects.add(fo);
-
 			}
 
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		fieldObjects.stream().sorted(Comparator.comparing(FieldObject::getRadSepAmin))
-				.forEach(fo -> result.setFieldObject(fo));
-		return result;
+		return fieldObjects;
 	}
 
 	public static void main(String[] args) {
 
-		ApassFileReader fr = new ApassFileReader();
-
-		CatalogQuery query = new CatalogQuery();
-
-		QueryResult result = fr.runQueryFromFile(query);
-
-		result.getFieldObjects().forEach(System.out::println);
-		System.out.println();
+//		ApassFileReader fr = new ApassFileReader();
+//
+//		CatalogQuery query = new CatalogQuery();
+//
+//		QueryResult result = fr.runQueryFromFile(query);
+//
+//		result.getFieldObjects().forEach(System.out::println);
+//		System.out.println();
 
 	}
 

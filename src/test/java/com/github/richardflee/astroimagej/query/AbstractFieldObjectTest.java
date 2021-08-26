@@ -6,7 +6,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import com.github.richardflee.astroimagej.data_objects.AbstractFieldObject;
+import com.github.richardflee.astroimagej.query_objects.AbstractFieldObject;
 import com.github.richardflee.astroimagej.utils.AstroCoords;
 
 class AbstractFieldObjectTest {

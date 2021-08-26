@@ -8,9 +8,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.github.richardflee.astroimagej.data_objects.CatalogQuery;
-import com.github.richardflee.astroimagej.data_objects.FieldObject;
-import com.github.richardflee.astroimagej.data_objects.QueryResult;
+import com.github.richardflee.astroimagej.query_objects.CatalogQuery;
+import com.github.richardflee.astroimagej.query_objects.FieldObject;
+import com.github.richardflee.astroimagej.query_objects.QueryResult;
 import com.github.richardflee.astroimagej.utils.AstroCoords;
 
 /**
@@ -24,7 +24,7 @@ public class RaDecFileWriter extends AbstractRaDecFile {
 
 	// flag data block
 	private boolean isDataBlock = true;
-	
+
 	// result of of operation
 	private String statusMessage = null;
 
@@ -66,9 +66,10 @@ public class RaDecFileWriter extends AbstractRaDecFile {
 	}
 
 	/*
-	 * Compiles radec filename pattern  <object_id>.<filter>.<fov_amin>.radec.txt
+	 * Compiles radec filename pattern <object_id>.<filter>.<fov_amin>.radec.txt
 	 * 
 	 * @param query on-line query parameters
+	 * 
 	 * @return formatted filename <objectid>.<magband>.<fov_amin>.radec.txt
 	 */
 	private String compileFilename(CatalogQuery query) {
@@ -78,10 +79,11 @@ public class RaDecFileWriter extends AbstractRaDecFile {
 	}
 
 	/*
-	 * Compiles file object to radec file path, ./astroimagej/radec.
-	 * <p>Creates new folders as necessary</p>
+	 * Compiles file object to radec file path, ./astroimagej/radec. <p>Creates new
+	 * folders as necessary</p>
 	 * 
 	 * @param query on-line query parameters
+	 * 
 	 * @return file object with path: ./astroimagej/radec/<filename>
 	 */
 	private File getFile(CatalogQuery query) {
@@ -96,9 +98,10 @@ public class RaDecFileWriter extends AbstractRaDecFile {
 	 * Compiles a single data line in astroimagej radec format from a FieldObject
 	 * 
 	 * @param fo current target or reference field object
-	 * @return single data record ordered: RA, Dec, RefStar, Centroid, Mag
-	 * <p>If current parameter is target object, indicate Ref = 0, mag = 99.99,
-	 * otherwise ref = 1 and mag = catalog mag for this filter band</p>
+	 * 
+	 * @return single data record ordered: RA, Dec, RefStar, Centroid, Mag <p>If
+	 * current parameter is target object, indicate Ref = 0, mag = 99.99, otherwise
+	 * ref = 1 and mag = catalog mag for this filter band</p>
 	 */
 	private String getFieldLine(FieldObject fo) {
 		String line = AstroCoords.raHr_To_raHms(fo.getRaHr()) + ",";
@@ -114,12 +117,14 @@ public class RaDecFileWriter extends AbstractRaDecFile {
 
 	/*
 	 * Compiles list of strings to write to radec file. List comprises 3 blocks
-	 * separated by single char '#'. Comment lines start with '#'
-	 * <p>Block 1: data lines: astroimagej radec format</p> 
-	 * <p>Block 2: comment lines: catalog table data</p> <p>Block 3: comment line: query data</p>
+	 * separated by single char '#'. Comment lines start with '#' <p>Block 1: data
+	 * lines: astroimagej radec format</p> <p>Block 2: comment lines: catalog table
+	 * data</p> <p>Block 3: comment line: query data</p>
 	 * 
 	 * @param selectedList list of FieldObjects to convert to write to radec file
+	 * 
 	 * @param query catalog query data for this data set
+	 * 
 	 * @return data and comment line string array
 	 */
 	private List<String> compileRaDecList(List<FieldObject> selectedList, CatalogQuery query) {
@@ -139,11 +144,11 @@ public class RaDecFileWriter extends AbstractRaDecFile {
 		}
 
 		// query block
-		lines.add(query.toFormattedString()[0]);  // query item names 
-		lines.add(query.toFormattedString()[1]);  // query data  
+		lines.add(query.toFormattedString()[0]); // query item names
+		lines.add(query.toFormattedString()[1]); // query data
 		return lines;
 	}
-	
+
 	// status line message gett & setter
 	public String getStatusMessage() {
 		return statusMessage;
@@ -155,15 +160,15 @@ public class RaDecFileWriter extends AbstractRaDecFile {
 
 	public static void main(String[] args) {
 		// compile result object from file
-		ApassFileReader fr = new ApassFileReader();
-		CatalogQuery query = new CatalogQuery();
-		QueryResult result = fr.runQueryFromFile(query);
-
-		RaDecFileWriter fw = new RaDecFileWriter();
-
-		List<FieldObject> selectedList = result.getFieldObjects();
-		for (FieldObject fo : selectedList) {
-			System.out.println(fw.compileTableLine(fo));
-		}
+//		ApassFileReader fr = new ApassFileReader();
+//		CatalogQuery query = new CatalogQuery();
+//		QueryResult result = fr.runQueryFromFile(query);
+//
+//		RaDecFileWriter fw = new RaDecFileWriter();
+//
+//		List<FieldObject> selectedList = result.getFieldObjects();
+//		for (FieldObject fo : selectedList) {
+//			System.out.println(fw.compileTableLine(fo));
+//		}
 	}
 }

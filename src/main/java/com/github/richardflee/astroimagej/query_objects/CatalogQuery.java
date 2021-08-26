@@ -1,4 +1,4 @@
-package com.github.richardflee.astroimagej.data_objects;
+package com.github.richardflee.astroimagej.query_objects;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
