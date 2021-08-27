@@ -1,7 +1,6 @@
 package com.github.richardflee.astroimagej.catalog_ui;
 
 import java.io.File;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -140,25 +139,12 @@ public class ActionHandler {
 		List<FieldObject> referenceObjects = fr.runQueryFromFile(query);
 		result.addFieldObjects(referenceObjects);
 
+		// applies default sort settings, populates catalog table with full dataset
 		updateCatalogTable(this.result);
 
-//		// save current query & target mag data
-//		doSaveQuerySettingsData();
-//
-//		// get current query & settings data
-//		CatalogQuery query = catalogDataListener.getQueryData();
-//
-//		// resets settings to default, null => retain current settings targtMag value
-//		CatalogSettings settings = catalogDataListener.getSettingsData();
-//		settings.resetDefaultSettings(null);
-//
-//		// run query -- TTD replace file read demo ..
-//		// new catalog result field encapsulates results for on-line query
-//		ApassFileReader fr = new ApassFileReader();
-//		this.result = fr.runQueryFromFile(query);
-//
-//		// updates catalog table with full dataset (acceted = selected = true)
-//		updateCatalogTable(settings);
+		// status message
+		String statusMessage = "Imported full dataset, sorted by radial distance to target object";
+		catalogDataListener.updateStatus(statusMessage);
 	}
 
 	/**
@@ -167,33 +153,27 @@ public class ActionHandler {
 	 * ./astroimagej/radec/wasp_12.Rc.020.radec.txt </p>
 	 */
 	public void doSaveRaDecFile() {
-//
-//		// filter user selected records
-//		List<FieldObject> selectedTableList = filteredTableList.stream().filter(p -> p.isSelected())
-//				.collect(Collectors.toList());
-//
-//		// writes sorted_filtered_selected data to radec file
-//		CatalogQuery query = this.result.getQuery();
-//		this.fileWriter.writeRaDecFile(selectedTableList, query);
-//
-//		// reset catalog ui query and sort-filter settings
-//		double targetMag = result.getTargetMag();
-//		CatalogSettings settings = new CatalogSettings(targetMag);
-//
-//		// record numbers
-//		int nTotalRecords = result.getRecordsTotal();
-//		int nFilteredRecords = filteredTableList.size() - 1;
-//		
-//		settings.setTotalLabelValue(nTotalRecords);
-//		settings.setFilteredLabelValue(nFilteredRecords);
-//
-//		// apply updates
-//		catalogDataListener.setQueryData(query);
-//		catalogDataListener.setSettingsData(settings);
-//
-//		// status line
-//		String message = fileWriter.getStatusMessage();
-//		catalogDataListener.updateStatus(message);
+		// CatalogQuery boject for dataset to save
+		CatalogQuery query = this.result.getQuery();
+		catalogDataListener.setQueryData(query);
+		
+		// resets catalog ui default settings + catalog table value target mag
+		double targetMag = result.getTargetObject().getMag();
+		result.setSettings(new CatalogSettings(targetMag));
+		catalogDataListener.setSettingsData(result.getSettings());
+		
+		// filter user selected records from accepted field objects
+		List<FieldObject> selectedTableList = this.result.getFieldObjects().stream()
+							.filter(p -> p.isAccepted())
+							.filter(p -> p.isSelected())
+							.collect(Collectors.toList());
+		
+		// writes radec 
+		this.fileWriter.writeRaDecFile(selectedTableList, query);
+
+		// status line
+		String message = fileWriter.getStatusMessage();
+		catalogDataListener.updateStatus(message);
 	}
 
 	/**
@@ -221,7 +201,7 @@ public class ActionHandler {
 		CatalogQuery radecQuery = radecResult.getQuery();
 
 		// default settings with radec target mag
-		double targetMag = radecResult.getTargetMag();
+		double targetMag = radecResult.getTargetObject().getMag();
 		CatalogSettings settings = new CatalogSettings(targetMag);
 
 		// update catalogui
@@ -248,18 +228,11 @@ public class ActionHandler {
 	 * Updates table with current user filter and sort settings
 	 */
 	public void doUpdateTable() {
-
+		// import current sort & filter settings
 		CatalogSettings currentSettings = catalogDataListener.getSettingsData();
-
 		this.result.setSettings(currentSettings);
 
-//		result.applySelectedSort();
-//
-//		result.applySelectedFilters();
-//
-//		catalogDataListener.setSettingsData(result.getSettings());
-
-//		// import current catalog ui settings and run update on catalog table data
+		// update catalog table with current settings
 		updateCatalogTable(this.result);
 
 		// status message
@@ -271,20 +244,20 @@ public class ActionHandler {
 	 * Clears catalog table and resets catalogui settings
 	 */
 	public void doClearTable() {
-
 		// clear result field
 		this.result = null;
 
-		// resets settings to default, retains current settings targtMag value
-		CatalogSettings settings = catalogDataListener.getSettingsData();
-		settings.resetDefaultSettings(null);
-
-		// status line
-		String message = "Cleared catalog result table, reset sort and filter settings";
-		catalogDataListener.updateStatus(message);
-
 		// clears table with null result
 		updateCatalogTable(null);
+		
+		// resets settings to default, retains current settings targtMag value
+		CatalogSettings defaultSettings = new CatalogSettings();
+		catalogDataListener.setSettingsData(defaultSettings);
+
+		
+		// status line
+		String statusMessage = "Cleared catalog result table, reset sort and filter settings";
+		catalogDataListener.updateStatus(statusMessage);
 	}
 
 	/*
@@ -294,22 +267,22 @@ public class ActionHandler {
 	 * @return FieldObject list sorted and filtered as specified by user settings
 	 */
 	private void updateCatalogTable(QueryResult result) {
-		
+
 		if (result == null) {
 			catalogDataListener.setSettingsData(new CatalogSettings());
 			catalogTableListener.updateTable(null);
 			return;
 		}
 
+		// apply sort & filter settings to dataset
 		result.applySelectedSort();
-
 		result.applySelectedFilters();
-
+		
+		// updates object counts
 		catalogDataListener.setSettingsData(result.getSettings());
 
 		// run table update with sort / filter selections
 		catalogTableListener.updateTable(result.getFieldObjects());
-
 	}
 
 	public static void main(String args[]) {
@@ -329,7 +302,7 @@ public class ActionHandler {
 		// modify q0 and s0 & update properties file
 		q0.setObjectId("freddy");
 		q0.setDecDeg(-23.456);
-		s0.resetDefaultSettings(7.89);
+		//s0.resetDefaultSettings(7.89);
 		pf.setPropertiesFileData(q0, s0);
 
 		CatalogQuery q1 = pf.getPropertiesQueryData();

@@ -258,7 +258,7 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		filteredLabel.setText(String.format("%s", settings.getFilteredLabelValue()));
 
 		// update enable buttons flag
-		this.enableButtons = settings.isTableData();
+		this.enableButtons = settings.isEnableButtons();
 	}
 
 	@Override
@@ -328,7 +328,7 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 
 		saveRaDecButton.addActionListener(e -> {
 			handler.doSaveRaDecFile();
-			setButtonsEnabled(this.enableButtons);			
+			//setButtonsEnabled(this.enableButtons);			
 		});
 
 		importRaDecButton.addActionListener(e -> {

@@ -9,8 +9,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.swing.JSpinner;
-
 import com.github.richardflee.astroimagej.fileio.ApassFileReader;
 
 /**
@@ -68,6 +66,7 @@ public class QueryResult {
 	public void setSettings(CatalogSettings settings) {
 		this.settings = new CatalogSettings(settings);
 		getTargetObject().setMag(settings.getTargetMagSpinnerValue());
+		setTotalsAndButtons();
 	}
 
 	// import list field objects and update delta mag & radeSep fields
@@ -83,7 +82,7 @@ public class QueryResult {
 			fo.setDeltaMag(targetMag);
 			fo.setRadSepAmin(target);
 		}
-		catalogUiDataStatus();
+		setTotalsAndButtons();
 	}
 
 	public void applySelectedSort() {
@@ -96,7 +95,7 @@ public class QueryResult {
 			this.fieldObjects = this.fieldObjects.stream()
 					.sorted(Comparator.comparingDouble(p -> Math.abs(p.getDeltaMag()))).collect(Collectors.toList());
 		}
-		catalogUiDataStatus();
+		setTotalsAndButtons();
 	}
 
 	public void applySelectedFilters() {
@@ -130,13 +129,13 @@ public class QueryResult {
 				}
 			}
 		}
-		catalogUiDataStatus();
+		setTotalsAndButtons();
 	}
 	
-	private void catalogUiDataStatus() {
+	private void setTotalsAndButtons() {
 		settings.setTotalLabelValue(getRecordsTotal());
 		settings.setFilteredLabelValue(getAcceptedTotal());
-		settings.setTableData(getRecordsTotal() > 0);
+		settings.setEnableButtons(getRecordsTotal() > 0);
 	}
 
 	// getters / setters
@@ -217,26 +216,6 @@ public class QueryResult {
 		target.setAccepted(true);
 	}
 
-	// TTD remove
-	public double getTargetMag() {
-		return getTargetObject().getMag();
-	}
-
-	// TTD remove
-	public void setTargetMag(double targetMag) {
-		getTargetObject().setMag(targetMag);
-	}
-
-	/**
-	 * Updates field object delta mag fields: delatMag = obj_mag - tgt_mag
-	 * 
-	 * @param targetMag target object nominal mag
-	 */
-	// ttd make private
-	public void updateDeltaMags(double targetMag) {
-		setTargetMag(targetMag);
-		fieldObjects.forEach(p -> p.setDeltaMag(targetMag));
-	}
 
 	@Override
 	public String toString() {

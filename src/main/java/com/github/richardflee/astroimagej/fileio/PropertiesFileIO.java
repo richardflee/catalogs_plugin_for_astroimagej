@@ -219,7 +219,7 @@ public class PropertiesFileIO {
 
 		System.out.println(String.format("Set target mag=9.99,   read settings properties= %.3f",
 				settings.getTargetMagSpinnerValue()));
-		settings.resetDefaultSettings(8.88);
+		//settings.resetDefaultSettings(8.88);
 		System.out.println(String.format("Reset target mag=8.88, read settings properties= %.3f",
 				settings.getTargetMagSpinnerValue()));
 

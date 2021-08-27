@@ -1,19 +1,7 @@
 package com.github.richardflee.astroimagej.query_objects;
 
 /**
- * This class encapsulates catalog ui control data:
- * <p>
- * target mag values
- * </p>
- * <p>
- * sort option
- * </p>
- * <p>
- * number of observations
- * </p>
- * <p>
- * table record numbers
- * </p>
+ * This class encapsulates catalog ui sort and filter controls data
  */
 public class CatalogSettings {
 	// target mag value
@@ -34,9 +22,18 @@ public class CatalogSettings {
 	// record totals
 	private int totalLabelValue;
 	private int filteredLabelValue;
-	
+
 	// flag enable / disable catalog ui buttons
-	private boolean isTableData;
+	private boolean enableButtons;
+
+	// Default, parameter and copy constructors
+	public CatalogSettings() {
+		resetDefaultSettings(null);
+	}
+	
+	public CatalogSettings(double targetMag) {
+		resetDefaultSettings(targetMag);
+	}
 
 	/**
 	 * Copy constructor
@@ -46,12 +43,11 @@ public class CatalogSettings {
 	public CatalogSettings(CatalogSettings settings) {
 		// target mag value
 		this.targetMagSpinnerValue = settings.getTargetMagSpinnerValue();
-		
+
 		// mag limits
 		this.upperLimitSpinnerValue = settings.getUpperLimitSpinnerValue();
 		this.lowerLimitSpinnerValue = settings.getLowerLimitSpinnerValue();
 		this.isMagLimitsCheckBoxValue = settings.isMagLimitsCheckBoxValue();
-				
 
 		// sort option
 		this.distanceRadioButtonValue = settings.isDistanceRadioButtonValue();
@@ -63,21 +59,12 @@ public class CatalogSettings {
 		// record totals
 		this.totalLabelValue = Integer.valueOf(settings.getTotalLabelValue());
 		this.filteredLabelValue = Integer.valueOf(settings.getFilteredLabelValue());
-		
+
 		// no table data
-		this.isTableData = false;
+		this.enableButtons = false;
 	}
 
-	// TTD reduce / remove multiple settings constructors
-	public CatalogSettings() {
-		resetDefaultSettings(null);
-	}
-
-	public CatalogSettings(Double targetMag) {
-		resetDefaultSettings(targetMag);
-	}
-
-	public void resetDefaultSettings(Double targetMag) {
+	private void resetDefaultSettings(Double targetMag) {
 		resetDefaultSettings();
 
 		// update targetmagspinner setting if targetMag not null
@@ -180,21 +167,19 @@ public class CatalogSettings {
 	public void setFilteredLabelValue(int nFilteredRecords) {
 		this.filteredLabelValue = (nFilteredRecords >= 0) ? nFilteredRecords : 0;
 	}
-	
 
-	public boolean isTableData() {
-		return isTableData;
+
+	public boolean isEnableButtons() {
+		return enableButtons;
 	}
 
-	public void setTableData(boolean isTableData) {
-		this.isTableData = isTableData;
+	public void setEnableButtons(boolean enableButtons) {
+		this.enableButtons = enableButtons;
 	}
 
 	/**
-	 * Upper limit magnitude band; upper limit < 0.01 disables this limit
-	 * <p>
-	 * Note: upper limit value is positive
-	 * </p>
+	 * Upper limit magnitude band; upper limit < 0.01 disables this limit <p> Note:
+	 * upper limit value is positive </p>
 	 * 
 	 * @return limit > 0.01 => sum of target and upper limit values, N/A otherwise
 	 */
@@ -206,10 +191,8 @@ public class CatalogSettings {
 	}
 
 	/**
-	 * Lower limit magnitude band; lower limit < 0.01 disables this limit
-	 * <p>
-	 * Note: lower limit value is negative
-	 * </p>
+	 * Lower limit magnitude band; lower limit < 0.01 disables this limit <p> Note:
+	 * lower limit value is negative </p>
 	 * 
 	 * @return |limit| > 0.01 => sum of target and lower limit values, N/A otherwise
 	 */
@@ -227,7 +210,7 @@ public class CatalogSettings {
 				+ ", isMagLimitsCheckBoxValue=" + isMagLimitsCheckBoxValue + ", distanceRadioButtonValue="
 				+ distanceRadioButtonValue + ", deltaMagRadioButtonValue=" + deltaMagRadioButtonValue
 				+ ", nObsSpinnerValue=" + nObsSpinnerValue + ", totalLabelValue=" + totalLabelValue
-				+ ", filteredLabelValue=" + filteredLabelValue + ", isTableData=" + isTableData + "]";
+				+ ", filteredLabelValue=" + filteredLabelValue + ", enableButtons=" + enableButtons + "]";
 	}
 
 	public static void main(String[] args) {
@@ -237,22 +220,21 @@ public class CatalogSettings {
 
 		set0.setUpperLimitSpinnerValue(1.2);
 		System.out.println(String.format("Target value %.3f", targetMag));
-		
+
 		System.out.println("Spinner value:");
 		set0.setLowerLimitSpinnerValue(0.00);
 		System.out.println(String.format("Upper limit spinner = 1.2, upper label: %s", set0.getUpperLabelValue()));
 		System.out.println(String.format("Lower limit spinner = 0.00, lower label: %s", set0.getLowerLabelValue()));
-		
+
 		System.out.println("\nCopy constructor:");
 		CatalogSettings set1 = new CatalogSettings(set0);
 		set1.setUpperLimitSpinnerValue(0.00);
 		set1.setLowerLimitSpinnerValue(-1.3);
 		System.out.println(String.format("Upper limit spinner = 0.0, upper label: %s", set1.getUpperLabelValue()));
 		System.out.println(String.format("Lower limit spinner = -1.3, lower label: %s", set1.getLowerLabelValue()));
-		System.out.println(String.format("Confirm equal target values = 12.3 %.1f, %b",
-							set1.getTargetMagSpinnerValue(),
-							set0.getTargetMagSpinnerValue() == set1.getTargetMagSpinnerValue()));
-		
+		System.out.println(String.format("Confirm equal target values = 12.3 %.1f, %b", set1.getTargetMagSpinnerValue(),
+				set0.getTargetMagSpinnerValue() == set1.getTargetMagSpinnerValue()));
+
 	}
 
 }

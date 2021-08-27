@@ -10,7 +10,6 @@ import java.util.List;
 
 import com.github.richardflee.astroimagej.query_objects.CatalogQuery;
 import com.github.richardflee.astroimagej.query_objects.FieldObject;
-import com.github.richardflee.astroimagej.query_objects.QueryResult;
 import com.github.richardflee.astroimagej.utils.AstroCoords;
 
 /**
