@@ -43,27 +43,19 @@ import com.github.richardflee.astroimagej.utils.InputsVerifier;
 
 /**
  * This class creates the main catalogs_plugin user interface. User options are:
- * <p>
- * Specify and run on-line astronomical database queries
- * </p>
- * <p>
- * Sort and filter query results
- * </p>
- * <p>
- * Options to save and reload data to and freom astroimagej compatible radec
- * file
- * </p>
- * <p>
- * Query result table and item select/deselect option is delegated to
- * CatalogTable class
- * </p>
- * <p>
- * Note: form design and layout in JFormDesigner v7.0.4
- * </p>
+ * <p> Specify and run on-line astronomical database queries </p>
+ * 
+ * <p> Sort and filter query results </p> <p> Options to save and reload data to
+ * and freom astroimagej compatible radec file </p>
+ * 
+ * <p> Query result table and item select/deselect option is delegated to
+ * CatalogTable class </p>
+ * 
+ * <p> Note: form design and layout in JFormDesigner v7.0.4 </p>
  */
 public class CatalogUI extends JDialog implements CatalogDataListener {
 	private static final long serialVersionUID = 1L;
-	
+
 	// statusLine font
 	private final String fontName = "Tahoma";
 	private final int fontSize = 13;
@@ -73,7 +65,10 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 	protected CatalogTableModel catalogTableModel = null;
 	protected ActionHandler handler = null;
 	protected CatalogSettings settings = null;
-	
+
+	// enable / disable catalog ui buttons flag
+	private boolean enableButtons;
+
 	/**
 	 * Initialises catalog_ui object references
 	 */
@@ -98,16 +93,16 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		catalogCombo.addItem(CatalogsEnum.VSP.toString());
 
 		// start in "no data" state
-		setButtonsEnabled(false);
+		this.enableButtons = false;
+		setButtonsEnabled(enableButtons);
 
 	}
-	
-	
+
 	/*
-	 * Handles change in catalogCombo selection. 
-	 * Clears existing filterCombo list and loads a new list based on CatalogType enum
+	 * Handles change in catalogCombo selection. Clears existing filterCombo list
+	 * and loads a new list based on CatalogType enum
 	 * 
-	 * @param ie event indicates an item was selected in the catalogCombo control 
+	 * @param ie event indicates an item was selected in the catalogCombo control
 	 */
 	private void selectCatalog(ItemEvent ie) {
 		if (ie.getStateChange() == ItemEvent.SELECTED) {
@@ -115,7 +110,7 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 			String selectedCatalog = catalogCombo.getSelectedItem().toString().toUpperCase();
 			CatalogsEnum en = CatalogsEnum.valueOf(selectedCatalog);
 
-			// populate filterCombo and select first item 
+			// populate filterCombo and select first item
 			populateFilterCombo(selectedCatalog, en.getMagBands().get(0));
 		}
 	}
@@ -134,14 +129,15 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		statusTextField.setFont(font);
 		statusTextField.setText(statusMessage);
 	}
-	
+
 	/**
-	 * Populates SIMBAD Data and Filter Mag sections with result of Simbad query. 
+	 * Populates SIMBAD Data and Filter Mag sections with result of Simbad query.
 	 * Marks fields "." if no dat found.
 	 * 
-	 * @param simbadResult coordinates and catalog mags for user specified objectId; null if no Simbad match
+	 * @param simbadResult coordinates and catalog mags for user specified objectId;
+	 *                     null if no Simbad match
 	 */
-	
+
 	@Override
 	public void setSimbadData(SimbadResult simbadResult) {
 		// null => reset simbad data
@@ -155,13 +151,13 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 			simbadMagILabel.setText(".");
 			return;
 		}
-		
+
 		// Simbad catalog match for user objectId
 		// update catalog ra
 		String raHms = AstroCoords.raHr_To_raHms(simbadResult.getSimbadRaHr());
 		raField.setText(raHms);
 		raField.setForeground(Color.black);
-		
+
 		// update catalog dec
 		String decDms = AstroCoords.decDeg_To_decDms(simbadResult.getSimbadDecDeg());
 		decField.setText(decDms);
@@ -186,7 +182,6 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		simbadMagILabel.setText(mag);
 	}
 
-
 	/**
 	 * Updates catalog UI query settings section with current query object data
 	 * 
@@ -199,12 +194,12 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		decField.setText(AstroCoords.decDeg_To_decDms(query.getDecDeg()));
 		fovField.setText(String.format("%.1f", query.getFovAmin()));
 		magLimitField.setText(String.format("%.1f", query.getMagLimit()));
-		
+
 		// selected catalog
 		CatalogsEnum en = query.getCatalogType();
 		String selectedCatalog = en.toString().toUpperCase();
 		catalogCombo.setSelectedItem(selectedCatalog);
-		
+
 		// populate filterCombo
 		String selectedFilter = query.getMagBand();
 		populateFilterCombo(selectedCatalog, selectedFilter);
@@ -213,7 +208,7 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 
 	@Override
 	public CatalogQuery getQueryData() {
-		
+
 		if (!verifyAllInputs()) {
 			return null;
 		}
@@ -226,7 +221,7 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 
 		query.setCatalogType(CatalogsEnum.getEnum(catalogCombo.getSelectedItem().toString()));
 		query.setMagBand(filterCombo.getSelectedItem().toString());
-		
+
 		return query;
 	}
 
@@ -261,15 +256,18 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		// record numbers
 		totalLabel.setText(String.format("%s", settings.getTotalLabelValue()));
 		filteredLabel.setText(String.format("%s", settings.getFilteredLabelValue()));
+
+		// update enable buttons flag
+		this.enableButtons = settings.isTableData();
 	}
 
 	@Override
 	public CatalogSettings getSettingsData() {
 		CatalogSettings settings = new CatalogSettings();
+		settings.setTargetMagSpinnerValue((Double) targetMagSpinner.getValue());
 
 		// mag limits
 		settings.setUpperLimitSpinnerValue((Double) upperLimitSpinner.getValue());
-		settings.setTargetMagSpinnerValue((Double) targetMagSpinner.getValue());
 		settings.setLowerLimitSpinnerValue((Double) lowerLimitSpinner.getValue());
 		settings.setMagLimitsCheckBoxValue(isMagLimitsCheckBox.isSelected());
 
@@ -282,11 +280,13 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 
 		return settings;
 	}
-	
+
 	/*
 	 * Clears current and imports new filter list in the filter selection combo
 	 * 
-	 * @param selectedCatalog uppercase name of current catalog selected in catalog combo
+	 * @param selectedCatalog uppercase name of current catalog selected in catalog
+	 * combo
+	 * 
 	 * @param selectedFilter filter name of current filter selection in filter combo
 	 */
 	private void populateFilterCombo(String selectedCatalog, String selectedFilter) {
@@ -302,25 +302,37 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 	}
 
 	/*
-	 * Configures button and combo event listeners and sets data/no-data button states
+	 * Configures button and combo event listeners and sets data/no-data button
+	 * states
 	 */
 	private void setUpActionListeners() {
-		simbadButton.addActionListener(e -> handler.doSimbadQuery());
+		simbadButton.addActionListener(e -> {
+			handler.doSimbadQuery();
+			setButtonsEnabled(this.enableButtons);			
+		});
 
-		saveQueryButton.addActionListener(e -> handler.doSaveQuerySettingsData());
+		saveQueryButton.addActionListener(e -> {
+			handler.doSaveQuerySettingsData();
+			setButtonsEnabled(this.enableButtons);			
+		});
 
 		catalogQueryButton.addActionListener(e -> {
 			handler.doCatalogQuery();
-			setButtonsEnabled(true);
+			setButtonsEnabled(this.enableButtons);
 		});
 
-		updateButton.addActionListener(e -> handler.doUpdateTable());
+		updateButton.addActionListener(e -> {
+			handler.doUpdateTable();
+			setButtonsEnabled(this.enableButtons);
+		});
 
-		saveRaDecButton.addActionListener(e -> handler.doSaveRaDecFile());
+		saveRaDecButton.addActionListener(e -> {
+			handler.doSaveRaDecFile();
+			setButtonsEnabled(this.enableButtons);			
+		});
 
 		importRaDecButton.addActionListener(e -> {
-			boolean isSelected = handler.doImportRaDecFile();
-			setButtonsEnabled(isSelected);
+			setButtonsEnabled(this.enableButtons);
 		});
 
 		clearButton.addActionListener(e -> {
@@ -337,11 +349,11 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		decField.addActionListener(e -> inputVerifier.verifyDecDms(decField.getText()));
 		fovField.addActionListener(e -> inputVerifier.verifyFov(fovField.getText()));
 		magLimitField.addActionListener(e -> inputVerifier.verifyMagLimit(magLimitField.getText()));
-		
+
 		// handles change in selected catalog (VSP, APASS ..)
 		catalogCombo.addItemListener(ie -> selectCatalog(ie));
 	}
-	
+
 	/*
 	 * Tests all input fileds are in range before compiling on-line database query
 	 * 
@@ -352,9 +364,9 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		isValid = isValid && InputsVerifier.isValidCoords(raField.getText(), QueryEnum.RA_HMS);
 		isValid = isValid && InputsVerifier.isValidCoords(decField.getText(), QueryEnum.DEC_DMS);
 		isValid = isValid && InputsVerifier.isValidFov(fovField.getText());
-		isValid = isValid && InputsVerifier.isValidMagLimit(magLimitField.getText());		
+		isValid = isValid && InputsVerifier.isValidMagLimit(magLimitField.getText());
 		return isValid;
-		
+
 	}
 
 	/*

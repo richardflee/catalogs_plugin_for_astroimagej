@@ -9,15 +9,19 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.swing.JSpinner;
+
 import com.github.richardflee.astroimagej.fileio.ApassFileReader;
 
 /**
  * Objects of this class encapsulate results of queries of on-line astronomical
- * databases in a list of FieldObjects <p> Target star data is the first list
- * item, identified "T01". The remainder is a list of reference star objects
- * ordered either by radial distance from the target star (in arcmin) or by the
- * absolute difference in magnitude. If user selected, reference objects are
- * identified as "C02", "C03" .. in sort order </p>
+ * databases in a list of FieldObjects
+ * 
+ * <p> Target star data is the first list item, identified "T01". The remainder
+ * is a list of reference star objects ordered either by radial distance from
+ * the target star (in arcmin) or by the absolute difference in magnitude. If
+ * user selected, reference objects are identified as "C02", "C03" .. in sort
+ * order </p>
  */
 public class QueryResult {
 
@@ -79,20 +83,60 @@ public class QueryResult {
 			fo.setDeltaMag(targetMag);
 			fo.setRadSepAmin(target);
 		}
+		catalogUiDataStatus();
 	}
 
 	public void applySelectedSort() {
 		// sort by distance option
-		if (settings.isDistanceRadioButtonValue() == true) {
-			fieldObjects = fieldObjects.stream()
-					.sorted(Comparator.comparingDouble(p -> p.getRadSepAmin()))
+		if (this.settings.isDistanceRadioButtonValue() == true) {
+			this.fieldObjects = this.fieldObjects.stream().sorted(Comparator.comparingDouble(p -> p.getRadSepAmin()))
 					.collect(Collectors.toList());
 			// sort by delta mag option
-		} else if (settings.isDeltaMagRadioButtonValue() == true) {
-			fieldObjects = fieldObjects.stream().sorted(Comparator
-					.comparingDouble(p -> Math.abs(p.getDeltaMag())))
-					.collect(Collectors.toList());
+		} else if (this.settings.isDeltaMagRadioButtonValue() == true) {
+			this.fieldObjects = this.fieldObjects.stream()
+					.sorted(Comparator.comparingDouble(p -> Math.abs(p.getDeltaMag()))).collect(Collectors.toList());
 		}
+		catalogUiDataStatus();
+	}
+
+	public void applySelectedFilters() {
+		// nObs filter
+		int numberObs = this.settings.getnObsSpinnerValue();
+		for (FieldObject fo : this.fieldObjects) {
+			boolean isAccepted = ((fo.getnObs() >= numberObs) || (fo.isTarget() == true));
+			fo.setAccepted(isAccepted);
+		}
+		// current target mag
+		double targetMag = settings.getTargetMagSpinnerValue();
+
+		// magband filter
+		// upper and lower mag range settings; 0.01 disables range check
+		double upperLimit = settings.getUpperLimitSpinnerValue();
+		double lowerLimit = settings.getLowerLimitSpinnerValue();
+
+		// disables respective range check if magnitude is less than 0.01
+		boolean disableUpperLimit = Math.abs(upperLimit) < 0.01;
+		boolean disableLowerLimit = Math.abs(lowerLimit) < 0.01;
+
+		// apply mag limits filter
+		if (settings.isMagLimitsCheckBoxValue() == true) {
+			for (FieldObject fo : fieldObjects) {
+				if (fo.isTarget() == false) {
+					// Initialise with result of nobs filter
+					boolean isAccepted = fo.isAccepted();
+					isAccepted = isAccepted && (disableUpperLimit || (fo.getMag() <= upperLimit + targetMag));
+					isAccepted = isAccepted && (disableLowerLimit || (fo.getMag() >= lowerLimit + targetMag));
+					fo.setAccepted(isAccepted);
+				}
+			}
+		}
+		catalogUiDataStatus();
+	}
+	
+	private void catalogUiDataStatus() {
+		settings.setTotalLabelValue(getRecordsTotal());
+		settings.setFilteredLabelValue(getAcceptedTotal());
+		settings.setTableData(getRecordsTotal() > 0);
 	}
 
 	// getters / setters
@@ -104,7 +148,7 @@ public class QueryResult {
 	public void setQuery(CatalogQuery query) {
 		this.query = query;
 	}
-	
+
 	public CatalogSettings getSettings() {
 		return this.settings;
 	}
@@ -201,14 +245,15 @@ public class QueryResult {
 
 	public static void main(String[] args) {
 
-		double targetMag = 12.345;
+		// result.getFieldObjects().stream().forEach(System.out::println);;
+		double tgtMag0 = 12.345;
 
 		// build default catalog result object, init new result object
 		CatalogQuery query = new CatalogQuery();
 		QueryResult result = new QueryResult(query);
 
-		// build default CatalogSettngs object, asign to result_settings
-		CatalogSettings settings = new CatalogSettings(targetMag);
+		// build default CatalogSettngs object, assign to result_settings
+		CatalogSettings settings = new CatalogSettings(tgtMag0);
 		result.setSettings(settings);
 
 		// compile ref object list from apass file
@@ -216,43 +261,18 @@ public class QueryResult {
 		List<FieldObject> referenceObjects = fr.runQueryFromFile(query);
 		result.addFieldObjects(referenceObjects);
 
-		// sort option radial distance
-		result.getSettings().setDistanceRadioButtonValue(true);
-		result.getSettings().setDeltaMagRadioButtonValue(false);
-		result.applySelectedSort();
-
-		boolean sorted = true;
-		for (int idx = 1; idx < result.getFieldObjects().size(); idx++) {
-			sorted = sorted && (result.getFieldObjects().get(idx).getRadSepAmin() > result.getFieldObjects().get(idx - 1).getRadSepAmin());
-		}
-		System.out.println(String.format("Sorted by radial distance: %b", sorted));
-
-		// sort option delta mag
-		result.getSettings().setDistanceRadioButtonValue(false);
-		result.getSettings().setDeltaMagRadioButtonValue(true);
-		result.applySelectedSort();
-
-		sorted = true;
-		for (int idx = 1; idx < result.getFieldObjects().size(); idx++) {
-			double item1 = Math.abs(result.getFieldObjects().get(idx).getDeltaMag());
-			double item0 = Math.abs(result.getFieldObjects().get(idx - 1).getDeltaMag());
-			
-			sorted = sorted && (item1 >= item0);
-			
-			// sorted = sorted && (Math.abs(list.get(idx).getDeltaMag()) >= Math.abs(list.get(idx - 1).getDeltaMag()));
-		}
-		System.out.println(String.format("Sorted by delta mag: %b", sorted));
-
-		// result.getFieldObjects().stream().forEach(System.out::println);;
-
-		// System.out.println(result.toString());
-
-		// target mag test
+		System.out.println("\n TARGET MAG *****************************************************");
+		// set target mag test
 		FieldObject tgt = result.getTargetObject();
-		System.out.println("\nTest target mag");
 		System.out.println("input    Settings   Target");
 		System.out.println(
-				String.format("%7.3f %7.3f  %9.3f", targetMag, settings.getTargetMagSpinnerValue(), tgt.getMag()));
+				String.format("%7.3f %7.3f  %9.3f", tgtMag0, settings.getTargetMagSpinnerValue(), tgt.getMag()));
+
+		double tgtMag1 = 9.876;
+		settings = new CatalogSettings(tgtMag1);
+		result.setSettings(settings);
+		System.out.println(
+				String.format("%7.3f %7.3f  %9.3f", tgtMag1, settings.getTargetMagSpinnerValue(), tgt.getMag()));
 
 		FieldObject fo2 = result.getFieldObjects().get(2);
 		FieldObject fo7 = result.getFieldObjects().get(7);
@@ -274,29 +294,88 @@ public class QueryResult {
 		System.out.println("\nTest delta mag");
 		System.out.println("Mag        Delta     Sums");
 		System.out.println(
-				String.format("%7.3f  %7.3f   %7.3f", tgt.getMag(), tgt.getDeltaMag(), tgt.getMag() - targetMag));
+				String.format("%7.3f  %7.3f   %7.3f", tgt.getMag(), tgt.getDeltaMag(), tgt.getMag() - tgtMag0));
 		System.out.println(
-				String.format("%7.3f  %7.3f   %7.3f", fo2.getMag(), fo2.getDeltaMag(), fo2.getMag() - targetMag));
+				String.format("%7.3f  %7.3f   %7.3f", fo2.getMag(), fo2.getDeltaMag(), fo2.getMag() - tgtMag0));
 		System.out.println(
-				String.format("%7.3f  %7.3f   %7.3f", fo7.getMag(), fo7.getDeltaMag(), fo7.getMag() - targetMag));
+				String.format("%7.3f  %7.3f   %7.3f", fo7.getMag(), fo7.getDeltaMag(), fo7.getMag() - tgtMag0));
 
-//		// update delta mag
-//		result.updateDeltaMags(targetMag);		
-//		//result.getFieldObjects().stream().forEach(System.out::println);
-//		System.out.println(String.format("\nTarget mag expected 12.345: %.3f", result.getTargetMag()));
-//		
-//		targetMag = 9.875;
-//		result.setTargetMag(targetMag);
-//		System.out.println(String.format("Target mag expected 9.875: %.3f", result.getTargetMag()));
-//		
-//		List<FieldObject> acceptedList = result.getFieldObjects();
-//		long counter = acceptedList.stream().filter(p -> p.isAccepted()).count();
-//		System.out.println(String.format("Start accepted field objects: %d", counter));
-//		
-//		acceptedList.get(1).setAccepted(false);
-//		counter = acceptedList.stream().filter(p -> p.isAccepted()).count();
-//		System.out.println(String.format("Accepted field objects after filter one: %d", counter));
-//		
-//		result = null;
+		// sort option radial distance
+		System.out.println("\n SORT BY DISTANCE *****************************************************");
+		result.getSettings().setDistanceRadioButtonValue(true);
+		result.getSettings().setDeltaMagRadioButtonValue(false);
+		result.applySelectedSort();
+
+		boolean sorted = true;
+		for (int idx = 1; idx < result.getFieldObjects().size(); idx++) {
+			sorted = sorted && (result.getFieldObjects().get(idx).getRadSepAmin() > result.getFieldObjects()
+					.get(idx - 1).getRadSepAmin());
+		}
+		System.out.println(String.format("Sorted by radial distance: %b", sorted));
+
+		sorted = true;
+		for (int idx = 1; idx < result.getFieldObjects().size(); idx++) {
+			double item1 = Math.abs(result.getFieldObjects().get(idx).getDeltaMag());
+			double item0 = Math.abs(result.getFieldObjects().get(idx - 1).getDeltaMag());
+			sorted = sorted && (item1 >= item0);
+		}
+		System.out.println(String.format("Sorted by delta mag: %b", sorted));
+
+		System.out.println("\n SORT BY DELTA MAG *****************************************************");
+		result.getSettings().setDistanceRadioButtonValue(false);
+		result.getSettings().setDeltaMagRadioButtonValue(true);
+		result.applySelectedSort();
+
+		sorted = true;
+		for (int idx = 1; idx < result.getFieldObjects().size(); idx++) {
+			sorted = sorted && (result.getFieldObjects().get(idx).getRadSepAmin() > result.getFieldObjects()
+					.get(idx - 1).getRadSepAmin());
+		}
+		System.out.println(String.format("Sorted by radial distance: %b", sorted));
+
+		// mag delta sort test
+		sorted = true;
+		for (int idx = 1; idx < result.getFieldObjects().size(); idx++) {
+			double item1 = Math.abs(result.getFieldObjects().get(idx).getDeltaMag());
+			double item0 = Math.abs(result.getFieldObjects().get(idx - 1).getDeltaMag());
+			sorted = sorted && (item1 >= item0);
+		}
+		System.out.println(String.format("Sorted by delta mag: %b", sorted));
+
+		System.out.println("\n APPLY NOBS FILTER *****************************************************");
+
+		System.out.println(("Nobs   No records"));
+		for (int idx = 1; idx <= 5; idx++) {
+			settings.setnObsSpinnerValue(idx);
+			result.setSettings(settings);
+			result.applySelectedFilters();
+			int total = result.getAcceptedTotal();
+			System.out.println(String.format("%d      %d", idx, total));
+		}
+
+		System.out.println("\n APPLY MAGBAND FILTER *****************************************************");
+		System.out.println(("Nobs   Flag   Upper   Nominal  Lower   ULimit    LLimit    NRecs"));
+		// array filter settings nObs, flag, upper & lower limits
+		int[] nObs = { 1, 2, 3, 3, 3, 3 };
+		boolean[] isChecked = { false, true, true, true, true, true };
+		double[] upper = { 1.00, 0.00, 0.00, 1.50, 0.00, 4.50 };
+		double[] lower = { -1.00, 0.00, 0.00, 0.00, -1.50, -4.50 };
+		double nominal = 14.500;
+		int nRecs;
+
+		settings = new CatalogSettings(nominal);
+		for (int idx = 0; idx < nObs.length; idx++) {
+			settings.setnObsSpinnerValue(nObs[idx]);
+			settings.setMagLimitsCheckBoxValue(isChecked[idx]);
+			settings.setUpperLimitSpinnerValue(upper[idx]);
+			settings.setLowerLimitSpinnerValue(lower[idx]);
+			result.setSettings(settings);
+			result.applySelectedFilters();
+			String upperLabel = result.getSettings().getUpperLabelValue();
+			String lowerLabel = result.getSettings().getLowerLabelValue();
+			nRecs = result.getAcceptedTotal();
+			System.out.println((String.format("%d     %b   %.3f   %.3f   %.3f  %s      %s      %d", nObs[idx],
+					isChecked[idx], upper[idx], nominal, lower[idx], upperLabel, lowerLabel, nRecs)));
+		}
 	}
 }

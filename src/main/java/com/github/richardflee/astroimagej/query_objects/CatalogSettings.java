@@ -34,6 +34,9 @@ public class CatalogSettings {
 	// record totals
 	private int totalLabelValue;
 	private int filteredLabelValue;
+	
+	// flag enable / disable catalog ui buttons
+	private boolean isTableData;
 
 	/**
 	 * Copy constructor
@@ -61,6 +64,8 @@ public class CatalogSettings {
 		this.totalLabelValue = Integer.valueOf(settings.getTotalLabelValue());
 		this.filteredLabelValue = Integer.valueOf(settings.getFilteredLabelValue());
 		
+		// no table data
+		this.isTableData = false;
 	}
 
 	// TTD reduce / remove multiple settings constructors
@@ -175,6 +180,15 @@ public class CatalogSettings {
 	public void setFilteredLabelValue(int nFilteredRecords) {
 		this.filteredLabelValue = (nFilteredRecords >= 0) ? nFilteredRecords : 0;
 	}
+	
+
+	public boolean isTableData() {
+		return isTableData;
+	}
+
+	public void setTableData(boolean isTableData) {
+		this.isTableData = isTableData;
+	}
 
 	/**
 	 * Upper limit magnitude band; upper limit < 0.01 disables this limit
@@ -208,12 +222,12 @@ public class CatalogSettings {
 
 	@Override
 	public String toString() {
-		return "CatalogSettings [upperLimitSpinnerValue=" + upperLimitSpinnerValue + ", targetMagSpinnerValue="
-				+ targetMagSpinnerValue + ", lowerLimitSpinnerValue=" + lowerLimitSpinnerValue
+		return "CatalogSettings [targetMagSpinnerValue=" + targetMagSpinnerValue + ", upperLimitSpinnerValue="
+				+ upperLimitSpinnerValue + ", lowerLimitSpinnerValue=" + lowerLimitSpinnerValue
 				+ ", isMagLimitsCheckBoxValue=" + isMagLimitsCheckBoxValue + ", distanceRadioButtonValue="
 				+ distanceRadioButtonValue + ", deltaMagRadioButtonValue=" + deltaMagRadioButtonValue
 				+ ", nObsSpinnerValue=" + nObsSpinnerValue + ", totalLabelValue=" + totalLabelValue
-				+ ", filteredLabelValue=" + filteredLabelValue + "]";
+				+ ", filteredLabelValue=" + filteredLabelValue + ", isTableData=" + isTableData + "]";
 	}
 
 	public static void main(String[] args) {

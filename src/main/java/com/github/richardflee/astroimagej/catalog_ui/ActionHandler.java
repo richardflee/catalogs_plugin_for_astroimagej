@@ -43,9 +43,9 @@ public class ActionHandler {
 	 * result field: object compiled from database query records or imported from
 	 * radec file. Each field object tracks its filtered and selected state
 	 * 
-	 * doCatalogQuery & doImportRaDec: create new result
-	 * doSaveRadec saves selected selected results field objects to radec format file
-	 * options doClear resets result null
+	 * doCatalogQuery & doImportRaDec: create new result doSaveRadec saves selected
+	 * selected results field objects to radec format file options doClear resets
+	 * result null
 	 */
 	private QueryResult result = null;
 
@@ -120,31 +120,28 @@ public class ActionHandler {
 	 */
 	// TTDO replace apass file read with on-line q
 	public void doCatalogQuery() {
-		
+
 		// compile CatalogQuery object from catalog ui Query Settings data
 		CatalogQuery query = catalogDataListener.getQueryData();
-		
+
 		// reference result field to a new QueryResult object
 		this.result = new QueryResult(query);
-		
+
 		// default settings with catalog ui target mag
 		double targetMag = catalogDataListener.getSettingsData().getTargetMagSpinnerValue();
 		CatalogSettings defaultSettings = new CatalogSettings(targetMag);
-		
+
 		// copy default settings
 		result.setSettings(defaultSettings);
-		
+
 		// run query
-		// TTD replace with online query 
+		// TTD replace with online query
 		ApassFileReader fr = new ApassFileReader();
-		List<FieldObject> referenceFields = fr.runQueryFromFile(query);
-		result.getFieldObjects().addAll(referenceFields);
-		
-		
-		
-		
-		
-		
+		List<FieldObject> referenceObjects = fr.runQueryFromFile(query);
+		result.addFieldObjects(referenceObjects);
+
+		updateCatalogTable(this.result);
+
 //		// save current query & target mag data
 //		doSaveQuerySettingsData();
 //
@@ -166,10 +163,8 @@ public class ActionHandler {
 
 	/**
 	 * Writes radec file with selected table data to radec format text file in local
-	 * radec astromagej folder
-	 * <p>
-	 * Example: ./astroimagej/radec/wasp_12.Rc.020.radec.txt
-	 * </p>
+	 * radec astromagej folder <p> Example:
+	 * ./astroimagej/radec/wasp_12.Rc.020.radec.txt </p>
 	 */
 	public void doSaveRaDecFile() {
 //
@@ -240,10 +235,10 @@ public class ActionHandler {
 		// field values: update result with radec values
 		// reset tableRowsList to full radec dataet all rows selected
 		this.result = radecResult;
-		//this.tableRowsList = result.copyFieldObjects();
+		// this.tableRowsList = result.copyFieldObjects();
 
 		// compile table rows from radec file, default settings, no filters applies
-		updateCatalogTable(settings);
+		updateCatalogTable(this.result);
 
 		// TTD remove
 		return true;
@@ -253,9 +248,19 @@ public class ActionHandler {
 	 * Updates table with current user filter and sort settings
 	 */
 	public void doUpdateTable() {
-		// import current catalog ui settings and run update on catalog table data
-		CatalogSettings settings = catalogDataListener.getSettingsData();
-		updateCatalogTable(settings);
+
+		CatalogSettings currentSettings = catalogDataListener.getSettingsData();
+
+		this.result.setSettings(currentSettings);
+
+//		result.applySelectedSort();
+//
+//		result.applySelectedFilters();
+//
+//		catalogDataListener.setSettingsData(result.getSettings());
+
+//		// import current catalog ui settings and run update on catalog table data
+		updateCatalogTable(this.result);
 
 		// status message
 		String statusMessage = "Catalog table updated with current sort and filter settings";
@@ -282,78 +287,29 @@ public class ActionHandler {
 		updateCatalogTable(null);
 	}
 
-
 	/*
 	 * Sorts QueryResult result object records relative to target object. <p>Sort
 	 * options are radial distance or difference in magnitude values.</p>
 	 * 
 	 * @return FieldObject list sorted and filtered as specified by user settings
 	 */
-	private void updateCatalogTable(CatalogSettings settings) {
-
-		// clears table and exits if result = null
-		catalogTableListener.updateTable(null);
-		if ((result == null) || (settings == null)) {
+	private void updateCatalogTable(QueryResult result) {
+		
+		if (result == null) {
+			catalogDataListener.setSettingsData(new CatalogSettings());
+			catalogTableListener.updateTable(null);
 			return;
 		}
 
-		// this.filteredTableRows = null;
+		result.applySelectedSort();
 
-		// get pesky targetMag value & update delta mag records
-		double targetMag = settings.getTargetMagSpinnerValue();
-		
-		result.updateDeltaMags(targetMag);
-		List<FieldObject> tableRowsList = result.getFieldObjects();
+		result.applySelectedFilters();
 
-		// sort by distance option
-		if (settings.isDistanceRadioButtonValue() == true) {
-			tableRowsList = tableRowsList.stream().sorted(Comparator.comparingDouble(FieldObject::getRadSepAmin))
-					.collect(Collectors.toList());
-			// sort by delta mag option
-		} else if (settings.isDeltaMagRadioButtonValue() == true) {
-			tableRowsList = tableRowsList.stream().sorted(Comparator.comparingDouble(p -> Math.abs(p.getDeltaMag())))
-					.collect(Collectors.toList());
-		}
-
-		// apply nObs limit to reference object records
-		int numberObs = settings.getnObsSpinnerValue();
-
-		for (FieldObject fo : tableRowsList) {
-			boolean isAccepted = ((fo.getnObs() >= numberObs) || (fo.isTarget() == true));
-			fo.setAccepted(isAccepted);
-		}
-
-		// upper and lower mag range settings; 0.01 disables range check
-		double upperLimit = settings.getUpperLimitSpinnerValue();
-		double lowerLimit = settings.getLowerLimitSpinnerValue();
-
-		// disables respective range check if magnitude is less than 0.01
-		boolean disableUpperLimit = Math.abs(upperLimit) < 0.01;
-		boolean disableLowerLimit = Math.abs(lowerLimit) < 0.01;
-		
-		// apply mag limits filter
-		if (settings.isMagLimitsCheckBoxValue() == true) {
-			for (FieldObject fo : tableRowsList) {
-				if (fo.isTarget() == false) {
-					boolean isAccepted = fo.isAccepted();
-					isAccepted = isAccepted && (disableUpperLimit || (fo.getMag() <= upperLimit + targetMag));
-					isAccepted = isAccepted && (disableLowerLimit || (fo.getMag() >= lowerLimit + targetMag));
-					fo.setAccepted(isAccepted);
-				}
-			}
-		}
-
-		// filtered record numbers
-		int nTotalRecords = result.getRecordsTotal();
-		int nAcceptedRecords = result.getAcceptedTotal();
-		settings.setTotalLabelValue(nTotalRecords);
-		settings.setFilteredLabelValue(nAcceptedRecords);
-
-		// update catalog ui
-		catalogDataListener.setSettingsData(settings);
+		catalogDataListener.setSettingsData(result.getSettings());
 
 		// run table update with sort / filter selections
-		catalogTableListener.updateTable(tableRowsList);
+		catalogTableListener.updateTable(result.getFieldObjects());
+
 	}
 
 	public static void main(String args[]) {
@@ -388,3 +344,55 @@ public class ActionHandler {
 		System.out.println(String.format("Modified settings targetMag 7.89: %.2f", s1.getTargetMagSpinnerValue()));
 	}
 }
+
+//clears table and exits if result = null
+//catalogTableListener.updateTable(null);
+//if ((result == null) || (settings == null)) {
+//	return;
+//}
+//
+//// this.filteredTableRows = null;
+//
+//// get pesky targetMag value & update delta mag records
+//double targetMag = settings.getTargetMagSpinnerValue();
+//
+//result.updateDeltaMags(targetMag);
+//List<FieldObject> tableRowsList = result.getFieldObjects();
+//
+//// sort by distance option
+//if (settings.isDistanceRadioButtonValue() == true) {
+//	tableRowsList = tableRowsList.stream().sorted(Comparator.comparingDouble(FieldObject::getRadSepAmin))
+//			.collect(Collectors.toList());
+//	// sort by delta mag option
+//} else if (settings.isDeltaMagRadioButtonValue() == true) {
+//	tableRowsList = tableRowsList.stream().sorted(Comparator.comparingDouble(p -> Math.abs(p.getDeltaMag())))
+//			.collect(Collectors.toList());
+//}
+//
+//// apply nObs limit to reference object records
+//int numberObs = settings.getnObsSpinnerValue();
+//
+//for (FieldObject fo : tableRowsList) {
+//	boolean isAccepted = ((fo.getnObs() >= numberObs) || (fo.isTarget() == true));
+//	fo.setAccepted(isAccepted);
+//}
+//
+//// upper and lower mag range settings; 0.01 disables range check
+//double upperLimit = settings.getUpperLimitSpinnerValue();
+//double lowerLimit = settings.getLowerLimitSpinnerValue();
+//
+//// disables respective range check if magnitude is less than 0.01
+//boolean disableUpperLimit = Math.abs(upperLimit) < 0.01;
+//boolean disableLowerLimit = Math.abs(lowerLimit) < 0.01;
+//
+//// apply mag limits filter
+//if (settings.isMagLimitsCheckBoxValue() == true) {
+//	for (FieldObject fo : tableRowsList) {
+//		if (fo.isTarget() == false) {
+//			boolean isAccepted = fo.isAccepted();
+//			isAccepted = isAccepted && (disableUpperLimit || (fo.getMag() <= upperLimit + targetMag));
+//			isAccepted = isAccepted && (disableLowerLimit || (fo.getMag() >= lowerLimit + targetMag));
+//			fo.setAccepted(isAccepted);
+//		}
+//	}
+//}
