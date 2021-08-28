@@ -12,7 +12,7 @@ import com.github.richardflee.astroimagej.utils.AstroCoords;
  * <p>Data arrays are indexed by ColumnsEnum getIndex() to maintain sync between 
  * table data read / write operations</p>
  */
-class AbstractRaDecFile {
+class RaDecFileBase {
 	
 	// result of of operation
 		private String statusMessage = null;
@@ -108,7 +108,7 @@ class AbstractRaDecFile {
 			  "#C02, star04, 06:30:31.03, +29:41:18.43, 9.120, 0.090, -0.880, 1.04,  4"					
 			};
 		
-		AbstractRaDecFile f = new AbstractRaDecFile();
+		RaDecFileBase f = new RaDecFileBase();
 		
 		FieldObject fo0 = f.compileFieldObject(dataLines[0]);
 		FieldObject fo1 = f.compileFieldObject(dataLines[1]);

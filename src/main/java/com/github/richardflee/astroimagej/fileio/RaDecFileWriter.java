@@ -19,13 +19,13 @@ import com.github.richardflee.astroimagej.utils.AstroCoords;
  * <p>Block 3: comment = header + row of catalog query data</p>
  * <p>Comment lines have leading char "#". A single "#" denotes break between blocks.</p>
  */
-public class RaDecFileWriter extends AbstractRaDecFile {
+public class RaDecFileWriter extends RaDecFileBase {
 
 	// flag data block
 	private boolean isDataBlock = true;
 
 	// result of of operation
-	private String statusMessage = null;
+	//private String statusMessage = null;
 
 	public RaDecFileWriter() {
 		// compile data lines first
@@ -148,14 +148,6 @@ public class RaDecFileWriter extends AbstractRaDecFile {
 		return lines;
 	}
 
-	// status line message gett & setter
-	public String getStatusMessage() {
-		return statusMessage;
-	}
-
-	public void setStatusMessage(String statusMessage) {
-		this.statusMessage = statusMessage;
-	}
 
 	public static void main(String[] args) {
 		// compile result object from file

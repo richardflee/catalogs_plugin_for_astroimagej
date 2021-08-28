@@ -331,10 +331,11 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 
 		saveRaDecButton.addActionListener(e -> {
 			handler.doSaveRaDecFile();
-			//setButtonsEnabled(this.enableButtons);			
+			setButtonsEnabled(this.enableButtons);			
 		});
 
 		importRaDecButton.addActionListener(e -> {
+			handler.doImportRaDecFile();
 			setButtonsEnabled(this.enableButtons);
 		});
 

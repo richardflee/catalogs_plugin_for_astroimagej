@@ -2,7 +2,6 @@ package com.github.richardflee.astroimagej.catalog_ui;
 
 import java.io.File;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.github.richardflee.astroimagej.catalogs.SimbadCatalog;
 import com.github.richardflee.astroimagej.exceptions.SimbadNotFoundException;
@@ -47,7 +46,7 @@ public class ActionHandler {
 	 * result null
 	 */
 	private QueryResult result = null;
-	
+
 	private final String QUERY_SETTINGS_ERROR = "ERROR: Invalid input in Catalog Query settings text field";
 
 	/**
@@ -74,27 +73,35 @@ public class ActionHandler {
 		this.catalogDataListener = catalogDataListener;
 	}
 
+	/**
+	 * Runs an objectId-based query on Simbad on-line database.
+	 * 
+	 * <p>Updates Simbad fields with search results or with "." if no match was
+	 * found</p>
+	 */
 	public void doSimbadQuery() {
 		SimbadCatalog simbad = new SimbadCatalog();
 		SimbadResult simbadResult = null;
-		String statusMessage = null;
 
 		CatalogQuery query = catalogDataListener.getQueryData();
-
-		// run query and update simbad section with results, "." => no data
-		if (query != null) {
-			try {
-				simbadResult = simbad.runQuery(query);
-				catalogDataListener.setSimbadData(simbadResult);
-			} catch (SimbadNotFoundException se) {
-				catalogDataListener.setSimbadData(null);
-			}
-			statusMessage = simbad.getStatusMessage();
-
-			// query = null => at least one jtext input is not valid
-		} else {
-			statusMessage = QUERY_SETTINGS_ERROR;
+		if (query == null) {
+			catalogDataListener.updateStatus(QUERY_SETTINGS_ERROR);
+			return;
 		}
+
+		// run simbad query, raises EimbadNotFound exception if no match to user input
+		// objectId
+		try {
+			simbadResult = simbad.runQuery(query);
+		} catch (SimbadNotFoundException se) {
+			simbadResult = null;
+		}
+
+		// update catalog ui with simbad results
+		// "." in simbad fields indicates no match found
+		catalogDataListener.setSimbadData(simbadResult);
+
+		String statusMessage = simbad.getStatusMessage();
 		catalogDataListener.updateStatus(statusMessage);
 	}
 
@@ -103,15 +110,16 @@ public class ActionHandler {
 	 * plus a subset of settings parameters
 	 */
 	public void doSaveQuerySettingsData() {
-		String statusMessage = null;
-
 		CatalogQuery query = catalogDataListener.getQueryData();
-		if (query != null) {
-			CatalogSettings settings = catalogDataListener.getSettingsData();
-			statusMessage = propertiesFile.setPropertiesFileData(query, settings);
-		} else {
-			statusMessage = QUERY_SETTINGS_ERROR;
+		if (query == null) {
+			catalogDataListener.updateStatus(QUERY_SETTINGS_ERROR);
+			return;
 		}
+
+		// import catalog ui target mag and save
+		CatalogSettings settings = catalogDataListener.getSettingsData();
+
+		String statusMessage = propertiesFile.setPropertiesFileData(query, settings);
 		catalogDataListener.updateStatus(statusMessage);
 	}
 
@@ -121,14 +129,10 @@ public class ActionHandler {
 	 */
 	// TTDO replace apass file read with on-line q
 	public void doCatalogQuery() {
-
 		// compile CatalogQuery object from catalog ui Query Settings data
 		CatalogQuery query = catalogDataListener.getQueryData();
-		
-		// traps invalid data entry
 		if (query == null) {
-			String statusMessage = QUERY_SETTINGS_ERROR;
-			catalogDataListener.updateStatus(statusMessage);
+			catalogDataListener.updateStatus(QUERY_SETTINGS_ERROR);
 			return;
 		}
 
@@ -139,44 +143,48 @@ public class ActionHandler {
 		double targetMag = catalogDataListener.getSettingsData().getTargetMagSpinnerValue();
 		CatalogSettings defaultSettings = new CatalogSettings(targetMag);
 
+		// set sort option
+//		defaultSettings.setDistanceRadioButtonValue(true);
+//		defaultSettings.setDeltaMagRadioButtonValue(false);
+
 		// copy default settings
-		result.setSettings(defaultSettings);
+		result.setSettings(new CatalogSettings(targetMag));
 
 		// run query
 		// TTD replace with online query
 		ApassFileReader fr = new ApassFileReader();
 		List<FieldObject> referenceObjects = fr.runQueryFromFile(query);
-		result.addFieldObjects(referenceObjects);
+		result.appendFieldObjects(referenceObjects);
 
-		// applies default sort settings, populates catalog table with full dataset
+		// applies current sort and default filter settings, populates catalog table
+		// with full dataset
 		updateCatalogTable(this.result);
 
+		// update catalog ui with default settings, retains current target spinner value
+		catalogDataListener.setSettingsData(result.getSettings());
+
 		// status message
-		String statusMessage = "Imported full dataset, sorted by radial distance to target object";
+		String statusMessage = "Imported full dataset, sorted by radial distance to target position";
 		catalogDataListener.updateStatus(statusMessage);
 	}
 
 	/**
 	 * Writes radec file with selected table data to radec format text file in local
-	 * radec astromagej folder <p> Example:
-	 * ./astroimagej/radec/wasp_12.Rc.020.radec.txt </p>
+	 * radec astroimagej folder
+	 * 
+	 * <p> Example: ./astroimagej/radec/wasp_12.Rc.020.radec.txt </p>
 	 */
 	public void doSaveRaDecFile() {
-		// CatalogQuery dataset object
-		CatalogQuery query = this.result.getQuery();
-		catalogDataListener.setQueryData(query);
-		
-		// resets catalog ui default settings + catalog table value target mag
-		double targetMag = result.getTargetObject().getMag();
-		result.setSettings(new CatalogSettings(targetMag));
-		catalogDataListener.setSettingsData(result.getSettings());
-		
 		// filter user selected records from accepted field objects
 		List<FieldObject> selectedTableList = this.result.getSelectedRecords();
-		
-		// writes radec 
-		this.fileWriter.writeRaDecFile(selectedTableList, query);
-		
+
+		// writes radec
+		this.fileWriter.writeRaDecFile(selectedTableList, result.getQuery());
+
+		// reverts catalog ui to query & settings used to get table data 
+		catalogDataListener.setQueryData(result.getQuery());
+		catalogDataListener.setSettingsData(result.getSettings());
+
 		// status line
 		String message = fileWriter.getStatusMessage();
 		catalogDataListener.updateStatus(message);
@@ -186,10 +194,9 @@ public class ActionHandler {
 	 * Reads user-selected radec file, maps data to catalog table and ui control and
 	 * creates a new query object.
 	 * 
-	 * @return true if catalog table is populated, false if table is clear
 	 */
 	// TTD replace with void & set button state in catalog settings
-	public boolean doImportRaDecFile() {
+	public void doImportRaDecFile() {
 		// import radec file and map to catalog result object
 		QueryResult radecResult = radecFileReader.readRaDecData();
 
@@ -197,10 +204,7 @@ public class ActionHandler {
 		if (radecResult == null) {
 			String message = radecFileReader.getStatusMessage();
 			catalogDataListener.updateStatus(message);
-
-			// TTD remvoe boolean
-			// return true if result is not null, false otherwise
-			return (this.result != null);
+			return;
 		}
 
 		// extract radec query from catalog result object
@@ -210,24 +214,19 @@ public class ActionHandler {
 		double targetMag = radecResult.getTargetObject().getMag();
 		CatalogSettings settings = new CatalogSettings(targetMag);
 
+		// reference new CatalogResult object
+		this.result = radecResult;
+
+		// compile table rows from radec file, default settings, no filters applied
+		updateCatalogTable(this.result);
+		
 		// update catalogui
 		catalogDataListener.setQueryData(radecQuery);
 		catalogDataListener.setSettingsData(settings);
-
+		
 		// status line
 		String message = radecFileReader.getStatusMessage();
 		catalogDataListener.updateStatus(message);
-
-		// field values: update result with radec values
-		// reset tableRowsList to full radec dataet all rows selected
-		this.result = radecResult;
-		// this.tableRowsList = result.copyFieldObjects();
-
-		// compile table rows from radec file, default settings, no filters applies
-		updateCatalogTable(this.result);
-
-		// TTD remove
-		return true;
 	}
 
 	/**
@@ -241,6 +240,9 @@ public class ActionHandler {
 		// update catalog table with current settings
 		updateCatalogTable(this.result);
 
+		// update catalog ui totals, filter sort settings are unchanged
+		catalogDataListener.setSettingsData(result.getSettings());
+
 		// status message
 		String statusMessage = "Catalog table updated with current sort and filter settings";
 		catalogDataListener.updateStatus(statusMessage);
@@ -250,17 +252,18 @@ public class ActionHandler {
 	 * Clears catalog table and resets catalogui settings
 	 */
 	public void doClearTable() {
+		// current target mag
+		double targetMag = result.getTargetObject().getMag();
+		
 		// clear result field
 		this.result = null;
 
 		// clears table with null result
 		updateCatalogTable(null);
-		
-		// resets settings to default, retains current settings targtMag value
-		CatalogSettings defaultSettings = new CatalogSettings();
-		catalogDataListener.setSettingsData(defaultSettings);
 
-		
+		// resets settings to default, retains current spincontrol targtMag value
+		catalogDataListener.setSettingsData(new CatalogSettings(targetMag));
+
 		// status line
 		String statusMessage = "Cleared catalog result table, reset sort and filter settings";
 		catalogDataListener.updateStatus(statusMessage);
@@ -273,7 +276,7 @@ public class ActionHandler {
 	 * @return FieldObject list sorted and filtered as specified by user settings
 	 */
 	private void updateCatalogTable(QueryResult result) {
-
+		// null result: sets default settings & clears catalog table
 		if (result == null) {
 			catalogDataListener.setSettingsData(new CatalogSettings());
 			catalogTableListener.updateTable(null);
@@ -283,9 +286,6 @@ public class ActionHandler {
 		// apply sort & filter settings to dataset
 		result.applySelectedSort();
 		result.applySelectedFilters();
-		
-		// updates object counts
-		catalogDataListener.setSettingsData(result.getSettings());
 
 		// run table update with sort / filter selections
 		catalogTableListener.updateTable(result.getFieldObjects());
@@ -308,7 +308,7 @@ public class ActionHandler {
 		// modify q0 and s0 & update properties file
 		q0.setObjectId("freddy");
 		q0.setDecDeg(-23.456);
-		//s0.resetDefaultSettings(7.89);
+		// s0.resetDefaultSettings(7.89);
 		pf.setPropertiesFileData(q0, s0);
 
 		CatalogQuery q1 = pf.getPropertiesQueryData();

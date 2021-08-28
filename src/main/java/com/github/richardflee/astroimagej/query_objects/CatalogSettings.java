@@ -30,7 +30,7 @@ public class CatalogSettings {
 	public CatalogSettings() {
 		resetDefaultSettings(null);
 	}
-	
+
 	public CatalogSettings(double targetMag) {
 		resetDefaultSettings(targetMag);
 	}
@@ -73,19 +73,40 @@ public class CatalogSettings {
 		}
 	}
 
-	private void resetDefaultSettings() {
+	/**
+	 * sets distance sort option selected
+	 */
+	public void resetSortSeting() {
+		distanceRadioButtonValue = true;
+		deltaMagRadioButtonValue = false;
+	}
+
+	/**
+	 * resets nobs and mag limit settings to default values
+	 */
+	public void resetFilterSettings() {
+		// number observations / APASS
+		nObsSpinnerValue = 1;
+		
+		// mag limtis and flag
 		upperLimitSpinnerValue = 0.0;
-		targetMagSpinnerValue = 12.0;
 		lowerLimitSpinnerValue = 0.0;
 		isMagLimitsCheckBoxValue = true;
 
-		// sort options unchanged
-//		distanceRadioButtonValue = true;
-//		deltaMagRadioButtonValue = false;
+	}
 
-		// number observations / APASS
-		nObsSpinnerValue = 1;
 
+	private void resetDefaultSettings() {
+//		upperLimitSpinnerValue = 0.0;
+//		targetMagSpinnerValue = 12.0;
+////		lowerLimitSpinnerValue = 0.0;
+////		isMagLimitsCheckBoxValue = true;
+//		
+//		// number observations / APASS
+//		nObsSpinnerValue = 1;
+//		
+		this.resetSortSeting();
+		this.resetFilterSettings();
 		// record totals
 		totalLabelValue = 0;
 		filteredLabelValue = 0;
@@ -163,7 +184,6 @@ public class CatalogSettings {
 	public void setFilteredLabelValue(int nFilteredRecords) {
 		this.filteredLabelValue = (nFilteredRecords >= 0) ? nFilteredRecords : 0;
 	}
-
 
 	public boolean isEnableButtons() {
 		return enableButtons;

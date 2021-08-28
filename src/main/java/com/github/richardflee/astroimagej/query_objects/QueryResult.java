@@ -29,7 +29,7 @@ public class QueryResult {
 	// catalog ui dialog sort and filter settings
 	private CatalogSettings settings;
 
-	// list of target and refrence field objects
+	// list of target and reference field objects
 	private List<FieldObject> fieldObjects;
 
 	/**
@@ -60,6 +60,9 @@ public class QueryResult {
 		target.setDeltaMag(0.0);
 		target.setnObs(1);
 		fieldObjects.add(target);
+		
+		// initialise default catalog settings
+		this.settings = new CatalogSettings();
 	}
 
 	// settings constructor & assign catalog ui target mag to target field object
@@ -68,19 +71,22 @@ public class QueryResult {
 		getTargetObject().setMag(settings.getTargetMagSpinnerValue());
 		setTotalsAndButtons();
 	}
+	
+	public void radecSettings(CatalogSettings settings) {
+		this.settings = new CatalogSettings(settings);
+		settings.setTargetMagSpinnerValue(getTargetObject().getMag());
+		setTotalsAndButtons();
+	}
 
 	// import list field objects and update delta mag & radeSep fields
-	public void addFieldObjects(List<FieldObject> fieldObjects) {
-
+	public void appendFieldObjects(List<FieldObject> fieldObjects) {
 		// append reference field objects to target object
 		this.fieldObjects.addAll(fieldObjects);
 
-		FieldObject target = getTargetObject();
-		double targetMag = target.getMag();
-
+		// update fields relative to target: delta mag & distance 
 		for (FieldObject fo : this.fieldObjects) {
-			fo.setDeltaMag(targetMag);
-			fo.setRadSepAmin(target);
+			fo.setRadSepAmin(getTargetObject());
+			fo.setDeltaMag(getTargetObject().getMag());
 		}
 		setTotalsAndButtons();
 	}
@@ -210,7 +216,7 @@ public class QueryResult {
 	 * @param fo target field object
 	 */
 	public void setTargetObject(FieldObject fo) {
-		FieldObject target = getTargetObject();
+		FieldObject target = this.getTargetObject();
 
 		// data
 		target.setObjectId(fo.getObjectId());
@@ -253,7 +259,7 @@ public class QueryResult {
 		// compile ref object list from apass file
 		ApassFileReader fr = new ApassFileReader();
 		List<FieldObject> referenceObjects = fr.runQueryFromFile(query);
-		result.addFieldObjects(referenceObjects);
+		result.appendFieldObjects(referenceObjects);
 
 		System.out.println("\n TARGET MAG *****************************************************");
 		// set target mag test

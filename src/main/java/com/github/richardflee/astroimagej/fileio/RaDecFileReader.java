@@ -13,39 +13,34 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import com.github.richardflee.astroimagej.query_objects.CatalogQuery;
+import com.github.richardflee.astroimagej.query_objects.CatalogSettings;
 import com.github.richardflee.astroimagej.query_objects.FieldObject;
 import com.github.richardflee.astroimagej.query_objects.QueryResult;
 
 /**
  * Imports radec file data and populates catlog table and creates new query
  * object. Radec file format:
- * <p>
- * Block 1: data = astroimagej radec format data to draw apertures on plate
- * solve images
- * </p>
- * <p>
- * Block 2: comment = header + selected catalog table rows
- * </p>
- * <p>
- * Block 3: comment = header + row of catalog query data
- * </p>
- * <p>
- * Comment lines have leading char "#". A single "#" denotes break between
- * blocks.
- * </p>
+ * 
+ * <p> Block 1: data = astroimagej radec format data to draw apertures on plate
+ * solve images </p>
+ * 
+ * <p> Block 2: comment = header + selected catalog table rows </p>
+ * 
+ * <p> Block 3: comment = header + row of catalog query data </p>
+ * 
+ * <p> Comment lines have leading char "#". A single "#" denotes break between
+ * blocks. </p>
  */
-public class RaDecFileReader extends AbstractRaDecFile {
+public class RaDecFileReader extends RaDecFileBase {
 
 	// private List<String> lines = null;
 	private String radecFilepath = null;
 	// private boolean raDecFileSelected = false;
 
 	/**
-	 * Opens file dialog in ./astroimgej/radec folder with txt file filter.
-	 * <p>
-	 * If a file is selected, sets raDecFileSelected flag true, opens selected file
-	 * and converts to text array.
-	 * </p>
+	 * Opens file dialog in ./astroimgej/radec folder with txt file filter. <p> If a
+	 * file is selected, sets raDecFileSelected flag true, opens selected file and
+	 * converts to text array. </p>
 	 * 
 	 * @throws IOException pass file error message to ActionHandler
 	 *                     doImportRaDecFile method
@@ -73,7 +68,6 @@ public class RaDecFileReader extends AbstractRaDecFile {
 
 		// initialise new result and add radec records
 		QueryResult result = new QueryResult(query);
-
 		// block 2 radec data
 		List<String> resultLines = getResultLines(radecLines);
 		for (String resultLine : resultLines) {
@@ -81,13 +75,16 @@ public class RaDecFileReader extends AbstractRaDecFile {
 			if (fo.isTarget()) {
 				result.setTargetObject(fo);
 			} else {
-				fo.setApertureId(fo.getApertureId().replace("#", ""));
+				// fo.setApertureId(fo.getApertureId().replace("#", ""));
 				result.getFieldObjects().add(fo);
 			}
 		}
 
+		result.radecSettings(new CatalogSettings());
+
 		String statusMessage = String.format("Imported radec file: %s", file.getAbsoluteFile());
 		setStatusMessage(statusMessage);
+		// setStatusMessage(statusMessage);
 
 		return result;
 	}
@@ -212,11 +209,6 @@ public class RaDecFileReader extends AbstractRaDecFile {
 	public void setRadecFilepath(String radecFilepath) {
 		this.radecFilepath = radecFilepath;
 	}
-
-	// file selected getter
-//	public boolean isRaDecFileSelected() {
-//		return raDecFileSelected;
-//	}
 
 	public static void main(String[] args) {
 		RaDecFileReader fr = new RaDecFileReader();
