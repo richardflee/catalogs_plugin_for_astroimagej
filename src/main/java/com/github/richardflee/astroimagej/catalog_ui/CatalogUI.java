@@ -91,11 +91,14 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		// populate catalog combo
 		catalogCombo.addItem(CatalogsEnum.APASS.toString());
 		catalogCombo.addItem(CatalogsEnum.VSP.toString());
+		
+		// start with Distance sort option selected
+		distanceRadioButton.setSelected(true);
+		deltaMagRadioButton.setSelected(false);
 
 		// start in "no data" state
 		this.enableButtons = false;
 		setButtonsEnabled(enableButtons);
-
 	}
 
 	/*
@@ -208,7 +211,7 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 
 	@Override
 	public CatalogQuery getQueryData() {
-
+		// return null query if invalid input
 		if (!verifyAllInputs()) {
 			return null;
 		}

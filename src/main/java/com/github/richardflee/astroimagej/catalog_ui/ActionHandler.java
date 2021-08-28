@@ -47,6 +47,8 @@ public class ActionHandler {
 	 * result null
 	 */
 	private QueryResult result = null;
+	
+	private final String QUERY_SETTINGS_ERROR = "ERROR: Invalid input in Catalog Query settings text field";
 
 	/**
 	 * Parameterised constructor references CatalogUI to access form control values
@@ -91,7 +93,7 @@ public class ActionHandler {
 
 			// query = null => at least one jtext input is not valid
 		} else {
-			statusMessage = "ERROR: Invalid text input";
+			statusMessage = QUERY_SETTINGS_ERROR;
 		}
 		catalogDataListener.updateStatus(statusMessage);
 	}
@@ -108,7 +110,7 @@ public class ActionHandler {
 			CatalogSettings settings = catalogDataListener.getSettingsData();
 			statusMessage = propertiesFile.setPropertiesFileData(query, settings);
 		} else {
-			statusMessage = "ERROR: Invalid input in Catalog Query settings text field";
+			statusMessage = QUERY_SETTINGS_ERROR;
 		}
 		catalogDataListener.updateStatus(statusMessage);
 	}
@@ -122,6 +124,13 @@ public class ActionHandler {
 
 		// compile CatalogQuery object from catalog ui Query Settings data
 		CatalogQuery query = catalogDataListener.getQueryData();
+		
+		// traps invalid data entry
+		if (query == null) {
+			String statusMessage = QUERY_SETTINGS_ERROR;
+			catalogDataListener.updateStatus(statusMessage);
+			return;
+		}
 
 		// reference result field to a new QueryResult object
 		this.result = new QueryResult(query);
@@ -153,7 +162,7 @@ public class ActionHandler {
 	 * ./astroimagej/radec/wasp_12.Rc.020.radec.txt </p>
 	 */
 	public void doSaveRaDecFile() {
-		// CatalogQuery boject for dataset to save
+		// CatalogQuery dataset object
 		CatalogQuery query = this.result.getQuery();
 		catalogDataListener.setQueryData(query);
 		
@@ -163,14 +172,11 @@ public class ActionHandler {
 		catalogDataListener.setSettingsData(result.getSettings());
 		
 		// filter user selected records from accepted field objects
-		List<FieldObject> selectedTableList = this.result.getFieldObjects().stream()
-							.filter(p -> p.isAccepted())
-							.filter(p -> p.isSelected())
-							.collect(Collectors.toList());
+		List<FieldObject> selectedTableList = this.result.getSelectedRecords();
 		
 		// writes radec 
 		this.fileWriter.writeRaDecFile(selectedTableList, query);
-
+		
 		// status line
 		String message = fileWriter.getStatusMessage();
 		catalogDataListener.updateStatus(message);

@@ -137,7 +137,7 @@ public class RaDecFileWriter extends AbstractRaDecFile {
 		}
 
 		// table block
-		lines.add("#\n#Ap, ObjectId, RA, Dec, Mag, MagErr, MagDelta, RadSpe, Nobs\n");
+		lines.add("#\n#Ap, ObjectId, RA, Dec, Mag, MagErr, MagDelta, RadSep, Nobs\n");
 		for (FieldObject fo : selectedList) {
 			lines.add(compileTableLine(fo));
 		}

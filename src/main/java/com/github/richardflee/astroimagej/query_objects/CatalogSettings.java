@@ -79,9 +79,9 @@ public class CatalogSettings {
 		lowerLimitSpinnerValue = 0.0;
 		isMagLimitsCheckBoxValue = true;
 
-		// sort option
-		distanceRadioButtonValue = true;
-		deltaMagRadioButtonValue = false;
+		// sort options unchanged
+//		distanceRadioButtonValue = true;
+//		deltaMagRadioButtonValue = false;
 
 		// number observations / APASS
 		nObsSpinnerValue = 1;
@@ -89,10 +89,6 @@ public class CatalogSettings {
 		// record totals
 		totalLabelValue = 0;
 		filteredLabelValue = 0;
-
-		// upper & lower mag limits
-		// upperLabelValue = 0.0;
-		// lowerLabelValue = 0.0;
 	}
 
 	// auto getter - setters

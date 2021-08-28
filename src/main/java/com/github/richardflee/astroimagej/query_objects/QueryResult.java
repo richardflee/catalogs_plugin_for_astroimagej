@@ -132,6 +132,21 @@ public class QueryResult {
 		setTotalsAndButtons();
 	}
 	
+	/**
+	 * Compiles list of accepted and selected field objects to export to radec file
+	 * 
+	 * <p>Note: default sort order by radial distance to target</p>
+	 * 
+	 * @return filtered list of user-selected records
+	 */
+	public List<FieldObject> getSelectedRecords() {
+		// filter user selected records from accepted field objects
+		return this.getFieldObjects().stream()
+							.filter(p -> p.isAccepted())
+							.filter(p -> p.isSelected())
+							.collect(Collectors.toList());		
+	}
+	
 	private void setTotalsAndButtons() {
 		settings.setTotalLabelValue(getRecordsTotal());
 		settings.setFilteredLabelValue(getAcceptedTotal());
