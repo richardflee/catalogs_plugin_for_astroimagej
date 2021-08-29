@@ -24,9 +24,6 @@ public class RaDecFileWriter extends RaDecFileBase {
 	// flag data block
 	private boolean isDataBlock = true;
 
-	// result of of operation
-	//private String statusMessage = null;
-
 	public RaDecFileWriter() {
 		// compile data lines first
 		isDataBlock = true;
@@ -59,9 +56,9 @@ public class RaDecFileWriter extends RaDecFileBase {
 			String message = String.format("ERROR: Error saving radec file: %s", filePath);
 			setStatusMessage(message);
 		}
-		String message = String.format("Saved radec file: %s", filePath);
-		setStatusMessage(message);
-		return message;
+		String statusMessage = String.format("Saved radec file: %s", filePath);
+		setStatusMessage(statusMessage);
+		return statusMessage;
 	}
 
 	/*

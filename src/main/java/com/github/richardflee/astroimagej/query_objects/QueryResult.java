@@ -240,7 +240,11 @@ public class QueryResult {
 
 	@Override
 	public String toString() {
-		return "QueryResult [fieldObjects=" + fieldObjects + "]";
+		String s = this.query.toString()+ "\n";
+		s += this.settings.toString()+ "\n\n";
+		for (FieldObject fo : this.getFieldObjects()) {
+			s += fo.toString() + "\n";		}
+		return String.format("QueryResult: %s", s);
 	}
 
 	public static void main(String[] args) {
@@ -251,6 +255,7 @@ public class QueryResult {
 		// build default catalog result object, init new result object
 		CatalogQuery query = new CatalogQuery();
 		QueryResult result = new QueryResult(query);
+		
 
 		// build default CatalogSettngs object, assign to result_settings
 		CatalogSettings settings = new CatalogSettings(tgtMag0);
@@ -260,6 +265,7 @@ public class QueryResult {
 		ApassFileReader fr = new ApassFileReader();
 		List<FieldObject> referenceObjects = fr.runQueryFromFile(query);
 		result.appendFieldObjects(referenceObjects);
+		
 
 		System.out.println("\n TARGET MAG *****************************************************");
 		// set target mag test
@@ -306,6 +312,7 @@ public class QueryResult {
 		result.getSettings().setDeltaMagRadioButtonValue(false);
 		result.applySelectedSort();
 
+		// distance sort test
 		boolean sorted = true;
 		for (int idx = 1; idx < result.getFieldObjects().size(); idx++) {
 			sorted = sorted && (result.getFieldObjects().get(idx).getRadSepAmin() > result.getFieldObjects()
@@ -313,6 +320,7 @@ public class QueryResult {
 		}
 		System.out.println(String.format("Sorted by radial distance: %b", sorted));
 
+		// mag delta sort test
 		sorted = true;
 		for (int idx = 1; idx < result.getFieldObjects().size(); idx++) {
 			double item1 = Math.abs(result.getFieldObjects().get(idx).getDeltaMag());
@@ -326,6 +334,7 @@ public class QueryResult {
 		result.getSettings().setDeltaMagRadioButtonValue(true);
 		result.applySelectedSort();
 
+		// distance sort test
 		sorted = true;
 		for (int idx = 1; idx < result.getFieldObjects().size(); idx++) {
 			sorted = sorted && (result.getFieldObjects().get(idx).getRadSepAmin() > result.getFieldObjects()
@@ -377,5 +386,11 @@ public class QueryResult {
 			System.out.println((String.format("%d     %b   %.3f   %.3f   %.3f  %s      %s      %d", nObs[idx],
 					isChecked[idx], upper[idx], nominal, lower[idx], upperLabel, lowerLabel, nRecs)));
 		}
+		
+		System.out.println("\n RESULT TOSTRING **********************************************************");
+
+		System.out.println(result.toString());
+		
+		
 	}
 }

@@ -19,127 +19,65 @@ import com.github.richardflee.astroimagej.query_objects.QueryResult;
 
 /**
  * Imports radec file data and populates catlog table and creates new query
- * object. Radec file format:
- * 
- * <p> Block 1: data = astroimagej radec format data to draw apertures on plate
- * solve images </p>
- * 
- * <p> Block 2: comment = header + selected catalog table rows </p>
- * 
- * <p> Block 3: comment = header + row of catalog query data </p>
- * 
- * <p> Comment lines have leading char "#". A single "#" denotes break between
- * blocks. </p>
+ * object. Radec file format: <p> Block 1: data = astroimagej radec format data
+ * to draw apertures on plate solve images </p> <p> Block 2: comment = header +
+ * selected catalog table rows </p> <p> Block 3: comment = header + row of
+ * catalog query data </p> <p> Comment lines have leading char "#". A single "#"
+ * denotes break between blocks. </p>
  */
 public class RaDecFileReader extends RaDecFileBase {
 
-	// private List<String> lines = null;
 	private String radecFilepath = null;
-	// private boolean raDecFileSelected = false;
+	private double targetMag;
 
-	/**
-	 * Opens file dialog in ./astroimgej/radec folder with txt file filter. <p> If a
-	 * file is selected, sets raDecFileSelected flag true, opens selected file and
-	 * converts to text array. </p>
-	 * 
-	 * @throws IOException pass file error message to ActionHandler
-	 *                     doImportRaDecFile method
-	 */
 	public RaDecFileReader() {
 	}
 
-	public QueryResult readRaDecData() {
-		// radec file into line array
-		List<String> radecLines = null;
-
+	/**
+	 * Compiles a QueryResult object from user-selected radec file. <p>Determines
+	 * sort order from radec table data</p>
+	 * @return QueryResult object in distance or mag difference sort order
+	 */
+	public QueryResult importRaDecResult() {
 		// open file dialog, file = null => cancel
-		// sets field raDecFileSelected flag = true if user selects file in dialog
 		File file = radecFileDialog();
 		if (file == null) {
 			String statusMessage = "Cancel pressed, no file selected";
 			setStatusMessage(statusMessage);
 			return null;
 		}
+		// map radec file contents into line array
+		List<String> radecLines = loadRaDecLines(file);
 
-		radecLines = loadRaDecLines(file);
+		// extract catalog query data
+		CatalogQuery radecQuery = getRaDecQuery(radecLines);
 
-		// extracts query data from the last array line
-		CatalogQuery query = getQueryData(radecLines);
+		// extract target object, first row in table data
+		FieldObject radecTarget = getRaDecFieldObjects(radecLines, true).get(0);
 
-		// initialise new result and add radec records
-		QueryResult result = new QueryResult(query);
-		// block 2 radec data
-		List<String> resultLines = getResultLines(radecLines);
-		for (String resultLine : resultLines) {
-			FieldObject fo = compileFieldObject(resultLine);
-			if (fo.isTarget()) {
-				result.setTargetObject(fo);
-			} else {
-				// fo.setApertureId(fo.getApertureId().replace("#", ""));
-				result.getFieldObjects().add(fo);
-			}
-		}
+		// extract remainder of table data into field object list
+		List<FieldObject> radecFieldObjects = getRaDecFieldObjects(radecLines, false);
 
-		result.radecSettings(new CatalogSettings());
+		// CatalogSettings object, initialised with radec targetMag value
+		// auto-selects sort radio button based on table sort order
+		this.targetMag = radecTarget.getMag();
+		CatalogSettings radecSettings = getRaDecSettings(radecFieldObjects);
+
+		// compile and return QueryResult object
+		QueryResult radecResult = new QueryResult(radecQuery);
+		radecResult.appendFieldObjects(radecFieldObjects);
+		radecResult.setSettings(radecSettings);
 
 		String statusMessage = String.format("Imported radec file: %s", file.getAbsoluteFile());
 		setStatusMessage(statusMessage);
-		// setStatusMessage(statusMessage);
-
-		return result;
-	}
-
-	/**
-	 * Compiles a QueryResult object from blocks 2 and 3 radec data
-	 * 
-	 * @return catalog table data mapped to a QueryResult object
-	 */
-
-	/**
-	 * Compiles a CatalogQuery object from block 3 radec data
-	 * 
-	 * @return CatalogQuery object
-	 */
-	private CatalogQuery getQueryData(List<String> lines) {
-		// locate single data line and convert to a new query object
-		String dataLine = getQueryLine(lines);
-		return CatalogQuery.fromFormattedString(dataLine);
-	}
-
-	/*
-	 * Converts user selected radec text file to text list
-	 * 
-	 * @param file reference to selected file
-	 * 
-	 * @return text file contents copied to String array
-	 */
-	private List<String> loadRaDecLines(File file) {
-		List<String> lines = new ArrayList<>();
-
-		Path path = file.toPath();
-		try (Stream<String> stream = Files.lines(path)) {
-			lines = stream.collect(Collectors.toList());
-		} catch (IOException e) {
-			// handle status line eror mmessage in doImportRaDec
-			String statusMessage = String.format("ERROR: Error reading radec file: %s", path.toString());
-			setStatusMessage(statusMessage);
-		}
-		return lines;
+		return radecResult;
 	}
 
 	/*
 	 * Opens file dialog configured for radec folder and file type
-	 * 
 	 * @return file reference to selected file, or null if Cancel pressed
 	 */
 	private File radecFileDialog() {
-//		// sets ui theme
-//		try {
-//			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-//		} catch (Exception ex) {
-//			System.err.println("Failed to initialize Windows Look-Feel");
-//		}
-
 		// configures file chooser dialog start folder and file type
 		File file = new File(System.getProperty("user.dir"), "radec");
 		JFileChooser jfc = new JFileChooser(file);
@@ -149,23 +87,109 @@ public class RaDecFileReader extends RaDecFileBase {
 		jfc.addChoosableFileFilter(filter);
 
 		// sets file object to selected text file or null if Cancel
+		file = null;
 		if (jfc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 			file = jfc.getSelectedFile();
 			setRadecFilepath(file.getAbsolutePath());
-		} else {
-			file = null;
 		}
 		return file;
 	}
 
 	/*
+	 * Converts user selected radec text file to text list
+	 * @param file reference to selected file
+	 * @return text file contents copied to String array
+	 */
+	private List<String> loadRaDecLines(File file) {
+		List<String> lines = new ArrayList<>();
+
+		Path path = file.toPath();
+		try (Stream<String> stream = Files.lines(path)) {
+			lines = stream.collect(Collectors.toList());
+		} catch (IOException e) {
+			// error statusMessage
+			String statusMessage = String.format("ERROR: Error reading radec file: %s", path.toString());
+			setStatusMessage(statusMessage);
+		}
+		return lines;
+	}
+
+	/*
+	 * Compiles a CatalogQuery object from block 3 radec data
+	 * @return CatalogQuery object
+	 */
+	private CatalogQuery getRaDecQuery(List<String> radecLines) {
+		// locate single data line and convert to a new query object
+		String dataLine = getQueryLine(radecLines);
+		return CatalogQuery.fromFormattedString(dataLine);
+	}
+
+	/*
+	 * If isTarget is true, returns target field object in a single element array,
+	 * otherwise returns array of reference field objects
+	 * @param radecLines text array comprising radec file contents
+	 * @param isTarget flag to return single target or multiple reference field
+	 * objects
+	 * @return array list containing eithe target field object or a list of
+	 * reference field objects
+	 */
+	private List<FieldObject> getRaDecFieldObjects(List<String> radecLines, boolean isTarget) {
+		List<FieldObject> radecRows = new ArrayList<>();
+
+		List<String> tableLines = getTableLines(radecLines);
+		for (String line : tableLines) {
+			FieldObject row = compileFieldObject(line);
+			if (row.isTarget() == isTarget) {
+				radecRows.add(row);
+			}
+		}
+		return radecRows;
+	}
+
+	/*
+	 * Compiles a CatalogSetting object with radec target mag and infers table sort order.
+	 * @param radecFieldObjects list of reference field objects sorted relative to target object
+	 * @param targetMag radec targe mag value
+	 * @return QueryResult object encapsulating contents of user selected radec file
+	 */
+	private CatalogSettings getRaDecSettings(List<FieldObject> radecFieldObjects) {
+		// initialise default settings
+		CatalogSettings settings = new CatalogSettings();
+
+		// set target mag from field value
+		settings.setTargetMagSpinnerValue(this.targetMag);
+
+		// sets distance and delta mag sort settings inferred from fieldObjects list
+		boolean sortedByDeltaMag = isSortedByDeltaMag(radecFieldObjects);
+		settings.setDeltaMagRadioButtonValue(sortedByDeltaMag);
+		settings.setDistanceRadioButtonValue(!sortedByDeltaMag);
+
+		return settings;
+	}
+
+	/**
+	 * Tests if |mag diff| is sorted in ascending order 
+	 * 
+	 * @param radecFieldObjects sorted list of field objeccts
+	 * @return true if sorted in order of increasing |mag diff|, false otherwise
+	 */
+	private boolean isSortedByDeltaMag(List<FieldObject> radecFieldObjects) {
+		// delta mag sort
+		boolean sortedByDeltaMag = true;
+		for (int idx = 1; idx < radecFieldObjects.size(); idx++) {
+			double currentDeltaMag = Math.abs(radecFieldObjects.get(idx).getDeltaMag());
+			double previousDeltaMag = Math.abs(radecFieldObjects.get(idx - 1).getDeltaMag());
+			sortedByDeltaMag = sortedByDeltaMag && (currentDeltaMag >= previousDeltaMag);
+		}
+		return sortedByDeltaMag;
+	}
+
+	/*
 	 * Extracts radec block 2 table data in text array
-	 * 
 	 * @param lines text array comprising full radec data set
-	 * 
 	 * @return text array comprising radec table data set
 	 */
-	private List<String> getResultLines(List<String> allTableLines) {
+	private List<String> getTableLines(List<String> allTableLines) {
 		int idx = 0;
 		// first "#" marks start of radec block 2
 		while (!(allTableLines.get(idx).equals("#"))) {
@@ -185,9 +209,7 @@ public class RaDecFileReader extends RaDecFileBase {
 
 	/*
 	 * Extracts radec block 3 table data in single text line
-	 * 
 	 * @param lines text array comprising full radec data set
-	 * 
 	 * @return text text line compring radec query data set
 	 */
 	private String getQueryLine(List<String> allTableLines) {
@@ -201,28 +223,14 @@ public class RaDecFileReader extends RaDecFileBase {
 		return allTableLines.get(dataIndex);
 	}
 
-	// radec filepath getter
-	public String getRadecFilepath() {
-		return radecFilepath;
-	}
-
-	public void setRadecFilepath(String radecFilepath) {
+	private void setRadecFilepath(String radecFilepath) {
 		this.radecFilepath = radecFilepath;
 	}
 
 	public static void main(String[] args) {
 		RaDecFileReader fr = new RaDecFileReader();
-
-		QueryResult result = fr.readRaDecData();
-		if (result != null) {
-			result.getFieldObjects().stream().forEach(System.out::println);
-			System.out.println();
-
-			CatalogQuery query = result.getQuery();
-			System.out.println(query.toString());
-		} else {
-			System.out.println("cancel pressed");
-		}
+		QueryResult result = fr.importRaDecResult();
+		System.out.println(result.toString());
 	}
 
 }

@@ -141,7 +141,7 @@ public class ActionHandler {
 
 		// default settings with catalog ui target mag
 		double targetMag = catalogDataListener.getSettingsData().getTargetMagSpinnerValue();
-		CatalogSettings defaultSettings = new CatalogSettings(targetMag);
+		//CatalogSettings defaultSettings = new CatalogSettings(targetMag);
 
 		// set sort option
 //		defaultSettings.setDistanceRadioButtonValue(true);
@@ -198,7 +198,7 @@ public class ActionHandler {
 	// TTD replace with void & set button state in catalog settings
 	public void doImportRaDecFile() {
 		// import radec file and map to catalog result object
-		QueryResult radecResult = radecFileReader.readRaDecData();
+		QueryResult radecResult = radecFileReader.importRaDecResult();
 
 		// user pressed cancel, update status message and exit
 		if (radecResult == null) {
@@ -207,13 +207,6 @@ public class ActionHandler {
 			return;
 		}
 
-		// extract radec query from catalog result object
-		CatalogQuery radecQuery = radecResult.getQuery();
-
-		// default settings with radec target mag
-		double targetMag = radecResult.getTargetObject().getMag();
-		CatalogSettings settings = new CatalogSettings(targetMag);
-
 		// reference new CatalogResult object
 		this.result = radecResult;
 
@@ -221,12 +214,12 @@ public class ActionHandler {
 		updateCatalogTable(this.result);
 		
 		// update catalogui
-		catalogDataListener.setQueryData(radecQuery);
-		catalogDataListener.setSettingsData(settings);
+		catalogDataListener.setQueryData(this.result.getQuery());
+		catalogDataListener.setSettingsData(this.result.getSettings());
 		
 		// status line
-		String message = radecFileReader.getStatusMessage();
-		catalogDataListener.updateStatus(message);
+		String statusMessage = radecFileReader.getStatusMessage();
+		catalogDataListener.updateStatus(statusMessage);
 	}
 
 	/**

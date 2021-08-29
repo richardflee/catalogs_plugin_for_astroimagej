@@ -15,7 +15,7 @@ import com.github.richardflee.astroimagej.utils.AstroCoords;
 class RaDecFileBase {
 	
 	// result of of operation
-		private String statusMessage = null;
+		private String statusMessage = "ERROR: Coding error";
 
 	/*
 	 * Returns single row of catalog table data in a comma-delimited string
