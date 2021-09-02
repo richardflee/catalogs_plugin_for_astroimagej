@@ -2,6 +2,8 @@ package com.github.richardflee.astroimagej.catalog_ui;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Dialog;
+import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -29,7 +31,7 @@ public class VspChart {
 	// chart size
 	private static final int SCALED_WIDTH = 650;
 
-	// empirical chart size constants
+	// empirical chart dimensions
 	// top-left corner chart area
 	private static final double X_LEFT = 9.0;
 	private static final double Y_TOP = 97.0;
@@ -44,6 +46,8 @@ public class VspChart {
 
 	// aperture diameter
 	private static final int AP_WIDTH = 22;
+	
+	private JDialog dialog;
 
 	// 2D graphics
 	private Graphics2D g2d = null;
@@ -63,6 +67,9 @@ public class VspChart {
 	 *     query result parameters
 	 */
 	public VspChart(QueryResult result) {
+		
+		
+		
 		this.fovAmin = result.getQuery().getFovAmin();
 		this.target = result.getTargetObject();
 		this.chartUri = result.getChartUri();
@@ -86,12 +93,10 @@ public class VspChart {
 		if (this.scaledImage == null) {
 			return;
 		}
-
 		// draw reference apertures
 		for (int i = 1; i < fieldObjects.size(); i++) {
 			drawAperture(fieldObjects.get(i));
 		}
-
 		// displays chart dialog
 		showVspChart(scaledImage);
 	}
@@ -128,6 +133,9 @@ public class VspChart {
 	 * @param fo reference to current field object, encapsulates object coordinates
 	 */
 	private void drawAperture(FieldObject fo) {
+		if (fo.isSelected() == false) {
+			return;
+		}
 		// sets red or green for reference or target object
 		Color color = (fo.isTarget() == true) ? Color.GREEN : Color.red;
 		g2d.setColor(color);
@@ -197,11 +205,24 @@ public class VspChart {
 	}
 
 	private void showVspChart(BufferedImage scaledImage) {
-		JDialog dialog = new JDialog();
-		dialog.getContentPane().add(new JLabel(new ImageIcon(scaledImage)));
-		dialog.setSize(new Dimension(scaledImage.getWidth(), scaledImage.getHeight()));
+		this.dialog = new JDialog();
+		this.dialog.getContentPane().add(new JLabel(new ImageIcon(scaledImage)));
+		this.dialog.setSize(new Dimension(scaledImage.getWidth(), scaledImage.getHeight()));
+		
+		this.dialog.setTitle("VSP Star chart");
+		this.dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		
+		// prevents blocking by modal chatUi dialog ...
+		dialog.setModalExclusionType(Dialog.ModalExclusionType.APPLICATION_EXCLUDE);
+		
 		dialog.setVisible(true);
-
+	}
+	
+	// close and dispose vsp chart
+	public void closeChart() {
+		if (this.dialog != null) {
+			this.dialog.dispose();
+		}
 	}
 
 	public static void main(String[] args) {

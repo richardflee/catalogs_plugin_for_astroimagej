@@ -36,6 +36,9 @@ public class ActionHandler {
 	private PropertiesFileIO propertiesFile = null;
 	private RaDecFileReader radecFileReader = null;
 	private RaDecFileWriter fileWriter = null;
+	
+	// star chart with selected aperture overlay
+	private VspChart chart = null;
 
 	/*
 	 * result field: object compiled from database query records or imported from
@@ -135,6 +138,8 @@ public class ActionHandler {
 			catalogDataListener.updateStatus(QUERY_SETTINGS_ERROR);
 			return;
 		}
+		
+		
 
 		// reference result field to a new QueryResult object
 		this.result = new QueryResult(query);
@@ -142,10 +147,6 @@ public class ActionHandler {
 		// default settings with catalog ui target mag
 		double targetMag = catalogDataListener.getSettingsData().getTargetMagSpinnerValue();
 		//CatalogSettings defaultSettings = new CatalogSettings(targetMag);
-
-		// set sort option
-//		defaultSettings.setDistanceRadioButtonValue(true);
-//		defaultSettings.setDeltaMagRadioButtonValue(false);
 
 		// copy default settings
 		result.setSettings(new CatalogSettings(targetMag));
@@ -155,6 +156,10 @@ public class ActionHandler {
 		ApassFileReader fr = new ApassFileReader();
 		List<FieldObject> referenceObjects = fr.runQueryFromFile(query);
 		result.appendFieldObjects(referenceObjects);
+		
+		// chart X26835JN: wasp12 / 06:30:32.80 / 29:40:20.3 / 10' fov / maglimit = 18.5 / N- E = up-left
+		result.setChartUri("https://app.aavso.org/vsp/chart/X26835JN.png?type=chart");
+		
 
 		// applies current sort and default filter settings, populates catalog table
 		// with full dataset
@@ -162,11 +167,20 @@ public class ActionHandler {
 
 		// update catalog ui with default settings, retains current target spinner value
 		catalogDataListener.setSettingsData(result.getSettings());
+		
+		if (chart != null) {
+			chart.closeChart();
+		}
+		chart = new VspChart(this.result);
+		chart.drawChart(result.getFieldObjects());
 
 		// status message
 		String statusMessage = "Imported full dataset, sorted by radial distance to target position";
 		catalogDataListener.updateStatus(statusMessage);
 	}
+	
+	
+	
 
 	/**
 	 * Writes radec file with selected table data to radec format text file in local
@@ -234,7 +248,13 @@ public class ActionHandler {
 		updateCatalogTable(this.result);
 
 		// update catalog ui totals, filter sort settings are unchanged
-		catalogDataListener.setSettingsData(result.getSettings());
+		catalogDataListener.setSettingsData(this.result.getSettings());
+		
+		if (chart != null) {
+			chart.closeChart();
+		}
+		chart = new VspChart(this.result);
+		chart.drawChart(result.getFieldObjects());
 
 		// status message
 		String statusMessage = "Catalog table updated with current sort and filter settings";
@@ -256,6 +276,9 @@ public class ActionHandler {
 
 		// resets settings to default, retains current spincontrol targtMag value
 		catalogDataListener.setSettingsData(new CatalogSettings(targetMag));
+		
+		// close & dispose current vsp chart
+		chart.closeChart();
 
 		// status line
 		String statusMessage = "Cleared catalog result table, reset sort and filter settings";
@@ -317,54 +340,3 @@ public class ActionHandler {
 	}
 }
 
-//clears table and exits if result = null
-//catalogTableListener.updateTable(null);
-//if ((result == null) || (settings == null)) {
-//	return;
-//}
-//
-//// this.filteredTableRows = null;
-//
-//// get pesky targetMag value & update delta mag records
-//double targetMag = settings.getTargetMagSpinnerValue();
-//
-//result.updateDeltaMags(targetMag);
-//List<FieldObject> tableRowsList = result.getFieldObjects();
-//
-//// sort by distance option
-//if (settings.isDistanceRadioButtonValue() == true) {
-//	tableRowsList = tableRowsList.stream().sorted(Comparator.comparingDouble(FieldObject::getRadSepAmin))
-//			.collect(Collectors.toList());
-//	// sort by delta mag option
-//} else if (settings.isDeltaMagRadioButtonValue() == true) {
-//	tableRowsList = tableRowsList.stream().sorted(Comparator.comparingDouble(p -> Math.abs(p.getDeltaMag())))
-//			.collect(Collectors.toList());
-//}
-//
-//// apply nObs limit to reference object records
-//int numberObs = settings.getnObsSpinnerValue();
-//
-//for (FieldObject fo : tableRowsList) {
-//	boolean isAccepted = ((fo.getnObs() >= numberObs) || (fo.isTarget() == true));
-//	fo.setAccepted(isAccepted);
-//}
-//
-//// upper and lower mag range settings; 0.01 disables range check
-//double upperLimit = settings.getUpperLimitSpinnerValue();
-//double lowerLimit = settings.getLowerLimitSpinnerValue();
-//
-//// disables respective range check if magnitude is less than 0.01
-//boolean disableUpperLimit = Math.abs(upperLimit) < 0.01;
-//boolean disableLowerLimit = Math.abs(lowerLimit) < 0.01;
-//
-//// apply mag limits filter
-//if (settings.isMagLimitsCheckBoxValue() == true) {
-//	for (FieldObject fo : tableRowsList) {
-//		if (fo.isTarget() == false) {
-//			boolean isAccepted = fo.isAccepted();
-//			isAccepted = isAccepted && (disableUpperLimit || (fo.getMag() <= upperLimit + targetMag));
-//			isAccepted = isAccepted && (disableLowerLimit || (fo.getMag() >= lowerLimit + targetMag));
-//			fo.setAccepted(isAccepted);
-//		}
-//	}
-//}
