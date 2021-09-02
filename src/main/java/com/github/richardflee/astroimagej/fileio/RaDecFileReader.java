@@ -223,14 +223,20 @@ public class RaDecFileReader extends RaDecFileBase {
 		return allTableLines.get(dataIndex);
 	}
 
-	private void setRadecFilepath(String radecFilepath) {
+	
+	public String getRadecFilepath() {
+		return radecFilepath;
+	}
+	
+	public void setRadecFilepath(String radecFilepath) {
 		this.radecFilepath = radecFilepath;
 	}
-
+	
 	public static void main(String[] args) {
 		RaDecFileReader fr = new RaDecFileReader();
 		QueryResult result = fr.importRaDecResult();
 		System.out.println(result.toString());
 	}
+
 
 }

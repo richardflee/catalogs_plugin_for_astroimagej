@@ -31,6 +31,8 @@ public class QueryResult {
 
 	// list of target and reference field objects
 	private List<FieldObject> fieldObjects;
+	
+	private String chartUri = null;
 
 	/**
 	 * Constructor for QueryResult objects created by query of on-line astronomical
@@ -238,13 +240,24 @@ public class QueryResult {
 	}
 
 
+	public String getChartUri() {
+		return chartUri;
+	}
+
+	public void setChartUri(String chartUri) {
+		this.chartUri = chartUri;
+	}
+
 	@Override
 	public String toString() {
 		String s = this.query.toString()+ "\n";
 		s += this.settings.toString()+ "\n\n";
 		for (FieldObject fo : this.getFieldObjects()) {
-			s += fo.toString() + "\n";		}
-		return String.format("QueryResult: %s", s);
+			s += fo.toString() + "\n";
+		}
+		s += String.format("QueryResult: %s\n", s);
+		s += String.format("Chart uri: %s", chartUri);
+		return s;
 	}
 
 	public static void main(String[] args) {
@@ -265,6 +278,10 @@ public class QueryResult {
 		ApassFileReader fr = new ApassFileReader();
 		List<FieldObject> referenceObjects = fr.runQueryFromFile(query);
 		result.appendFieldObjects(referenceObjects);
+		
+		// vsp chart uri
+		String chartUri = "https://app.aavso.org/vsp/chart/X26835JN.png?type=chart";
+		result.setChartUri(chartUri);
 		
 
 		System.out.println("\n TARGET MAG *****************************************************");
@@ -388,7 +405,8 @@ public class QueryResult {
 		}
 		
 		System.out.println("\n RESULT TOSTRING **********************************************************");
-
+		
+		
 		System.out.println(result.toString());
 		
 		
