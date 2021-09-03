@@ -3,7 +3,6 @@ package com.github.richardflee.astroimagej.catalog_ui;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dialog;
-import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -11,6 +10,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -46,12 +46,13 @@ public class VspChart {
 
 	// aperture diameter
 	private static final int AP_WIDTH = 22;
-	
+
 	private JDialog dialog;
 
-	// 2D graphics
+	// 2D graphics, download and scaled image arrays
 	private Graphics2D g2d = null;
-	private BufferedImage scaledImage = null;
+	private BufferedImage downloadImage = null;
+	// private BufferedImage scaledImage = null;
 
 	// query result data
 	private double fovAmin = 0.0;
@@ -67,38 +68,81 @@ public class VspChart {
 	 *     query result parameters
 	 */
 	public VspChart(QueryResult result) {
-		
-		
-		
+		// initialises fields with query result data
 		this.fovAmin = result.getQuery().getFovAmin();
 		this.target = result.getTargetObject();
 		this.chartUri = result.getChartUri();
 
-		// download and scale vsp chart as buffered image or null if download fails
-		this.scaledImage = loadImage(chartUri);
-		if (this.scaledImage == null) {
-			String statusMessage = String.format("ERROR: Error in downoading chart: %s", chartUri);
+		// downloads and scales vsp chart as buffered image or null if download fails
+		this.downloadImage = loadImage(chartUri);
+		if (this.downloadImage == null) {
+			String statusMessage = String.format("ERROR: Error downoading chart: %s", chartUri);
 			setStatusMessage(statusMessage);
 			return;
 		}
-
-		// create graphics object to draw aperture shapes and text
+		
+		// draws chart with all reference objects selected
+		drawChart(result.getFieldObjects());
+	}
+	
+	/**
+	 * Closes any open chart and draws a new chart showing VSP chart of current star field overlaid with aperture selections
+	 * 
+	 * @param fieldObjects list of target and reference objects
+	 */
+	public void drawChart(List<FieldObject> fieldObjects) {
+		// chart download has failed
+		if (this.downloadImage == null) {
+			return;
+		}
+		// clears open chart dialog
+		closeChart();
+		
+		// scale image to SCALED_WIDTH, retaining aspect ration
+		BufferedImage scaledImage = scaledImage(this.downloadImage);
+		
+		// creates graphics object to draw aperture shapes and text
 		this.g2d = scaledImage.createGraphics();
 		this.g2d.setStroke(new BasicStroke(3));
 		this.g2d.setFont(new Font("Consolas", Font.BOLD, 14));
-	}
-
-	public void drawChart(List<FieldObject> fieldObjects) {
-		// chart download already failed
-		if (this.scaledImage == null) {
-			return;
-		}
-		// draw reference apertures
-		for (int i = 1; i < fieldObjects.size(); i++) {
+		
+		// draws selected reference apertures
+		for (int i = 0; i < fieldObjects.size(); i++) {
 			drawAperture(fieldObjects.get(i));
 		}
 		// displays chart dialog
 		showVspChart(scaledImage);
+	}
+	
+	/**
+	 * Closes vsp chart
+	 */
+	public void closeChart() {
+		if (this.dialog != null) {
+			this.dialog.dispose();
+		}
+	}
+
+	/*
+	 * Scales image width to SCALED_WIDTH, retaining chart aspect ratio
+	 * 
+	 * Ref: Advanced Java Swing, Bodnar, 2015, chap 5
+	 * 
+	 * @param downloadImage reference to vsp downloaded image array
+	 * @return image scaled image array 
+	 */
+	private BufferedImage scaledImage(BufferedImage downloadImage) {
+		BufferedImage scaledImage = null;
+
+		// scales image width to SCALED_WIDTH, retain aspect ratio
+		int sourceWidth = downloadImage.getWidth();
+		int scaledHeight = Math.toIntExact(downloadImage.getHeight() * SCALED_WIDTH / sourceWidth);
+		scaledImage = new BufferedImage(SCALED_WIDTH, scaledHeight, BufferedImage.TYPE_INT_RGB);
+		
+		Graphics2D g2d = scaledImage.createGraphics();
+		g2d.drawImage(downloadImage, 0, 0, SCALED_WIDTH, scaledHeight, null);
+		g2d.dispose();
+		return scaledImage;
 	}
 
 	/*
@@ -112,18 +156,7 @@ public class VspChart {
 			downloadImage = ImageIO.read(new URL(chartUri));
 		} catch (IOException ex) {
 		}
-
-		// scale image width to SCALED_WIDTH, retain aspect ratio
-		int sourceWidth = downloadImage.getWidth();
-		int scaledHeight = Math.toIntExact(downloadImage.getHeight() * SCALED_WIDTH / sourceWidth);
-
-		BufferedImage scaledDownloadImage = new BufferedImage(SCALED_WIDTH, scaledHeight, BufferedImage.TYPE_INT_RGB);
-
-		Graphics2D g2d = scaledDownloadImage.createGraphics();
-		g2d.drawImage(downloadImage, 0, 0, SCALED_WIDTH, scaledHeight, null);
-		g2d.dispose();
-
-		return scaledDownloadImage;
+		return downloadImage;
 	}
 
 	/*
@@ -156,19 +189,19 @@ public class VspChart {
 		double chartX = X0 + (raHr - raHr0) * scaleX(fo);
 		return (int) (chartX);
 	}
-	
+
 	// maps object dec coordinate to chart coordinate
 	private int chtY(FieldObject fo) {
 		double decDeg = fo.getDecDeg();
 		double decDeg0 = this.target.getDecDeg();
 		return (int) (Y0 + (decDeg - decDeg0) * scaleY());
 	}
-	
+
 	// scales chart x to object ra in pix/arcmin
 	// note dependency on object dec
 	private double scaleX(FieldObject fo) {
 		double decRad = Math.toRadians(fo.getDecDeg());
-		
+
 		// convertion hr -> deg -> arcmin
 		// L_WIDTH is semi-width of chart area
 		// y increases down direction, dec increases up direction => "-" scale factor
@@ -182,7 +215,6 @@ public class VspChart {
 		return -60 * 2 * L_HEIGHT / getFovAmin();
 	}
 
-
 	public String getStatusMessage() {
 		return statusMessage;
 	}
@@ -191,14 +223,13 @@ public class VspChart {
 		this.statusMessage = statusMessage;
 	}
 
-	 public double getFovAmin() {
-	 return fovAmin;
-	 }
-	
-	 public void setFovAmin(QueryResult result) {
-	 this.fovAmin = result.getQuery().getFovAmin();
-	 }
+	public double getFovAmin() {
+		return fovAmin;
+	}
 
+	public void setFovAmin(QueryResult result) {
+		this.fovAmin = result.getQuery().getFovAmin();
+	}
 
 	public void setG2d(Graphics2D g2d) {
 		this.g2d = g2d;
@@ -208,24 +239,17 @@ public class VspChart {
 		this.dialog = new JDialog();
 		this.dialog.getContentPane().add(new JLabel(new ImageIcon(scaledImage)));
 		this.dialog.setSize(new Dimension(scaledImage.getWidth(), scaledImage.getHeight()));
-		
+
 		this.dialog.setTitle("VSP Star chart");
 		this.dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-		
+
 		// prevents blocking by modal chatUi dialog ...
 		dialog.setModalExclusionType(Dialog.ModalExclusionType.APPLICATION_EXCLUDE);
-		
+
 		dialog.setVisible(true);
 	}
-	
-	// close and dispose vsp chart
-	public void closeChart() {
-		if (this.dialog != null) {
-			this.dialog.dispose();
-		}
-	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException {
 		double tgtMag0 = 12.345;
 
 		// build default catalog result object, init new result object
@@ -244,14 +268,21 @@ public class VspChart {
 		result.getQuery().setRaHr(AstroCoords.raHms_To_raHr("06:30:32.80"));
 		result.getQuery().setDecDeg(AstroCoords.decDms_To_decDeg("29:40:20.3"));
 		result.getQuery().setFovAmin(10.0);
-		
-		// chart X26835JN: wasp12 / 06:30:32.80 / 29:40:20.3 / 10' fov / maglimit = 18.5 / N- E = up-left
+
+		// chart X26835JN: wasp12 / 06:30:32.80 / 29:40:20.3 / 10' fov / maglimit = 18.5
+		// / N- E = up-left
 		result.setChartUri("https://app.aavso.org/vsp/chart/X26835JN.png?type=chart");
 
 		// **********************************************************************************************************
 
 		VspChart vspChart = new VspChart(result);
-		vspChart.drawChart(result.getFieldObjects());
+		TimeUnit.SECONDS.sleep(1);
+		
+		// demo repeat chart display with different apertures
+		List<FieldObject> fieldObjects = result.getFieldObjects();
+		for (int i = 1; i < 5; i++) {
+			fieldObjects.get(i).setSelected(false);
+			vspChart.drawChart(fieldObjects);
+		}
 	}
-
 }

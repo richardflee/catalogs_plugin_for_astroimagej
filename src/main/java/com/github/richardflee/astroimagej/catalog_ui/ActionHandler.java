@@ -172,7 +172,7 @@ public class ActionHandler {
 			chart.closeChart();
 		}
 		chart = new VspChart(this.result);
-		chart.drawChart(result.getFieldObjects());
+		//chart.drawChart(result.getFieldObjects());
 
 		// status message
 		String statusMessage = "Imported full dataset, sorted by radial distance to target position";
@@ -253,7 +253,7 @@ public class ActionHandler {
 		if (chart != null) {
 			chart.closeChart();
 		}
-		chart = new VspChart(this.result);
+		//chart = new VspChart(this.result);
 		chart.drawChart(result.getFieldObjects());
 
 		// status message
