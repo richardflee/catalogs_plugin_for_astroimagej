@@ -141,15 +141,11 @@ public class ActionHandler {
 		
 		
 
-		// reference result field to a new QueryResult object
-		this.result = new QueryResult(query);
-
 		// default settings with catalog ui target mag
 		double targetMag = catalogDataListener.getSettingsData().getTargetMagSpinnerValue();
-		//CatalogSettings defaultSettings = new CatalogSettings(targetMag);
-
-		// copy default settings
-		result.setSettings(new CatalogSettings(targetMag));
+		
+		// assemble catalog result with default settings & targe mag
+		this.result = new QueryResult(query, new CatalogSettings(targetMag));
 
 		// run query
 		// TTD replace with online query

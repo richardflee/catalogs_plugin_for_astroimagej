@@ -254,11 +254,10 @@ public class VspChart {
 
 		// build default catalog result object, init new result object
 		CatalogQuery query = new CatalogQuery();
-		QueryResult result = new QueryResult(query);
 
 		// build default CatalogSettngs object, assign to result_settings
 		CatalogSettings settings = new CatalogSettings(tgtMag0);
-		result.setSettings(settings);
+		QueryResult result = new QueryResult(query, settings);
 
 		// compile ref object list from apass file
 		ApassFileReader fr = new ApassFileReader();

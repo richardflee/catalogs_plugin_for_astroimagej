@@ -53,9 +53,10 @@ class RaDecFileBase {
 
 		FieldObject fo = new FieldObject();
 		String[] terms = tableLine.replace(" ", "").split(",");
-
+		
+		// strip leading "#" from aperture id
 		String apertureId = terms[ColumnsEnum.AP_COL.getIndex()];
-		fo.setApertureId(apertureId);
+		fo.setApertureId(apertureId.replace("#", ""));
 
 		String objectId = terms[ColumnsEnum.OBJECTID_COL.getIndex()];
 		fo.setObjectId(objectId);

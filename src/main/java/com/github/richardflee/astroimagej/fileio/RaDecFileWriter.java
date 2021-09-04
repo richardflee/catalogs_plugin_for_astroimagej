@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import com.github.richardflee.astroimagej.enums.RaDecFilesEnum;
 import com.github.richardflee.astroimagej.query_objects.CatalogQuery;
+import com.github.richardflee.astroimagej.query_objects.CatalogSettings;
 import com.github.richardflee.astroimagej.query_objects.FieldObject;
 import com.github.richardflee.astroimagej.query_objects.QueryResult;
 import com.github.richardflee.astroimagej.utils.AstroCoords;
@@ -167,7 +168,11 @@ public class RaDecFileWriter extends RaDecFileBase {
 		RaDecFileWriter fw = new RaDecFileWriter();
 		ApassFileReader fr = new ApassFileReader();
 		CatalogQuery query = new CatalogQuery();
-		QueryResult result = new QueryResult(query);
+		
+		double targetMag = 13.579;
+		CatalogSettings settings = new CatalogSettings(targetMag);
+		
+		QueryResult result = new QueryResult(query, settings);
 
 		List<FieldObject> referenceObjects = fr.runQueryFromFile(query);
 		result.appendFieldObjects(referenceObjects);
@@ -176,8 +181,6 @@ public class RaDecFileWriter extends RaDecFileBase {
 		// lines.stream().forEach(System.out::print);
 		
 		fw.writeRaDecFile(result);
-		
-		RaDecFilesEnum en = RaDecFilesEnum.QUERY_DATA_LINE;
 		
 		// query
 		int matchIndex = fw.getIndex(lines, RaDecFilesEnum.QUERY_DATA_LINE);

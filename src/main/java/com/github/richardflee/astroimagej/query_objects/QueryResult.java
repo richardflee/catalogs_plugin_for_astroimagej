@@ -41,30 +41,48 @@ public class QueryResult {
 	 * @param query
 	 *     parameters for on-line database query
 	 */
-	public QueryResult(CatalogQuery query) {
+	public QueryResult(CatalogQuery query, CatalogSettings settings) {
 		// copy query
 		this.query = new CatalogQuery(query);
 
 		// creates target field object from query and saves target 1st item in
 		// FieldObjects array
 		fieldObjects = new ArrayList<>();
-		FieldObject target = new FieldObject(query.getObjectId(), query.getRaHr(), query.getDecDeg(), 0.0, 0.0);
-		target.setTarget(true);
-		target.setSelected(true);
-		target.setAccepted(true);
-		target.setApertureId("T01");
+		FieldObject targetObject = createTargetObject(query);
+		fieldObjects.add(targetObject);
 
-		target.setRadSepAmin(0.0);
-		target.setDeltaMag(0.0);
-		target.setnObs(1);
-		fieldObjects.add(target);
+		// initialise default catalog settings
+		if (settings == null) {
+			this.settings = new CatalogSettings();
+		} else {
+			setSettings(settings);
+		}
 
 		// chart X26835JN: wasp12/06:30:32.80/29:40:20.3/60' fov/maglimit=16 /
 		// N-E=up-left
 		setChartUri("https://app.aavso.org/vsp/chart/X26836EQ.png?type=chart");
+	}
 
-		// initialise default catalog settings
-		this.settings = new CatalogSettings();
+	private FieldObject createTargetObject(CatalogQuery query) {
+		// initialise target from query params
+		String objectId = query.getObjectId();
+		double raHr = query.getRaHr();
+		double decDeg = query.getDecDeg();
+		double targetMag = 10.000;
+		double targetMagErr = 0.00;
+		FieldObject targetObject = new FieldObject(objectId, raHr, decDeg, targetMag, targetMagErr);
+
+		// set defaults
+		targetObject.setTarget(true);
+		targetObject.setSelected(true);
+		targetObject.setAccepted(true);
+		targetObject.setApertureId("T01");
+
+		targetObject.setRadSepAmin(0.0);
+		targetObject.setDeltaMag(0.0);
+		targetObject.setnObs(1);
+
+		return targetObject;
 	}
 
 	// settings constructor & assign catalog ui target mag to target field object
@@ -259,7 +277,7 @@ public class QueryResult {
 
 		// build default catalog result object, init new result object
 		CatalogQuery query = new CatalogQuery();
-		QueryResult result = new QueryResult(query);
+		QueryResult result = new QueryResult(query, null);
 
 		// build default CatalogSettngs object, assign to result_settings
 		CatalogSettings settings = new CatalogSettings(tgtMag0);
@@ -397,6 +415,13 @@ public class QueryResult {
 		System.out.println("\n RESULT TOSTRING **********************************************************");
 
 		System.out.println(result.toString());
+
+		System.out.println("\n TWO PARAM CONSTRUCTOR ******************************************************");
+
+		// two param constructor no field objects
+		QueryResult result2 = new QueryResult(query, settings);
+		System.out.println(result2.toString());
+		
 
 	}
 }
