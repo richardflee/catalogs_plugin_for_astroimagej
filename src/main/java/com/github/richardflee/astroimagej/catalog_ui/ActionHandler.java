@@ -190,10 +190,10 @@ public class ActionHandler {
 	 */
 	public void doSaveRaDecFile() {
 		// filter user selected records from accepted field objects
-		List<FieldObject> selectedTableList = this.result.getSelectedRecords();
+		//List<FieldObject> selectedTableList = this.result.getSelectedRecords();
 
 		// writes radec
-		this.fileWriter.writeRaDecFile(selectedTableList, result.getQuery());
+		this.fileWriter.writeRaDecFile(result);
 
 		// reverts catalog ui to query & settings used to get table data 
 		catalogDataListener.setQueryData(result.getQuery());

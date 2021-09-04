@@ -13,13 +13,11 @@ import com.github.richardflee.astroimagej.fileio.ApassFileReader;
 
 /**
  * Objects of this class encapsulate results of queries of on-line astronomical
- * databases in a list of FieldObjects
- * 
- * <p> Target star data is the first list item, identified "T01". The remainder
- * is a list of reference star objects ordered either by radial distance from
- * the target star (in arcmin) or by the absolute difference in magnitude. If
- * user selected, reference objects are identified as "C02", "C03" .. in sort
- * order </p>
+ * databases in a list of FieldObjects <p> Target star data is the first list
+ * item, identified "T01". The remainder is a list of reference star objects
+ * ordered either by radial distance from the target star (in arcmin) or by the
+ * absolute difference in magnitude. If user selected, reference objects are
+ * identified as "C02", "C03" .. in sort order </p>
  */
 public class QueryResult {
 
@@ -31,19 +29,17 @@ public class QueryResult {
 
 	// list of target and reference field objects
 	private List<FieldObject> fieldObjects;
-	
+
 	private String chartUri = null;
 
 	/**
 	 * Constructor for QueryResult objects created by query of on-line astronomical
-	 * database or importing radec dataset.
-	 * 
-	 * <p> A QueryResult object comprises the database query object and a list of
-	 * FieldObjects initialised with a single target object. </p>
-	 * 
-	 * <p> Target fields are extracted from the query catalog query.</p>
-	 * 
-	 * @param query parameters for on-line database query
+	 * database or importing radec dataset. <p> A QueryResult object comprises the
+	 * database query object and a list of FieldObjects initialised with a single
+	 * target object. </p> <p> Target fields are extracted from the query catalog
+	 * query.</p>
+	 * @param query
+	 *     parameters for on-line database query
 	 */
 	public QueryResult(CatalogQuery query) {
 		// copy query
@@ -62,7 +58,11 @@ public class QueryResult {
 		target.setDeltaMag(0.0);
 		target.setnObs(1);
 		fieldObjects.add(target);
-		
+
+		// chart X26835JN: wasp12/06:30:32.80/29:40:20.3/60' fov/maglimit=16 /
+		// N-E=up-left
+		setChartUri("https://app.aavso.org/vsp/chart/X26836EQ.png?type=chart");
+
 		// initialise default catalog settings
 		this.settings = new CatalogSettings();
 	}
@@ -73,7 +73,7 @@ public class QueryResult {
 		getTargetObject().setMag(settings.getTargetMagSpinnerValue());
 		setTotalsAndButtons();
 	}
-	
+
 	public void radecSettings(CatalogSettings settings) {
 		this.settings = new CatalogSettings(settings);
 		settings.setTargetMagSpinnerValue(getTargetObject().getMag());
@@ -85,7 +85,7 @@ public class QueryResult {
 		// append reference field objects to target object
 		this.fieldObjects.addAll(fieldObjects);
 
-		// update fields relative to target: delta mag & distance 
+		// update fields relative to target: delta mag & distance
 		for (FieldObject fo : this.fieldObjects) {
 			fo.setRadSepAmin(getTargetObject());
 			fo.setDeltaMag(getTargetObject().getMag());
@@ -139,22 +139,18 @@ public class QueryResult {
 		}
 		setTotalsAndButtons();
 	}
-	
+
 	/**
 	 * Compiles list of accepted and selected field objects to export to radec file
-	 * 
 	 * <p>Note: default sort order by radial distance to target</p>
-	 * 
 	 * @return filtered list of user-selected records
 	 */
 	public List<FieldObject> getSelectedRecords() {
 		// filter user selected records from accepted field objects
-		return this.getFieldObjects().stream()
-							.filter(p -> p.isAccepted())
-							.filter(p -> p.isSelected())
-							.collect(Collectors.toList());		
+		return this.getFieldObjects().stream().filter(p -> p.isAccepted()).filter(p -> p.isSelected())
+				.collect(Collectors.toList());
 	}
-	
+
 	private void setTotalsAndButtons() {
 		settings.setTotalLabelValue(getRecordsTotal());
 		settings.setFilteredLabelValue(getAcceptedTotal());
@@ -185,7 +181,6 @@ public class QueryResult {
 
 	/**
 	 * Total number of reference field objects, excludes target object
-	 * 
 	 * @return total reference field objects
 	 */
 	public int getRecordsTotal() {
@@ -195,7 +190,6 @@ public class QueryResult {
 	/**
 	 * Number of reference field objects within filter limits, excludes target
 	 * object
-	 * 
 	 * @return total accepted field objects
 	 */
 	public int getAcceptedTotal() {
@@ -205,7 +199,6 @@ public class QueryResult {
 
 	/**
 	 * Returns first item from list where isTarget is true
-	 * 
 	 * @return reference to target object
 	 */
 	public FieldObject getTargetObject() {
@@ -214,8 +207,8 @@ public class QueryResult {
 
 	/**
 	 * Sets properties for target object fo imported from radec file
-	 * 
-	 * @param fo target field object
+	 * @param fo
+	 *     target field object
 	 */
 	public void setTargetObject(FieldObject fo) {
 		FieldObject target = this.getTargetObject();
@@ -239,7 +232,6 @@ public class QueryResult {
 		target.setAccepted(true);
 	}
 
-
 	public String getChartUri() {
 		return chartUri;
 	}
@@ -250,8 +242,8 @@ public class QueryResult {
 
 	@Override
 	public String toString() {
-		String s = this.query.toString()+ "\n";
-		s += this.settings.toString()+ "\n\n";
+		String s = this.query.toString() + "\n";
+		s += this.settings.toString() + "\n\n";
 		for (FieldObject fo : this.getFieldObjects()) {
 			s += fo.toString() + "\n";
 		}
@@ -268,7 +260,6 @@ public class QueryResult {
 		// build default catalog result object, init new result object
 		CatalogQuery query = new CatalogQuery();
 		QueryResult result = new QueryResult(query);
-		
 
 		// build default CatalogSettngs object, assign to result_settings
 		CatalogSettings settings = new CatalogSettings(tgtMag0);
@@ -278,11 +269,10 @@ public class QueryResult {
 		ApassFileReader fr = new ApassFileReader();
 		List<FieldObject> referenceObjects = fr.runQueryFromFile(query);
 		result.appendFieldObjects(referenceObjects);
-		
+
 		// vsp chart uri
 		String chartUri = "https://app.aavso.org/vsp/chart/X26835JN.png?type=chart";
 		result.setChartUri(chartUri);
-		
 
 		System.out.println("\n TARGET MAG *****************************************************");
 		// set target mag test
@@ -403,12 +393,10 @@ public class QueryResult {
 			System.out.println((String.format("%d     %b   %.3f   %.3f   %.3f  %s      %s      %d", nObs[idx],
 					isChecked[idx], upper[idx], nominal, lower[idx], upperLabel, lowerLabel, nRecs)));
 		}
-		
+
 		System.out.println("\n RESULT TOSTRING **********************************************************");
-		
-		
+
 		System.out.println(result.toString());
-		
-		
+
 	}
 }

@@ -51,7 +51,7 @@ public class CatalogQuery extends AbstractFieldObject {
 		String[] lines = new String[2];
 		
 		// items header
-		lines[0] = "#\n#ObjectId, RA, Dec, Fov, MagLimit, Catalog, Filter\n";
+		lines[0] = "#ObjectId, RA, Dec, Fov, MagLimit, Catalog, Filter\n";
 		
 		// compile data by QueryEnum index
 		String[] terms = new String[QueryEnum.size];

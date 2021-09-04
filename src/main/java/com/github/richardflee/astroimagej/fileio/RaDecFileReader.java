@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import com.github.richardflee.astroimagej.enums.RaDecFilesEnum;
 import com.github.richardflee.astroimagej.query_objects.CatalogQuery;
 import com.github.richardflee.astroimagej.query_objects.CatalogSettings;
 import com.github.richardflee.astroimagej.query_objects.FieldObject;
@@ -28,7 +29,7 @@ import com.github.richardflee.astroimagej.query_objects.QueryResult;
 public class RaDecFileReader extends RaDecFileBase {
 
 	private String radecFilepath = null;
-	private double targetMag;
+	// private double targetMag;
 
 	public RaDecFileReader() {
 	}
@@ -60,8 +61,8 @@ public class RaDecFileReader extends RaDecFileBase {
 
 		// CatalogSettings object, initialised with radec targetMag value
 		// auto-selects sort radio button based on table sort order
-		this.targetMag = radecTarget.getMag();
-		CatalogSettings radecSettings = getRaDecSettings(radecFieldObjects);
+		double targetMag = radecTarget.getMag();
+		CatalogSettings radecSettings = getRaDecSettings(radecFieldObjects, targetMag);
 
 		// compile and return QueryResult object
 		QueryResult radecResult = new QueryResult(radecQuery);
@@ -147,17 +148,19 @@ public class RaDecFileReader extends RaDecFileBase {
 	}
 
 	/*
-	 * Compiles a CatalogSetting object with radec target mag and infers table sort order.
-	 * @param radecFieldObjects list of reference field objects sorted relative to target object
+	 * Compiles a CatalogSetting object with radec target mag and infers table sort
+	 * order.
+	 * @param radecFieldObjects list of reference field objects sorted relative to
+	 * target object
 	 * @param targetMag radec targe mag value
 	 * @return QueryResult object encapsulating contents of user selected radec file
 	 */
-	private CatalogSettings getRaDecSettings(List<FieldObject> radecFieldObjects) {
+	private CatalogSettings getRaDecSettings(List<FieldObject> radecFieldObjects, double targetMag) {
 		// initialise default settings
 		CatalogSettings settings = new CatalogSettings();
 
 		// set target mag from field value
-		settings.setTargetMagSpinnerValue(this.targetMag);
+		settings.setTargetMagSpinnerValue(targetMag);
 
 		// sets distance and delta mag sort settings inferred from fieldObjects list
 		boolean sortedByDeltaMag = isSortedByDeltaMag(radecFieldObjects);
@@ -168,9 +171,9 @@ public class RaDecFileReader extends RaDecFileBase {
 	}
 
 	/**
-	 * Tests if |mag diff| is sorted in ascending order 
-	 * 
-	 * @param radecFieldObjects sorted list of field objeccts
+	 * Tests if |mag diff| is sorted in ascending order
+	 * @param radecFieldObjects
+	 *     sorted list of field objeccts
 	 * @return true if sorted in order of increasing |mag diff|, false otherwise
 	 */
 	private boolean isSortedByDeltaMag(List<FieldObject> radecFieldObjects) {
@@ -210,9 +213,10 @@ public class RaDecFileReader extends RaDecFileBase {
 	/*
 	 * Extracts radec block 3 table data in single text line
 	 * @param lines text array comprising full radec data set
-	 * @return text text line compring radec query data set
+	 * @return text text line comprising the radec query data set
 	 */
 	private String getQueryLine(List<String> allTableLines) {
+
 		// reverse search to find last "#" marker
 		int idx = allTableLines.size() - 1;
 		while (!(allTableLines.get(idx).equals("#"))) {
@@ -223,20 +227,85 @@ public class RaDecFileReader extends RaDecFileBase {
 		return allTableLines.get(dataIndex);
 	}
 
-	
 	public String getRadecFilepath() {
 		return radecFilepath;
 	}
-	
+
 	public void setRadecFilepath(String radecFilepath) {
 		this.radecFilepath = radecFilepath;
 	}
-	
-	public static void main(String[] args) {
-		RaDecFileReader fr = new RaDecFileReader();
-		QueryResult result = fr.importRaDecResult();
-		System.out.println(result.toString());
+
+	private int getIndex(List<String> lines, RaDecFilesEnum en) {
+		int matchIndex = -1;
+		for (int idx = 0; idx < lines.size(); idx++) {
+			if (lines.get(idx).contains(en.toString()) == true) {
+				matchIndex = idx;
+				break;
+			}
+		}
+		return matchIndex;
 	}
 
+	public static void main(String[] args) {
+		RaDecFileReader fr = new RaDecFileReader();
+
+		String path = "C:\\Users\\rlee1\\eclipse-workspace\\astroimagej-plugin\\catalogs_plugin\\radec\\wasp_12.V.060.radec.txt";
+		File file = new File(path);
+		List<String> lines = fr.loadRaDecLines(file);
+
+		// query
+		int matchIndex = fr.getIndex(lines, RaDecFilesEnum.QUERY_DATA_LINE);
+		String dataLine = lines.get(matchIndex + 2);
+		CatalogQuery query = CatalogQuery.fromFormattedString(dataLine);
+//		System.out.println(query.toString());
+//		System.out.println();
+
+		// table data
+		matchIndex = fr.getIndex(lines, RaDecFilesEnum.DATA_TABLE_START);
+		int startIndex = matchIndex + 2;
+
+		matchIndex = fr.getIndex(lines, RaDecFilesEnum.DATA_TABLE_END);
+		int endIndex = matchIndex;
+		List<String> tableLines = lines.subList(startIndex, endIndex);
+
+		// target
+		String targetLine = tableLines.get(0);
+		FieldObject target = fr.compileFieldObject(targetLine);
+		double targetMag = target.getMag();
+//		System.out.println((target.toString()));
+//		System.out.println(targetMag);
+//		System.out.println();
+		
+		// ref field objects
+		List<FieldObject> fieldObjects = new ArrayList<>();
+		for (String line : tableLines) {
+			FieldObject fo = fr.compileFieldObject(line);
+			if (fo.isTarget() == false) {
+				fieldObjects.add(fo);
+			}
+		}
+//		fieldObjects.stream().forEach(System.out::println);
+		//System.out.println();
+		
+		// settings
+		CatalogSettings settings = fr.getRaDecSettings(fieldObjects, targetMag);
+		
+//		System.out.println(settings.toString());
+		
+
+		// chart uri
+		matchIndex = fr.getIndex(lines, RaDecFilesEnum.CHART_URI_LINE);
+		dataLine = lines.get(matchIndex + 1);
+		String chartUri = dataLine.replaceAll("#", "");
+//		System.out.println(chartUri);
+//		System.out.println();
+		
+		// compile query result
+		QueryResult result = new QueryResult(query);
+		result.appendFieldObjects(fieldObjects);
+		result.setSettings(settings);
+		result.setChartUri(chartUri);
+		System.out.println(result.toString());
+	}
 
 }
