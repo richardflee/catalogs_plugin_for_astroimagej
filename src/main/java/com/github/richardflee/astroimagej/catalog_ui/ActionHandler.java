@@ -21,7 +21,6 @@ import com.github.richardflee.astroimagej.utils.AstroCoords;
 /**
  * This class handles catalog_ui button click events to command database query,
  * update tale data and radec file read / write operations
- *
  */
 
 // TTDO load query + target mag from props file or default query
@@ -36,14 +35,13 @@ public class ActionHandler {
 	private PropertiesFileIO propertiesFile = null;
 	private RaDecFileReader radecFileReader = null;
 	private RaDecFileWriter fileWriter = null;
-	
+
 	// star chart with selected aperture overlay
 	private VspChart chart = null;
 
 	/*
 	 * result field: object compiled from database query records or imported from
 	 * radec file. Each field object tracks its filtered and selected state
-	 * 
 	 * doCatalogQuery & doImportRaDec: create new result doSaveRadec saves selected
 	 * selected results field objects to radec format file options doClear resets
 	 * result null
@@ -54,8 +52,8 @@ public class ActionHandler {
 
 	/**
 	 * Parameterised constructor references CatalogUI to access form control values
-	 * 
-	 * @param catalogTableListener reference to main user form interface
+	 * @param catalogTableListener
+	 *     reference to main user form interface
 	 */
 	public ActionHandler(PropertiesFileIO propertiesFile) {
 		this.propertiesFile = propertiesFile;
@@ -65,8 +63,8 @@ public class ActionHandler {
 
 	/**
 	 * Configures local table listener field to broadcast updateTable message
-	 * 
-	 * @param catalogTableListener reference to CataTableListner interface
+	 * @param catalogTableListener
+	 *     reference to CataTableListner interface
 	 */
 	public void setCatalogTableListener(CatalogTableListener catalogTableListener) {
 		this.catalogTableListener = catalogTableListener;
@@ -77,10 +75,8 @@ public class ActionHandler {
 	}
 
 	/**
-	 * Runs an objectId-based query on Simbad on-line database.
-	 * 
-	 * <p>Updates Simbad fields with search results or with "." if no match was
-	 * found</p>
+	 * Runs an objectId-based query on Simbad on-line database. <p>Updates Simbad
+	 * fields with search results or with "." if no match was found</p>
 	 */
 	public void doSimbadQuery() {
 		SimbadCatalog simbad = new SimbadCatalog();
@@ -138,12 +134,10 @@ public class ActionHandler {
 			catalogDataListener.updateStatus(QUERY_SETTINGS_ERROR);
 			return;
 		}
-		
-		
 
 		// default settings with catalog ui target mag
 		double targetMag = catalogDataListener.getSettingsData().getTargetMagSpinnerValue();
-		
+
 		// assemble catalog result with default settings & targe mag
 		this.result = new QueryResult(query, new CatalogSettings(targetMag));
 
@@ -152,10 +146,10 @@ public class ActionHandler {
 		ApassFileReader fr = new ApassFileReader();
 		List<FieldObject> referenceObjects = fr.runQueryFromFile(query);
 		result.appendFieldObjects(referenceObjects);
-		
-		// chart X26835JN: wasp12 / 06:30:32.80 / 29:40:20.3 / 10' fov / maglimit = 18.5 / N- E = up-left
+
+		// chart X26835JN: wasp12 / 06:30:32.80 / 29:40:20.3 / 10' fov / maglimit = 18.5
+		// / N- E = up-left
 		result.setChartUri("https://app.aavso.org/vsp/chart/X26835JN.png?type=chart");
-		
 
 		// applies current sort and default filter settings, populates catalog table
 		// with full dataset
@@ -163,35 +157,31 @@ public class ActionHandler {
 
 		// update catalog ui with default settings, retains current target spinner value
 		catalogDataListener.setSettingsData(result.getSettings());
-		
+
+		// closes vsp chart if necessary and draws new chart
 		if (chart != null) {
 			chart.closeChart();
 		}
 		chart = new VspChart(this.result);
-		//chart.drawChart(result.getFieldObjects());
 
 		// status message
 		String statusMessage = "Imported full dataset, sorted by radial distance to target position";
 		catalogDataListener.updateStatus(statusMessage);
 	}
-	
-	
-	
 
 	/**
 	 * Writes radec file with selected table data to radec format text file in local
-	 * radec astroimagej folder
-	 * 
-	 * <p> Example: ./astroimagej/radec/wasp_12.Rc.020.radec.txt </p>
+	 * radec astroimagej folder <p> Example:
+	 * ./astroimagej/radec/wasp_12.Rc.020.radec.txt </p>
 	 */
 	public void doSaveRaDecFile() {
 		// filter user selected records from accepted field objects
-		//List<FieldObject> selectedTableList = this.result.getSelectedRecords();
+		// List<FieldObject> selectedTableList = this.result.getSelectedRecords();
 
 		// writes radec
 		this.fileWriter.writeRaDecFile(result);
 
-		// reverts catalog ui to query & settings used to get table data 
+		// reverts catalog ui to query & settings used to get table data
 		catalogDataListener.setQueryData(result.getQuery());
 		catalogDataListener.setSettingsData(result.getSettings());
 
@@ -203,7 +193,6 @@ public class ActionHandler {
 	/**
 	 * Reads user-selected radec file, maps data to catalog table and ui control and
 	 * creates a new query object.
-	 * 
 	 */
 	// TTD replace with void & set button state in catalog settings
 	public void doImportRaDecFile() {
@@ -222,11 +211,17 @@ public class ActionHandler {
 
 		// compile table rows from radec file, default settings, no filters applied
 		updateCatalogTable(this.result);
-		
+
 		// update catalogui
 		catalogDataListener.setQueryData(this.result.getQuery());
 		catalogDataListener.setSettingsData(this.result.getSettings());
-		
+
+		// closes vsp chart if necessary and draws new chart
+		if (chart != null) {
+			chart.closeChart();
+		}
+		chart = new VspChart(this.result);
+
 		// status line
 		String statusMessage = radecFileReader.getStatusMessage();
 		catalogDataListener.updateStatus(statusMessage);
@@ -245,11 +240,11 @@ public class ActionHandler {
 
 		// update catalog ui totals, filter sort settings are unchanged
 		catalogDataListener.setSettingsData(this.result.getSettings());
-		
+
 		if (chart != null) {
 			chart.closeChart();
 		}
-		//chart = new VspChart(this.result);
+		// chart = new VspChart(this.result);
 		chart.drawChart(result.getFieldObjects());
 
 		// status message
@@ -263,7 +258,7 @@ public class ActionHandler {
 	public void doClearTable() {
 		// current target mag
 		double targetMag = result.getTargetObject().getMag();
-		
+
 		// clear result field
 		this.result = null;
 
@@ -272,7 +267,7 @@ public class ActionHandler {
 
 		// resets settings to default, retains current spincontrol targtMag value
 		catalogDataListener.setSettingsData(new CatalogSettings(targetMag));
-		
+
 		// close & dispose current vsp chart
 		chart.closeChart();
 
@@ -284,7 +279,6 @@ public class ActionHandler {
 	/*
 	 * Sorts QueryResult result object records relative to target object. <p>Sort
 	 * options are radial distance or difference in magnitude values.</p>
-	 * 
 	 * @return FieldObject list sorted and filtered as specified by user settings
 	 */
 	private void updateCatalogTable(QueryResult result) {
@@ -335,4 +329,3 @@ public class ActionHandler {
 		System.out.println(String.format("Modified settings targetMag 7.89: %.2f", s1.getTargetMagSpinnerValue()));
 	}
 }
-

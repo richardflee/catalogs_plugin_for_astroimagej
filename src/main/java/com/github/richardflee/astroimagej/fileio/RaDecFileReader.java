@@ -58,6 +58,9 @@ public class RaDecFileReader extends RaDecFileBase {
 
 		// extract remainder of table data into field object list
 		List<FieldObject> radecFieldObjects = getRaDecFieldObjects(radecLines);
+		
+		// extract chart uri
+		String chartUri = getChartUriLine(radecLines);
 
 		// CatalogSettings object, initialised with radec targetMag value
 		// auto-selects sort radio button based on table sort order
@@ -67,22 +70,108 @@ public class RaDecFileReader extends RaDecFileBase {
 		// compile and return QueryResult object
 		QueryResult radecResult = new QueryResult(radecQuery, radecSettings);
 		radecResult.appendFieldObjects(radecFieldObjects);
-		// radecResult.setSettings(radecSettings);
+		
+		// add chart uri
+		radecResult.setChartUri(chartUri);
 
 		String statusMessage = String.format("Imported radec file: %s", file.getAbsoluteFile());
 		setStatusMessage(statusMessage);
 		return radecResult;
 	}
 	
+	/*
+	 * Compiles CatalogQuery object from data line embedded in radec line array
+	 * 
+	 * @param radecLines text array mapped from selected radec file
+	 * @return radec file catalog query object
+	 */
+	private CatalogQuery getRaDecQuery(List<String> radecLines) {
+		String dataLine = matchQueryLine(radecLines);
+		return CatalogQuery.fromFormattedString(dataLine);
+	}
+	
+	/*
+	 * Compiles target object from data line embedded in radec line array
+	 * 
+	 * @param radecLines text array mapped from selected radec file
+	 * @return radec file target object, first table line
+	 */
 	private FieldObject getRaDecTargetObject(List<String> radecLines) {
-		String dataLine = getTargetLine(radecLines);
+		String dataLine = matchTargetLine(radecLines);
 		return compileFieldObject(dataLine);
 	}
 	
-	private String getTargetLine(List<String> radecLines) {
-		int matchIndex = getIndex(radecLines, RaDecFilesEnum.DATA_TABLE_START);
+	
+	/*
+	 * Compiles list of reference field objects data lines embedded in radec line array
+	 * 
+	 * @param radecLines text array mapped from selected radec file
+	 * @return radec file table lines comprising field object data
+	 */
+	private List<FieldObject> getRaDecFieldObjects(List<String> radecLines) {
+		List<FieldObject> tableRows = new ArrayList<>();
+		List<String> tableLines = matchTableLines(radecLines);
+		for (String line : tableLines) {
+			FieldObject fo = compileFieldObject(line);
+			tableRows.add(fo);
+		}
+		return tableRows;
+	}
+	
+	/*
+	 * Finds chart uri text embedded in radec line array
+	 * 
+	 * @param radecLines text array mapped from selected radec file
+	 * @return chart uri data
+	 */
+	private String getChartUriLine(List<String> radecLines) {
+		int matchIndex = matchIndex(radecLines, RaDecFilesEnum.CHART_URI_LINE);
+		// data 1 row below marker
+		return radecLines.get(matchIndex + 1);
+	}
+	
+	/*
+	 * Finds line of CatalogQuery data embedded in radec line array
+	 * 
+	 * @param radecLines text array mapped from selected radec file
+	 * @return query data line
+	 */
+	private String matchQueryLine(List<String> radecLines) {
+		int matchIndex = matchIndex(radecLines, RaDecFilesEnum.QUERY_DATA_LINE);
+		// query data 2 rows below marker
 		return radecLines.get(matchIndex + 2);
 	}
+	
+	/*
+	 * Finds line of target object data embedded in radec line array
+	 * 
+	 * @param radecLines text array mapped from selected radec file
+	 * @return target object data line
+	 */
+	private String matchTargetLine(List<String> radecLines) {
+		int matchIndex = matchIndex(radecLines, RaDecFilesEnum.DATA_TABLE_START);
+		// target data 2 rows below marker
+		return radecLines.get(matchIndex + 2);
+	}
+	
+	
+	/*
+	 * Finds line array of field object data embedded in radec line array
+	 * 
+	 * @param radecLines text array mapped from selected radec file
+	 * @return text array comprising field object data
+	 */
+	private List<String> matchTableLines(List<String> radecLines) {
+		// start index 3 row below DATA_TABLE_START 
+		int matchIndex = matchIndex(radecLines, RaDecFilesEnum.DATA_TABLE_START);
+		int startIndex = matchIndex + 3;
+		
+		// end index same row as DATA_TABLE_END
+		matchIndex = matchIndex(radecLines, RaDecFilesEnum.DATA_TABLE_END);
+		int endIndex = matchIndex;
+		return radecLines.subList(startIndex, endIndex);
+	}
+	
 
 	/*
 	 * Opens file dialog configured for radec folder and file type
@@ -125,49 +214,7 @@ public class RaDecFileReader extends RaDecFileBase {
 		return lines;
 	}
 
-	/*
-	 * Compiles a CatalogQuery object from block 3 radec data
-	 * @return CatalogQuery object
-	 */
-	private CatalogQuery getRaDecQuery(List<String> radecLines) {
-		String dataLine = getQueryLine(radecLines);
-		return CatalogQuery.fromFormattedString(dataLine);
-//		
-//		
-//		// locate single data line and convert to a new query object
-//		String dataLine = getQueryLine(radecLines);
-//		return CatalogQuery.fromFormattedString(dataLine);
-	}
 	
-	
-
-	/*
-	 * If isTarget is true, returns target field object in a single element array,
-	 * otherwise returns array of reference field objects
-	 * @param radecLines text array comprising radec file contents
-	 * @param isTarget flag to return single target or multiple reference field
-	 * objects
-	 * @return array list containing eithe target field object or a list of
-	 * reference field objects
-	 */
-	private List<FieldObject> getRaDecFieldObjects(List<String> radecLines) {
-		
-//		int matchIndex = getIndex(radecLines, RaDecFilesEnum.DATA_TABLE_START);
-//		int startIndex = matchIndex + 3;
-//
-//		matchIndex = getIndex(radecLines, RaDecFilesEnum.DATA_TABLE_END);
-//		int endIndex = matchIndex;
-//		List<String> tableLines = radecLines.subList(startIndex, endIndex);
-//		
-		List<FieldObject> tableRows = new ArrayList<>();
-
-		List<String> tableLines = getTableLines(radecLines);
-		for (String line : tableLines) {
-			FieldObject fo = compileFieldObject(line);
-			tableRows.add(fo);
-		}
-		return tableRows;
-	}
 
 	/*
 	 * Compiles a CatalogSetting object with radec target mag and infers table sort
@@ -209,57 +256,6 @@ public class RaDecFileReader extends RaDecFileBase {
 		return sortedByDeltaMag;
 	}
 
-	/*
-	 * Extracts radec block 2 table data in text array
-	 * @param lines text array comprising full radec data set
-	 * @return text array comprising radec table data set
-	 */
-	private List<String> getTableLines(List<String> radecLines) {
-		
-		int matchIndex = getIndex(radecLines, RaDecFilesEnum.DATA_TABLE_START);
-		int startIndex = matchIndex + 3;
-
-		matchIndex = getIndex(radecLines, RaDecFilesEnum.DATA_TABLE_END);
-		int endIndex = matchIndex;
-		return radecLines.subList(startIndex, endIndex);
-		
-		
-		
-//		int idx = 0;
-//		// first "#" marks start of radec block 2
-//		while (!(allTableLines.get(idx).equals("#"))) {
-//			idx++;
-//		}
-//		// fromIndex marks start of table data, skips marker and header lines
-//		int fromIndex = idx + 2;
-//
-//		// reverse search for 2nd "#" char, marks end of block 2 data
-//		idx = allTableLines.size() - 1;
-//		while (!(allTableLines.get(idx).equals("#"))) {
-//			idx--;
-//		}
-//		int toIndex = idx;
-//		return allTableLines.subList(fromIndex, toIndex);
-	}
-
-	/*
-	 * Extracts radec block 3 table data in single text line
-	 * @param lines text array comprising full radec data set
-	 * @return text text line comprising the radec query data set
-	 */
-	private String getQueryLine(List<String> radecLines) {
-		int matchIndex = getIndex(radecLines, RaDecFilesEnum.QUERY_DATA_LINE);
-		return radecLines.get(matchIndex + 2);
-
-//		// reverse search to find last "#" marker
-//		int idx = allTableLines.size() - 1;
-//		while (!(allTableLines.get(idx).equals("#"))) {
-//			idx--;
-//		}
-//		// skips marker and header and returns data line
-//		int dataIndex = idx + 2;
-//		return allTableLines.get(dataIndex);
-	}
 
 	public String getRadecFilepath() {
 		return radecFilepath;
@@ -269,7 +265,16 @@ public class RaDecFileReader extends RaDecFileBase {
 		this.radecFilepath = radecFilepath;
 	}
 
-	private int getIndex(List<String> lines, RaDecFilesEnum en) {
+	/*
+	 * Finds first line in line array matching enum text
+	 * 
+	 *  Example: en=RaDecFilesEnum.DATA_TABLE_START matches #*** DATA_TABLE_START 
+	 * 
+	 * @param lines text array contents of selected rade file
+	 * @param en enum specifying line ot match
+	 * @return matching index in lines array; -1 if no match found 
+	 */
+	private int matchIndex(List<String> lines, RaDecFilesEnum en) {
 		int matchIndex = -1;
 		for (int idx = 0; idx < lines.size(); idx++) {
 			if (lines.get(idx).contains(en.toString()) == true) {
@@ -288,17 +293,17 @@ public class RaDecFileReader extends RaDecFileBase {
 		List<String> lines = fr.loadRaDecLines(file);
 
 		// query
-		int matchIndex = fr.getIndex(lines, RaDecFilesEnum.QUERY_DATA_LINE);
+		int matchIndex = fr.matchIndex(lines, RaDecFilesEnum.QUERY_DATA_LINE);
 		String dataLine = lines.get(matchIndex + 2);
 		CatalogQuery query = CatalogQuery.fromFormattedString(dataLine);
 //		System.out.println(query.toString());
 //		System.out.println();
 
 		// table data
-		matchIndex = fr.getIndex(lines, RaDecFilesEnum.DATA_TABLE_START);
+		matchIndex = fr.matchIndex(lines, RaDecFilesEnum.DATA_TABLE_START);
 		int startIndex = matchIndex + 2;
 
-		matchIndex = fr.getIndex(lines, RaDecFilesEnum.DATA_TABLE_END);
+		matchIndex = fr.matchIndex(lines, RaDecFilesEnum.DATA_TABLE_END);
 		int endIndex = matchIndex;
 		List<String> tableLines = lines.subList(startIndex, endIndex);
 
@@ -324,11 +329,8 @@ public class RaDecFileReader extends RaDecFileBase {
 		// settings
 		CatalogSettings settings = fr.getRaDecSettings(fieldObjects, targetMag);
 		
-//		System.out.println(settings.toString());
-		
-
 		// chart uri
-		matchIndex = fr.getIndex(lines, RaDecFilesEnum.CHART_URI_LINE);
+		matchIndex = fr.matchIndex(lines, RaDecFilesEnum.CHART_URI_LINE);
 		dataLine = lines.get(matchIndex + 1);
 		String chartUri = dataLine.replaceAll("#", "");
 //		System.out.println(chartUri);
@@ -341,10 +343,8 @@ public class RaDecFileReader extends RaDecFileBase {
 		result.setChartUri(chartUri);
 		System.out.println(result.toString());
 		
-		
 		QueryResult radecResult = fr.importRaDecResult();
 		System.out.println(radecResult.toString());
-		
 	}
 
 }
