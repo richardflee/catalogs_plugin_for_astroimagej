@@ -62,6 +62,19 @@ public class QueryResult {
 		// N-E=up-left
 		setChartUri("https://app.aavso.org/vsp/chart/X26836EQ.png?type=chart");
 	}
+	
+	// import list field objects and update delta mag & radeSep fields
+		public void appendFieldObjects(List<FieldObject> fieldObjects) {
+			// append reference field objects to target object
+			this.fieldObjects.addAll(fieldObjects);
+
+			// update fields relative to target: delta mag & distance
+			for (FieldObject fo : this.fieldObjects) {
+				fo.setRadSepAmin(getTargetObject());
+				fo.setDeltaMag(getTargetObject().getMag());
+			}
+			setTotalsAndButtons();
+		}
 
 	private FieldObject createTargetObject(CatalogQuery query) {
 		// initialise target from query params
@@ -92,24 +105,12 @@ public class QueryResult {
 		setTotalsAndButtons();
 	}
 
-	public void radecSettings(CatalogSettings settings) {
+	public void importRadecSettings(CatalogSettings settings) {
 		this.settings = new CatalogSettings(settings);
 		settings.setTargetMagSpinnerValue(getTargetObject().getMag());
 		setTotalsAndButtons();
 	}
 
-	// import list field objects and update delta mag & radeSep fields
-	public void appendFieldObjects(List<FieldObject> fieldObjects) {
-		// append reference field objects to target object
-		this.fieldObjects.addAll(fieldObjects);
-
-		// update fields relative to target: delta mag & distance
-		for (FieldObject fo : this.fieldObjects) {
-			fo.setRadSepAmin(getTargetObject());
-			fo.setDeltaMag(getTargetObject().getMag());
-		}
-		setTotalsAndButtons();
-	}
 
 	public void applySelectedSort() {
 		// sort by distance option

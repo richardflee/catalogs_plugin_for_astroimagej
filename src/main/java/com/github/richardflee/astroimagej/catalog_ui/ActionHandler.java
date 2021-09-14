@@ -3,9 +3,11 @@ package com.github.richardflee.astroimagej.catalog_ui;
 import java.io.File;
 import java.util.List;
 
+import com.github.richardflee.astroimagej.catalogs.AstroCatalog;
+import com.github.richardflee.astroimagej.catalogs.CatalogFactory;
 import com.github.richardflee.astroimagej.catalogs.SimbadCatalog;
+import com.github.richardflee.astroimagej.catalogs.VspCatalog;
 import com.github.richardflee.astroimagej.exceptions.SimbadNotFoundException;
-import com.github.richardflee.astroimagej.fileio.ApassFileReader;
 import com.github.richardflee.astroimagej.fileio.PropertiesFileIO;
 import com.github.richardflee.astroimagej.fileio.RaDecFileReader;
 import com.github.richardflee.astroimagej.fileio.RaDecFileWriter;
@@ -143,13 +145,20 @@ public class ActionHandler {
 
 		// run query
 		// TTD replace with online query
-		ApassFileReader fr = new ApassFileReader();
-		List<FieldObject> referenceObjects = fr.runQueryFromFile(query);
-		result.appendFieldObjects(referenceObjects);
+		//ApassFileReader fr = new ApassFileReader();
+		//List<FieldObject> referenceObjects = fr.runQueryFromFile(query);
+		
+		AstroCatalog catalog = CatalogFactory.createCatalog(query.getCatalogType());
+		List<FieldObject> fieldObjects = catalog.runQuery(query);
+		result.appendFieldObjects(fieldObjects);
+		
+		VspCatalog vspChart = new VspCatalog();
+		String chartUri = vspChart.downloadVspChart(query);
+		result.setChartUri(chartUri);
 
 		// chart X26835JN: wasp12 / 06:30:32.80 / 29:40:20.3 / 10' fov / maglimit = 18.5
 		// / N- E = up-left
-		result.setChartUri("https://app.aavso.org/vsp/chart/X26835JN.png?type=chart");
+		//result.setChartUri("https://app.aavso.org/vsp/chart/X26835JN.png?type=chart");
 
 		// applies current sort and default filter settings, populates catalog table
 		// with full dataset

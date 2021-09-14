@@ -1,7 +1,7 @@
 package com.github.richardflee.astroimagej.utils;
 
 import com.github.richardflee.astroimagej.enums.CatalogsEnum;
-import com.github.richardflee.astroimagej.enums.SimbadUrlType;
+import com.github.richardflee.astroimagej.enums.SimbadEnum;
 import com.github.richardflee.astroimagej.query_objects.CatalogQuery;
 
 /**
@@ -22,7 +22,7 @@ public class CatalogUrls {
 	 * @param paramType which data item to download
 	 * @return compiled Simbad url for specified paramType
 	 */
-	public static String getUrl(CatalogQuery query, SimbadUrlType paramType) {
+	public static String getUrl(CatalogQuery query, SimbadEnum paramType) {
 		// SIMBAD header
 		String url = "http://simbad.u-strasbg.fr/simbad/sim-id?output.format=votable";
 
@@ -41,8 +41,9 @@ public class CatalogUrls {
 	 * @param paramType which data item to download
 	 * @return compiled url for specified catalogType
 	 */
-	public static String getUrl(CatalogQuery query, CatalogsEnum en) {
+	public static String getUrl(CatalogQuery query) {
 		String url = "";
+		CatalogsEnum en = query.getCatalogType();
 		if (en == CatalogsEnum.DSS) {
 			// SkyView header
 			url += "https://skyview.gsfc.nasa.gov/cgi-bin/images?Survey=digitized+sky+survey";
@@ -71,9 +72,15 @@ public class CatalogUrls {
 			url += String.format("&ra=%.5f", query.getRaHr() * 15.0);
 			
 			// dec nn.nnnnn (0 to ± 90 deg)
-			url += String.format("&dec=%.5f", query.getDecDeg());			
+			url += String.format("&dec=%.5f", query.getDecDeg());	
+			
+			// orientation
+			url += "&north=up&east=left";
+		} else if (en == CatalogsEnum.VSP_CHART) {
+			url += "https://app.aavso.org/vsp/api/chart/";
 		}
 		return url;
 	}
+	
 }
 

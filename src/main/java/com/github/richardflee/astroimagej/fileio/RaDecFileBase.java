@@ -83,9 +83,9 @@ class RaDecFileBase {
 		fo.setnObs(nObs);
 
 		// set boolean states
-		fo.setSelected(true);
 		boolean isTarget = apertureId.contains("T");
 		fo.setTarget(isTarget);
+		fo.setSelected(true);
 
 		return fo;
 	}

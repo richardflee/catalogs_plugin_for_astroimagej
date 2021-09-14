@@ -14,7 +14,7 @@ import java.util.Map;
  * </p>
  */
 public enum CatalogsEnum {
-	SIMBAD("B.V.R.I"), VSP("B.V.Rc.Ic"), APASS("B.V.SG.SR.SI"), DSS("");
+	SIMBAD("B.V.R.I"), VSP("B.V.Rc.Ic"), APASS("B.V.SG.SR.SI"), DSS(""), VSP_CHART("");
 
 	private String strVal;
 	private static final Map<String, CatalogsEnum> getEnumMap = new HashMap<>();

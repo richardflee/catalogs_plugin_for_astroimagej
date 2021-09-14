@@ -3,7 +3,7 @@ package com.github.richardflee.astroimagej.enums;
 /**
  * Enum maps url segments to SIMBAD query type
  */
-public enum SimbadUrlType {
+public enum SimbadEnum {
 	USER_TARGET_NAME(""), 
 	RA_HR("ra(d;ICRS;2000.0;2000.0)"), 
 	DEC_DEG("dec(d;ICRS;2000.0;2000.0)"), 
@@ -14,7 +14,7 @@ public enum SimbadUrlType {
 
 	private String paramUrl;
 
-	SimbadUrlType(String urlParam) {
+	SimbadEnum(String urlParam) {
 		this.paramUrl = urlParam;
 	}
 

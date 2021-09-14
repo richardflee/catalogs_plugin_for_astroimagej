@@ -16,7 +16,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import com.github.richardflee.astroimagej.enums.SimbadUrlType;
+import com.github.richardflee.astroimagej.enums.SimbadEnum;
 import com.github.richardflee.astroimagej.exceptions.SimbadNotFoundException;
 import com.github.richardflee.astroimagej.query_objects.CatalogQuery;
 import com.github.richardflee.astroimagej.query_objects.SimbadResult;
@@ -66,33 +66,33 @@ public class SimbadCatalog {
 		
 		// search database for user input object name
 		// throws SimbadNotFoundException if no match found
-		String data = downloadSimbadItem(query, SimbadUrlType.USER_TARGET_NAME);
+		String data = downloadSimbadItem(query, SimbadEnum.USER_TARGET_NAME);
 		simbadResult.setSimbadId(data);
 		
 		// no checks on coordinate data, assumed good
 		// object J2000 RA converted deg -> hrs
-		data = downloadSimbadItem(query, SimbadUrlType.RA_HR);
+		data = downloadSimbadItem(query, SimbadEnum.RA_HR);
 		simbadResult.setSimbadRaHr(Double.parseDouble(data) / 15.0);
 		
 		// object J2000 Dec in deg
-		data = downloadSimbadItem(query, SimbadUrlType.DEC_DEG);
+		data = downloadSimbadItem(query, SimbadEnum.DEC_DEG);
 		simbadResult.setSimbadDecDeg(Double.parseDouble(data));
 		
 		// object magnitude for filters B, V, Rc and Ic.
 		// return null if no magnitude data for this filter
-		data = downloadSimbadItem(query, SimbadUrlType.MAG_B);
+		data = downloadSimbadItem(query, SimbadEnum.MAG_B);
 		Double num = (data.equals(NO_DATA)) ? null : Double.parseDouble(data);
 		simbadResult.setMagB(num);
 		
-		data = downloadSimbadItem(query, SimbadUrlType.MAG_V);
+		data = downloadSimbadItem(query, SimbadEnum.MAG_V);
 		num = (data.equals(NO_DATA)) ? null : Double.parseDouble(data);
 		simbadResult.setMagV(num);
 		
-		data = downloadSimbadItem(query, SimbadUrlType.MAG_R);
+		data = downloadSimbadItem(query, SimbadEnum.MAG_R);
 		num = (data.equals(NO_DATA)) ? null : Double.parseDouble(data);
 		simbadResult.setMagR(num);
 		
-		data = downloadSimbadItem(query, SimbadUrlType.MAG_I);
+		data = downloadSimbadItem(query, SimbadEnum.MAG_I);
 		num = (data.equals(NO_DATA)) ? null : Double.parseDouble(data);
 		simbadResult.setMagI(num);
 		
@@ -113,7 +113,7 @@ public class SimbadCatalog {
 	 * @throws SimbadNotFoundException thrown if specified object name is not found
 	 * in SIMBAD database
 	 */
-	private String downloadSimbadItem(CatalogQuery query, SimbadUrlType paramType) 
+	private String downloadSimbadItem(CatalogQuery query, SimbadEnum paramType) 
 			throws SimbadNotFoundException {
 		NodeList nodes = null;
 		String result = null;
@@ -138,7 +138,7 @@ public class SimbadCatalog {
 		
 		// node item 0 is SimbadId name. 
 		// Query objectId: throw SimbadNotFoundException if input does not match SIMBAD records
-		if (paramType == SimbadUrlType.USER_TARGET_NAME) {
+		if (paramType == SimbadEnum.USER_TARGET_NAME) {
 			try {
 				result = nodes.item(0).getNodeValue();
 			} catch (NullPointerException npe) {
