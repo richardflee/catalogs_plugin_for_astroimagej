@@ -59,8 +59,13 @@ public class ActionHandler {
 	 */
 	public ActionHandler(PropertiesFileIO propertiesFile) {
 		this.propertiesFile = propertiesFile;
+		
+		// file reader and writer objects
 		this.fileWriter = new RaDecFileWriter();
 		this.radecFileReader = new RaDecFileReader();
+		
+		// aperture chart object
+		this.chart = new VspChart();
 	}
 
 	/**
@@ -144,34 +149,30 @@ public class ActionHandler {
 		this.result = new QueryResult(query, new CatalogSettings(targetMag));
 
 		// run query
-		// TTD replace with online query
 		//ApassFileReader fr = new ApassFileReader();
 		//List<FieldObject> referenceObjects = fr.runQueryFromFile(query);
 		
+		// runs query on selected on-line catalog
 		AstroCatalog catalog = CatalogFactory.createCatalog(query.getCatalogType());
 		List<FieldObject> fieldObjects = catalog.runQuery(query);
 		result.appendFieldObjects(fieldObjects);
 		
+		// downloads VSP chart for current query parameters
+		// Example chart X26835JN: 
+		// wasp12 / 06:30:32.80 / 29:40:20.3 / 10' fov / maglimit = 18.5 / N- E = up-left
 		VspCatalog vspChart = new VspCatalog();
 		String chartUri = vspChart.downloadVspChart(query);
 		result.setChartUri(chartUri);
-
-		// chart X26835JN: wasp12 / 06:30:32.80 / 29:40:20.3 / 10' fov / maglimit = 18.5
-		// / N- E = up-left
-		//result.setChartUri("https://app.aavso.org/vsp/chart/X26835JN.png?type=chart");
 
 		// applies current sort and default filter settings, populates catalog table
 		// with full dataset
 		updateCatalogTable(this.result);
 
-		// update catalog ui with default settings, retains current target spinner value
+		// set catalog ui default settings, retaining current target spinner value
 		catalogDataListener.setSettingsData(result.getSettings());
 
-		// closes vsp chart if necessary and draws new chart
-		if (chart != null) {
-			chart.closeChart();
-		}
-		chart = new VspChart(this.result);
+		// draws new chart, closing any chart that is already open
+		this.chart.drawChart(result);
 
 		// status message
 		String statusMessage = "Imported full dataset, sorted by radial distance to target position";
@@ -215,7 +216,7 @@ public class ActionHandler {
 			return;
 		}
 
-		// reference new CatalogResult object
+		// references new QueryResult object
 		this.result = radecResult;
 
 		// compile table rows from radec file, default settings, no filters applied
@@ -226,10 +227,7 @@ public class ActionHandler {
 		catalogDataListener.setSettingsData(this.result.getSettings());
 
 		// closes vsp chart if necessary and draws new chart
-		if (chart != null) {
-			chart.closeChart();
-		}
-		chart = new VspChart(this.result);
+		this.chart.drawChart(result);
 
 		// status line
 		String statusMessage = radecFileReader.getStatusMessage();
@@ -250,11 +248,8 @@ public class ActionHandler {
 		// update catalog ui totals, filter sort settings are unchanged
 		catalogDataListener.setSettingsData(this.result.getSettings());
 
-		if (chart != null) {
-			chart.closeChart();
-		}
-		// chart = new VspChart(this.result);
-		chart.drawChart(result.getFieldObjects());
+		// closes any open chart and draws current chart
+		this.chart.drawChart(result);
 
 		// status message
 		String statusMessage = "Catalog table updated with current sort and filter settings";
@@ -278,7 +273,7 @@ public class ActionHandler {
 		catalogDataListener.setSettingsData(new CatalogSettings(targetMag));
 
 		// close & dispose current vsp chart
-		chart.closeChart();
+		this.chart.closeChart();
 
 		// status line
 		String statusMessage = "Cleared catalog result table, reset sort and filter settings";

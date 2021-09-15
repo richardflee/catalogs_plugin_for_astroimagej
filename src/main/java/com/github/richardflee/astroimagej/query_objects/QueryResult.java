@@ -62,19 +62,19 @@ public class QueryResult {
 		// N-E=up-left
 		setChartUri("https://app.aavso.org/vsp/chart/X26836EQ.png?type=chart");
 	}
-	
-	// import list field objects and update delta mag & radeSep fields
-		public void appendFieldObjects(List<FieldObject> fieldObjects) {
-			// append reference field objects to target object
-			this.fieldObjects.addAll(fieldObjects);
 
-			// update fields relative to target: delta mag & distance
-			for (FieldObject fo : this.fieldObjects) {
-				fo.setRadSepAmin(getTargetObject());
-				fo.setDeltaMag(getTargetObject().getMag());
-			}
-			setTotalsAndButtons();
+	// import list field objects and update delta mag & radeSep fields
+	public void appendFieldObjects(List<FieldObject> fieldObjects) {
+		// append reference field objects to target object
+		this.fieldObjects.addAll(fieldObjects);
+
+		// update fields relative to target: delta mag & distance
+		for (FieldObject fo : this.fieldObjects) {
+			fo.setRadSepAmin(getTargetObject());
+			fo.setDeltaMag(getTargetObject().getMag());
 		}
+		setTotalsAndButtons();
+	}
 
 	private FieldObject createTargetObject(CatalogQuery query) {
 		// initialise target from query params
@@ -110,7 +110,6 @@ public class QueryResult {
 		settings.setTargetMagSpinnerValue(getTargetObject().getMag());
 		setTotalsAndButtons();
 	}
-
 
 	public void applySelectedSort() {
 		// sort by distance option
@@ -255,7 +254,17 @@ public class QueryResult {
 		return chartUri;
 	}
 
+	/**
+	 * Strips leading '#' fom radec chart uri & removes any text including and after embedded '?' char
+	 * 
+	 * @param chartUri pre-processed vsp chart address
+	 */
 	public void setChartUri(String chartUri) {
+		// strip leading "#" from radec chart uri
+		chartUri = chartUri.startsWith("#") ? chartUri.substring(1) : chartUri;
+
+		// strip any text from url including and beyond "?" char
+		chartUri = (chartUri.contains("?")) ? chartUri.split("\\?")[0] : chartUri;
 		this.chartUri = chartUri;
 	}
 
@@ -422,7 +431,6 @@ public class QueryResult {
 		// two param constructor no field objects
 		QueryResult result2 = new QueryResult(query, settings);
 		System.out.println(result2.toString());
-		
 
 	}
 }

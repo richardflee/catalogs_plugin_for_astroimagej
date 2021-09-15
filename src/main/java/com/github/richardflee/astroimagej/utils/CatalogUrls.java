@@ -76,8 +76,6 @@ public class CatalogUrls {
 			
 			// orientation
 			url += "&north=up&east=left";
-		} else if (en == CatalogsEnum.VSP_CHART) {
-			url += "https://app.aavso.org/vsp/api/chart/";
 		}
 		return url;
 	}

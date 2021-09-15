@@ -10,7 +10,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -57,7 +56,7 @@ public class VspChart {
 	// query result data
 	private double fovAmin = 0.0;
 	private FieldObject target = null;
-	private String chartUri = null;
+	// private String chartUri = null;
 
 	// status message
 	private String statusMessage = null;
@@ -67,53 +66,68 @@ public class VspChart {
 	 * @param result
 	 *     query result parameters
 	 */
-	public VspChart(QueryResult result) {
-		// initialises fields with query result data
-		this.fovAmin = result.getQuery().getFovAmin();
-		this.target = result.getTargetObject();
-		this.chartUri = result.getChartUri();
+	public VspChart() {
 
-		// downloads and scales vsp chart as buffered image or null if download fails
+		// initChart(result);
+		//
+		//
+		//
+		// // draws chart with all reference objects selected
+		// drawChart(result.getFieldObjects());
+	}
+
+	/**
+	 * Closes any open chart and draws a new chart showing VSP chart of current star
+	 * field overlaid with aperture selections
+	 * @param fieldObjects
+	 *     list of target and reference objects
+	 */
+	public void drawChart(QueryResult result) {
+		
+		// sets field attribute values
+		initChart(result);
+
+		// downloads and scales vsp chart as buffered image; null if download fails
+		String chartUri = result.getChartUri();
 		this.downloadImage = loadImage(chartUri);
 		if (this.downloadImage == null) {
 			String statusMessage = String.format("ERROR: Error downoading chart: %s", chartUri);
 			setStatusMessage(statusMessage);
 			return;
 		}
-		
-		// draws chart with all reference objects selected
-		drawChart(result.getFieldObjects());
-	}
-	
-	/**
-	 * Closes any open chart and draws a new chart showing VSP chart of current star field overlaid with aperture selections
-	 * 
-	 * @param fieldObjects list of target and reference objects
-	 */
-	public void drawChart(List<FieldObject> fieldObjects) {
-		// chart download has failed
-		if (this.downloadImage == null) {
-			return;
-		}
+
 		// clears open chart dialog
 		closeChart();
-		
+
 		// scale image to SCALED_WIDTH, retaining aspect ration
 		BufferedImage scaledImage = scaledImage(this.downloadImage);
-		
+
 		// creates graphics object to draw aperture shapes and text
 		this.g2d = scaledImage.createGraphics();
 		this.g2d.setStroke(new BasicStroke(3));
 		this.g2d.setFont(new Font("Consolas", Font.BOLD, 14));
-		
+
 		// draws selected reference apertures
+		List<FieldObject> fieldObjects = result.getFieldObjects();
 		for (int i = 0; i < fieldObjects.size(); i++) {
 			drawAperture(fieldObjects.get(i));
 		}
 		// displays chart dialog
 		showVspChart(scaledImage);
 	}
-	
+
+	/**
+	 * Initialises attributes
+	 * @param result
+	 *     current chart data set
+	 */
+	private void initChart(QueryResult result) {
+		// initialises fields with query result data
+		this.fovAmin = result.getQuery().getFovAmin();
+		this.target = result.getTargetObject();
+		// this.chartUri = result.getChartUri();
+	}
+
 	/**
 	 * Closes vsp chart
 	 */
@@ -124,12 +138,10 @@ public class VspChart {
 	}
 
 	/*
-	 * Scales image width to SCALED_WIDTH, retaining chart aspect ratio
-	 * 
-	 * Ref: Advanced Java Swing, Bodnar, 2015, chap 5
-	 * 
+	 * Scales image width to SCALED_WIDTH, retaining chart aspect ratio Ref:
+	 * Advanced Java Swing, Bodnar, 2015, chap 5
 	 * @param downloadImage reference to vsp downloaded image array
-	 * @return image scaled image array 
+	 * @return image scaled image array
 	 */
 	private BufferedImage scaledImage(BufferedImage downloadImage) {
 		BufferedImage scaledImage = null;
@@ -138,7 +150,7 @@ public class VspChart {
 		int sourceWidth = downloadImage.getWidth();
 		int scaledHeight = Math.toIntExact(downloadImage.getHeight() * SCALED_WIDTH / sourceWidth);
 		scaledImage = new BufferedImage(SCALED_WIDTH, scaledHeight, BufferedImage.TYPE_INT_RGB);
-		
+
 		Graphics2D g2d = scaledImage.createGraphics();
 		g2d.drawImage(downloadImage, 0, 0, SCALED_WIDTH, scaledHeight, null);
 		g2d.dispose();
@@ -272,16 +284,16 @@ public class VspChart {
 		// / N- E = up-left
 		result.setChartUri("https://app.aavso.org/vsp/chart/X26835JN.png?type=chart");
 
-		// **********************************************************************************************************
-
-		VspChart vspChart = new VspChart(result);
-		TimeUnit.SECONDS.sleep(1);
-		
-		// demo repeat chart display with different apertures
-		List<FieldObject> fieldObjects = result.getFieldObjects();
-		for (int i = 1; i < 5; i++) {
-			fieldObjects.get(i).setSelected(false);
-			vspChart.drawChart(fieldObjects);
-		}
+//		// **********************************************************************************************************
+//
+//		VspChart vspChart = new VspChart();
+//		TimeUnit.SECONDS.sleep(1);
+//
+//		// demo repeat chart display with different apertures
+//		List<FieldObject> fieldObjects = result.getFieldObjects();
+//		for (int i = 1; i < 5; i++) {
+//			fieldObjects.get(i).setSelected(false);
+//			vspChart.drawChart(fieldObjects);
+//		}
 	}
 }

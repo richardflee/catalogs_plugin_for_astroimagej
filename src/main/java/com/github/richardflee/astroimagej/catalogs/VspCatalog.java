@@ -83,14 +83,22 @@ public class VspCatalog implements AstroCatalog {
 		return fieldObjects;
 	}
 
+	/**
+	 * Extracts chart uri for current CatalogQuery parameters, orientated N-E = up-left
+	 * 
+	 * <p>Extranseous text is removed in QueryResult chart uri setter</p>
+	 * 
+	 * @param query curent CatalogQuery parameters
+	 * @return full uri text string extracted from VSP response
+	 */
 	public String downloadVspChart(CatalogQuery query) {
 		String chartUri = null;
 		JsonNode root = null;
 		query.setCatalogType(CatalogsEnum.VSP);
 		try {
 			root = objectMapper.readTree(new URL(CatalogUrls.getUrl(query)));
+			// full uri may include extraneous text
 			chartUri = root.findPath("image_uri").asText();
-			chartUri = chartUri.split("\\?")[0];
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
