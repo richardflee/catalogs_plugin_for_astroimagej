@@ -56,7 +56,7 @@ public class VspCatalog implements AstroCatalog {
 		// reference to json root node
 		JsonNode root = null;
 		try {
-			root = objectMapper.readTree(new URL(CatalogUrls.getUrl(query)));
+			root = objectMapper.readTree(new URL(CatalogUrls.urlBuilder(query)));
 
 			// photometry node: parent node for field object nodes
 			JsonNode foNodes = root.findPath("photometry");
@@ -96,7 +96,7 @@ public class VspCatalog implements AstroCatalog {
 		JsonNode root = null;
 		query.setCatalogType(CatalogsEnum.VSP);
 		try {
-			root = objectMapper.readTree(new URL(CatalogUrls.getUrl(query)));
+			root = objectMapper.readTree(new URL(CatalogUrls.urlBuilder(query)));
 			// full uri may include extraneous text
 			chartUri = root.findPath("image_uri").asText();
 		} catch (IOException e) {

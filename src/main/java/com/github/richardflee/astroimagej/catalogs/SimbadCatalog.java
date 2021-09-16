@@ -119,7 +119,7 @@ public class SimbadCatalog {
 		String result = null;
 		
 		// compile SIMBAD url for current SinbadDataType
-		String url = CatalogUrls.getUrl(query, paramType);
+		String url = CatalogUrls.urlBuilder(query, paramType);
 		
 		// Create Xpath and run xml query for dataType-specified item
 		try {
