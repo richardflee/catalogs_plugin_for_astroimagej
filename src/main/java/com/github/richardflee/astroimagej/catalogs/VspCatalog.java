@@ -45,7 +45,6 @@ public class VspCatalog implements AstroCatalog {
 	 * @return result VSP database QueryResult type response comprising an array of
 	 * FieldObjects matching user-input query parameters
 	 */
-
 	@Override
 	public List<FieldObject> runQuery(CatalogQuery query) {
 

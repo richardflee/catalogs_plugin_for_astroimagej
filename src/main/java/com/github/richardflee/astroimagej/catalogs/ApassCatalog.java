@@ -34,36 +34,106 @@ public class ApassCatalog implements AstroCatalog {
 	public ApassCatalog() {
 	}
 
+	/**
+	 * Runs a query on APASS9 catalog in the Vizier on-line database with url compiled from user-input parameters
+	 * 
+	 * @param query
+	 *     CatalogQuery object encapsulating VSP database query parameters
+	 * @return fieldObjects array of FieldObjects matching user-input query parameters
+	 */
 	@Override
 	public List<FieldObject> runQuery(CatalogQuery query) {
-		List<FieldObject> fieldObjects = new ArrayList<>();
-
+		// compiles url
 		String url = CatalogUrls.urlBuilder(query);
+		
+		// extracts array of data lines from Vizier/APASS response
 		List<String> lines = importApassData(url);
 		
-		lines.stream().forEach(p -> System.out.println(p));
-		
+		// converts data lines to array field objects
+		List<FieldObject> fieldObjects = getFieldObjects(lines);
 		return fieldObjects;
 	}
-
+	
+	/**
+	 * Status message getter
+	 */
 	@Override
 	public String getStatusMessage() {
 		return this.statusMessage;
 	}
-
+	
+	/*
+	 * Compiles a list of field objects assembled from apass data line array
+	 * 
+	 * @param lines list of text data lines 
+	 * @return list of field objects
+	 */
+	private List<FieldObject> getFieldObjects(List<String> lines) { 
+		List<FieldObject> fieldObjects = new ArrayList<>();
+		for (String line : lines) {
+			FieldObject fo = compileFieldObject(line);
+			fieldObjects.add(fo);
+		}
+		return fieldObjects;
+	}
+	
+	/**
+	 * Compiles a single field object with coordinate-based object id
+	 * 
+	 * <p>Auto-names APASS objects format: HHMMSSSS±DDMMSSSS</p>
+	 * 
+	 * @param line tab-delimited text data line
+	 * @return compiled field object
+	 */
+	private FieldObject compileFieldObject(String line) {
+		
+		// remove any blanks then splits line on tab char
+		String[] terms = line.replace(" ", "").split("\t");
+		
+		// coordinate terms
+		double raDeg = Double.valueOf(terms[0]);
+		double raHr = raDeg / 15.0;
+		double decDeg = Double.valueOf(terms[1]);
+		
+		// number obs
+		int nObs = Integer.valueOf(terms[2]);
+		
+		// mag terms
+		double mag = Double.valueOf(terms[3]);
+		double magErr = Double.valueOf(terms[4]);
+		
+		// create new field object, auto-name object id
+		FieldObject fo = new FieldObject(null, raHr, decDeg, mag, magErr);
+		
+		// set params
+		fo.setnObs(nObs);
+		fo.setTarget(false);
+		fo.setSelected(true);
+		
+		return fo;
+	}
+	
+	
+	/**
+	 * Runs APASS catalog-based query on Vizier on-line database
+	 * 
+	 * @param url Vizier / APASS url specifying query parameters
+	 * @return list of data lines extractedd from query response
+	 */
 	private List<String> importApassData(String url) {
-
 		String line;
 		List<String> lines = new ArrayList<>();
-
+		
+		// run Vizier query, add valid data lines to string array
 		try {
+			// initialise connection
 			URL vizier = new URL(url);
 			URLConnection conn = vizier.openConnection();
-
+			
 			BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+			// append valid data lines to lines array
 			while ((line = in.readLine()) != null)
 				if (this.isDataLine(line)) {
-					// System.out.println(line);
 					lines.add(line);
 				}
 			in.close();
@@ -71,10 +141,9 @@ public class ApassCatalog implements AstroCatalog {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-
-	return lines;
-
+		return lines;
 	}
+
 
 	/*
 	 * Returns true if text line complies with data pattern tests
@@ -99,7 +168,7 @@ public class ApassCatalog implements AstroCatalog {
 	}
 
 	// regular expression numeric test
-	// ref: https://www.baeldung.com/java-check-string-number
+	// refer: https://www.baeldung.com/java-check-string-number
 	private static boolean isNumeric(String strNum) {
 		Pattern pattern = Pattern.compile("-?\\d+(\\.\\d+)?");
 		if ((strNum == null) || (strNum.length() == 0)) {
@@ -115,32 +184,9 @@ public class ApassCatalog implements AstroCatalog {
 		CatalogQuery query = new CatalogQuery();
 		query.setCatalogType(CatalogsEnum.APASS);
 
-		apass.runQuery(query);
-
-		//
-		// String url = CatalogUrls.urlBuilder(query);
-		//
-		// URL vizier = null;
-		// URLConnection yc = null;
-		//
-		// try {
-		// vizier = new URL(url);
-		// yc = vizier.openConnection();
-		// BufferedReader in = new BufferedReader(new
-		// InputStreamReader(yc.getInputStream()));
-		// String line;
-		// while ((line = in.readLine()) != null)
-		// if (apass.isDataLine(line)) {
-		// System.out.println(line);
-		// }
-		// in.close();
-		// } catch (IOException e1) {
-		// // TODO Auto-generated catch block
-		// e1.printStackTrace();
-		// }
-		//
-		// System.out.println(url);
-
+		List<FieldObject> fieldObjects = apass.runQuery(query);
+		fieldObjects.stream().forEach(p -> System.out.println(p.toString()));
+		System.out.println(String.format("No. download records: %d", fieldObjects.size()));
 	}
 
 }
