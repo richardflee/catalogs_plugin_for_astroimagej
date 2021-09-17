@@ -19,8 +19,8 @@ import com.github.richardflee.astroimagej.query_objects.CatalogQuery;
 public class CatalogUrls {
 	
 	// HTTP protocol: ascii g=hexadecimal representations
-	private static final String SPACE_CHAR = "%20";		// space char ' '
-	private static final String PLUS_SIGN = "%2b";       // plus sing '+'
+	private static final String SPACE_CHAR = "%20";		// http coding for space char ' '
+	private static final String PLUS_SIGN = "%2b";      // http coding for plus sign '+'
 
 	private static final int MAX_RECORDS = 1500;
 
@@ -44,7 +44,7 @@ public class CatalogUrls {
 	}
 	
 	/**
-	 * Compiles a url for a database query, signature ([CatalogQuery], [CatalogType])
+	 * Compiles a url for a database query, signature ([CatalogQuery])
 	 * 
 	 * @param query catalog query data
 	 * @param paramType which data item to download
@@ -106,12 +106,12 @@ public class CatalogUrls {
 			// append combined ra, dec and fov
 			url += ra  + SPACE_CHAR + dec + fov;
 			
-			// url output contents
+			// format url output contents
 			// ra and dec in J2000 equinox / epoch, number observations
 			String radec = "&-out=_RAJ" + SPACE_CHAR + "_DEJ" + SPACE_CHAR + "nobs";	
 			url += radec + SPACE_CHAR;
 			
-			// mag and mag error for selected APASS filter
+			// looks up ApassNum for selected filter & appends mag, mag_err url fragments
 			ApassEnum en = ApassEnum.getEnum(query.getMagBand());
 			url += en.getMagUrl() + SPACE_CHAR + en.getMagErrUrl() + SPACE_CHAR;
 			
