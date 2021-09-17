@@ -1,7 +1,5 @@
 package com.github.richardflee.astroimagej.catalogs;
 
-import javax.swing.JOptionPane;
-
 import com.github.richardflee.astroimagej.enums.CatalogsEnum;
 
 /**
@@ -23,8 +21,7 @@ public class CatalogFactory {
 		if (catalogType == CatalogsEnum.VSP) {
 			catalog = new VspCatalog();
 		} else {
-			String message = String.format("Program error %s catalog", catalogType.toString());
-			JOptionPane.showMessageDialog(null, message, "Catalog Query Error", JOptionPane.INFORMATION_MESSAGE);
+			catalog = new ApassCatalog();
 		}
 		return catalog;
 	}

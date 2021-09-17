@@ -67,13 +67,6 @@ public class VspChart {
 	 *     query result parameters
 	 */
 	public VspChart() {
-
-		// initChart(result);
-		//
-		//
-		//
-		// // draws chart with all reference objects selected
-		// drawChart(result.getFieldObjects());
 	}
 
 	/**
@@ -178,7 +171,7 @@ public class VspChart {
 	 * @param fo reference to current field object, encapsulates object coordinates
 	 */
 	private void drawAperture(FieldObject fo) {
-		if (fo.isSelected() == false) {
+		if ((fo.isAccepted() == false) || (fo.isSelected() == false)) {
 			return;
 		}
 		// sets red or green for reference or target object

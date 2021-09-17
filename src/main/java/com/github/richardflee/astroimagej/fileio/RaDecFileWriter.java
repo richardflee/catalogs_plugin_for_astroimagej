@@ -121,7 +121,10 @@ public class RaDecFileWriter extends RaDecFileBase {
 	private List<String> compileRaDecList(QueryResult result) {
 		List<String> lines = new ArrayList<>();
 
-		List<FieldObject> selectedList = result.getFieldObjects().stream().filter(p -> p.isSelected() == true)
+		List<FieldObject> selectedList = result.getFieldObjects()
+				.stream()
+				.filter(p -> p.isSelected() == true)
+				.filter(p -> p.isAccepted())
 				.collect(Collectors.toList());
 
 		// astrominagej radec data block

@@ -11,7 +11,9 @@ import java.util.regex.Pattern;
 
 import com.github.richardflee.astroimagej.enums.CatalogsEnum;
 import com.github.richardflee.astroimagej.query_objects.CatalogQuery;
+import com.github.richardflee.astroimagej.query_objects.CatalogSettings;
 import com.github.richardflee.astroimagej.query_objects.FieldObject;
+import com.github.richardflee.astroimagej.query_objects.QueryResult;
 import com.github.richardflee.astroimagej.utils.CatalogUrls;
 
 /**
@@ -51,6 +53,11 @@ public class ApassCatalog implements AstroCatalog {
 		
 		// converts data lines to array field objects
 		List<FieldObject> fieldObjects = getFieldObjects(lines);
+		
+		// status message
+		String statusMessage = String.format("Downloaded %d APASS records", fieldObjects.size());
+		setStatusMessage(statusMessage);
+		
 		return fieldObjects;
 	}
 	
@@ -138,8 +145,8 @@ public class ApassCatalog implements AstroCatalog {
 				}
 			in.close();
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			String statusMessage = "ERROR: Vizier/APASS download error";
+			setStatusMessage(statusMessage);
 		}
 		return lines;
 	}
@@ -176,6 +183,10 @@ public class ApassCatalog implements AstroCatalog {
 		}
 		return pattern.matcher(strNum).matches();
 	}
+	
+	private void setStatusMessage(String statusMessage) {
+		this.statusMessage = statusMessage;
+	}
 
 	public static void main(String[] args) {
 
@@ -183,10 +194,17 @@ public class ApassCatalog implements AstroCatalog {
 
 		CatalogQuery query = new CatalogQuery();
 		query.setCatalogType(CatalogsEnum.APASS);
+		query.setFovAmin(10.0);
 
 		List<FieldObject> fieldObjects = apass.runQuery(query);
 		fieldObjects.stream().forEach(p -> System.out.println(p.toString()));
+		
+		QueryResult result = new QueryResult(query, new CatalogSettings(12.345));
+		result.appendFieldObjects(fieldObjects);
+		
 		System.out.println(String.format("No. download records: %d", fieldObjects.size()));
+		System.out.println(String.format("Status message: %s", apass.getStatusMessage()));
+		
 	}
 
 }
