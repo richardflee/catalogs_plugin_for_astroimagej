@@ -24,7 +24,7 @@ public class CatalogSettings {
 	private int filteredLabelValue;
 
 	// flag enable / disable catalog ui buttons
-	private boolean enableButtons;
+	private boolean isTableData;
 
 	// Default, parameter and copy constructors
 	public CatalogSettings() {
@@ -61,7 +61,7 @@ public class CatalogSettings {
 		this.filteredLabelValue = Integer.valueOf(settings.getFilteredLabelValue());
 
 		// no table data
-		this.enableButtons = false;
+		this.isTableData = false;
 	}
 
 	private void resetDefaultSettings(Double targetMag) {
@@ -185,12 +185,12 @@ public class CatalogSettings {
 		this.filteredLabelValue = (nFilteredRecords >= 0) ? nFilteredRecords : 0;
 	}
 
-	public boolean isEnableButtons() {
-		return enableButtons;
+	public boolean isTableData() {
+		return isTableData;
 	}
 
-	public void setEnableButtons(boolean enableButtons) {
-		this.enableButtons = enableButtons;
+	public void setTableData(boolean isTableData) {
+		this.isTableData = isTableData;
 	}
 
 	/**
@@ -219,6 +219,7 @@ public class CatalogSettings {
 		return labelStr;
 	}
 
+	
 	@Override
 	public String toString() {
 		return "CatalogSettings [targetMagSpinnerValue=" + targetMagSpinnerValue + ", upperLimitSpinnerValue="
@@ -226,7 +227,7 @@ public class CatalogSettings {
 				+ ", isMagLimitsCheckBoxValue=" + isMagLimitsCheckBoxValue + ", distanceRadioButtonValue="
 				+ distanceRadioButtonValue + ", deltaMagRadioButtonValue=" + deltaMagRadioButtonValue
 				+ ", nObsSpinnerValue=" + nObsSpinnerValue + ", totalLabelValue=" + totalLabelValue
-				+ ", filteredLabelValue=" + filteredLabelValue + ", enableButtons=" + enableButtons + "]";
+				+ ", filteredLabelValue=" + filteredLabelValue + ", isTableData=" + isTableData + "]";
 	}
 
 	public static void main(String[] args) {

@@ -172,7 +172,7 @@ public class QueryResult {
 	private void setTotalsAndButtons() {
 		settings.setTotalLabelValue(getRecordsTotal());
 		settings.setFilteredLabelValue(getAcceptedTotal());
-		settings.setEnableButtons(getRecordsTotal() > 0);
+		settings.setTableData(getRecordsTotal() > 0);
 	}
 
 	// getters / setters

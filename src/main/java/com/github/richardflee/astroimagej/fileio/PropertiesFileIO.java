@@ -18,15 +18,15 @@ import com.github.richardflee.astroimagej.query_objects.CatalogSettings;
 import com.github.richardflee.astroimagej.utils.AstroCoords;
 
 /**
- * This class handles property file read and write requests functioning as
- * CatalogQuery and CatalogSettings getters and setters.
+ * This class handles property file read and write requests.
+ * 
+ * <p>Path to prperties file: C:/Users/[user]/.astroimagej/catalogs_plugin.properties</p>
  *
  */
 public class PropertiesFileIO {
-	// full path to properties file, example:
-	// C:/Users/[user]/.astroimagej/catalogs_plugin.properties
 	private String propertiesFilePath = null;
 
+	
 	public PropertiesFileIO() {
 		// set properties path
 		String homePath = Paths.get(System.getProperty("user.home")).toAbsolutePath().toString();
@@ -45,9 +45,8 @@ public class PropertiesFileIO {
 
 	/**
 	 * Creates a CatalogQuery object from property file.
-	 * <p>
-	 * Query items identified: "Query." + CatalogsEnum identifier
-	 * </p>
+	 * 
+	 * <p>CatalogQuery items identified: "Query." + CatalogsEnum identifier</p>
 	 * 
 	 * @return CatalogQuery object encapsulating catalog dialog field values
 	 */
@@ -93,15 +92,12 @@ public class PropertiesFileIO {
 	}
 
 	/**
-	 * Creates a CatalogSettings object from property file with target mag the only
+	 * Creates a CatalogSettings object from property file; target mag is the only
 	 * non-default field.
-	 * <p>
-	 * Settings items identified: "Settings." + identifier
-	 * </p>
-	 * <p>
-	 * </p>
 	 * 
-	 * @return CatalogQuery object encapsulating catalog dialog field values
+	 * <p>CatalogSettings target mag: "Settings.TARGETMAG=" + [value]</p>
+	 * 
+	 * @return CatalogSetings object encapsulating catalog dialog field values
 	 */
 	public CatalogSettings getPropertiesSettingsData() {
 

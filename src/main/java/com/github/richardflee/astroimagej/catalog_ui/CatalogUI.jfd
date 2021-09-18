@@ -320,8 +320,8 @@ new FormModel {
 						} )
 					} )
 					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-						"$horizontalGroup": "par l {seq {space :::p, par l {seq {par l {comp simbadButton:2::p:139:p, comp saveQueryButton:2:l:p::p, comp catalogQueryButton:2:l:p::p, comp importRaDecButton:2:l:p::p}, space :0:0:x}, seq t {space :0:0:x, par l {comp closeButton:2:t:p:139:p, comp updateButton:2:t:p::p, comp saveRaDecButton:2:t:p::p, comp clearButton:2:t:p::p}}}, space :::p}}"
-						"$verticalGroup": "par l {seq l {space :::p, comp simbadButton:::p:39:p, space u:::p, comp saveQueryButton:::p:39:p, space u:::p, comp catalogQueryButton:::p:39:p, space s:::p, comp saveRaDecButton:::p:39:p, space u:::p, comp importRaDecButton:::p:39:p, space ::159:x, comp updateButton:::p:39:p, space :p:23:p, comp clearButton:::p:39:p, space u:::p, comp closeButton:::p:39:p, space :::p}}"
+						"$horizontalGroup": "par l {seq {space :::p, par l {seq {par l {comp simbadButton:2::p:139:p, comp saveQueryButton:2:l:p::p, comp catalogQueryButton:2:l:p::p, comp importRaDecButton:2:l:p::p}, space :0:0:x}, seq t {space :0:0:x, par l {comp closeButton:2:t:p:139:p, comp updateButton:2:t:p::p, comp clearButton:2:t:p::p, comp saveRaDecButton:2:t:p::p}}}, space :::p}}"
+						"$verticalGroup": "par l {seq l {space :::p, comp simbadButton:::p:39:p, space u:::p, comp saveQueryButton:::p:39:p, space u:::p, comp catalogQueryButton:::p:39:p, space u:::p, comp importRaDecButton:::p:39:p, space s:::p, comp saveRaDecButton:::p:39:p, space ::159:x, comp updateButton:::p:39:p, space :p:23:p, comp clearButton:::p:39:p, space u:::p, comp closeButton:::p:39:p, space :::p}}"
 					} ) {
 						name: "panel7"
 						add( new FormComponent( "javax.swing.JButton" ) {

@@ -14,22 +14,38 @@ import com.github.richardflee.astroimagej.query_objects.CatalogSettings;
 import ij.IJ;
 import ij.plugin.PlugIn;
 
+/**
+ * AstroImageJ plugin to import on-line photometry data and save to radec format files.
+ * 
+ * <p>Note: class name (Catalogs_Plugin) requires underscore  ('_') character to appear 
+ * as an option under AIJ Plugins menu.</p>
+ * 
+ * <p>Refer ImageJ documentation 'Developing Plugins for ImageJ 1.x 
+ * https://imagej.net/Developing_Plugins_for_ImageJ_1.x</p>
+ */
+
 public class Catalogs_Plugin implements PlugIn {
 
+	/**
+	 * ImageJ plug-in interface
+	 */
 	@Override
 	public void run(String arg) {
 		main(null);
 	}
 
+	/**
+	 * Runs as a modal Java dialog, invoked from Astroimagej toolbar / Plugins
+	 */
 	public static void main(String[] args) {
-		IJ.showMessage("radec", "constructo");
-
+		// sets os 'look-and-feel' 
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception ex) {
-			IJ.showMessage("Failed to initialize Windows Look-Feel");
+			IJ.showMessage("Failed to initialize System Look-Feel");
 		}
 
+		// runs app in EDT (event dispatching thread)
 		EventQueue.invokeLater(() -> {
 			runCatalogsPlugin();
 		});
@@ -37,46 +53,32 @@ public class Catalogs_Plugin implements PlugIn {
 	}
 
 	public static void runCatalogsPlugin() {
-
-		// Read last saved catalog dialog data from properties file
-		// First run loads default WASP-12 data set
-		//CatalogQuery query = PropertiesFileReader.readPropertiesFile();
-
-		// Instantiates file writer objects
-		//PropertiesFileWriter pfw = new PropertiesFileWriter();
-		
-		//RaDecFileWriter rdw = new RaDecFileWriter();
-
-		// Opens catalog user interface with properties or default data
-		
+		// Handles properties file read/write
 		PropertiesFileIO pf = new PropertiesFileIO();
 		
+		// Swing table data model
 		CatalogTableModel ctm = new CatalogTableModel();
 		
+		// Handles ui button events
 		ActionHandler handler = new ActionHandler(pf);
 		
+		// User  interface
 		CatalogUI catalogUi = new CatalogUI(handler, ctm);
 		
+		// configure listener interfaces
 		handler.setCatalogTableListener(ctm);
-		
 		handler.setCatalogDataListener(catalogUi);
-		
+
+		// initialise CatalogQuery object with properties data
+		// or default data if properties file not found
 		CatalogQuery query = pf.getPropertiesQueryData();
 		catalogUi.setQueryData(query);
 		
 		// apply properties target mag
 		CatalogSettings settings = pf.getPropertiesSettingsData();
 		catalogUi.setSettingsData(settings);
-		
 
-//		// sets up file writer as listeners to catalog query & save property file events
-//		catalogUi.setPropsWriterListener(pfw);
-//		catalogUi.setRaDecWriterListener(rdw);
-
-		// finally set JDialog modal and visible after objects and form complete
-		// initialisation
-		// Set dialog modal to lock-out AIJ toolbar while vsp_demo open, otherwise bad
-		// things can happen ..
+		// show JDialog as modal to lock-out AIJ toolbar while vsp_demo open
 		catalogUi.setModal(true);
 		catalogUi.setVisible(true);
 	}
