@@ -21,13 +21,9 @@ import com.github.richardflee.astroimagej.query_objects.SimbadResult;
 import com.github.richardflee.astroimagej.utils.AstroCoords;
 
 /**
- * This class handles catalog_ui button click events to command database query,
- * update tale data and radec file read / write operations
+ * This class handles catalog_ui button click events to run on-lines database queries,
+ * update table data and radec file read / write operations
  */
-
-// TTDO load query + target mag from props file or default query
-// return string array & extract query & target
-// default settings
 public class ActionHandler {
 	// reference to CatalogUI, main user form
 	private CatalogTableListener catalogTableListener;
@@ -42,11 +38,8 @@ public class ActionHandler {
 	private VspChart chart = null;
 
 	/*
-	 * result field: object compiled from database query records or imported from
-	 * radec file. Each field object tracks its filtered and selected state
-	 * doCatalogQuery & doImportRaDec: create new result doSaveRadec saves selected
-	 * selected results field objects to radec format file options doClear resets
-	 * result null
+	 * result field: object compiled from database query parameters and query response data
+	 *  or imported from radec file
 	 */
 	private QueryResult result = null;
 
@@ -64,26 +57,32 @@ public class ActionHandler {
 		this.fileWriter = new RaDecFileWriter();
 		this.radecFileReader = new RaDecFileReader();
 		
-		// aperture chart object
+		// creates vsp star chart with aperture overlay
 		this.chart = new VspChart();
 	}
 
 	/**
 	 * Configures local table listener field to broadcast updateTable message
 	 * @param catalogTableListener
-	 *     reference to CataTableListner interface
+	 *     reference to CataTableListener interface
 	 */
 	public void setCatalogTableListener(CatalogTableListener catalogTableListener) {
 		this.catalogTableListener = catalogTableListener;
 	}
-
+	
+	/**
+	 * Configures local catalog listener field to broadcast query & settings update messages
+	 * 
+	 * @param catalogDataListener reference to CatalogDataListener interface
+	 */
 	public void setCatalogDataListener(CatalogDataListener catalogDataListener) {
 		this.catalogDataListener = catalogDataListener;
 	}
 
 	/**
-	 * Runs an objectId-based query on Simbad on-line database. <p>Updates Simbad
-	 * fields with search results or with "." if no match was found</p>
+	 * Runs an objectId-based query on Simbad on-line database. 
+	 * 
+	 * <p>Updates Simbad fields with search results or with "." if no match was found</p>
 	 */
 	public void doSimbadQuery() {
 		SimbadCatalog simbad = new SimbadCatalog();
@@ -130,10 +129,9 @@ public class ActionHandler {
 	}
 
 	/**
-	 * Runs a query on on-line astronomical database with query object parameters.
+	 * Runs a query on an on-line astronomical database with atalogQuery object parameters.
 	 * Outputs result records in the catalog table.
 	 */
-	// TTDO replace apass file read with on-line q
 	public void doCatalogQuery() {
 		// compile CatalogQuery object from catalog ui Query Settings data
 		CatalogQuery query = catalogDataListener.getQueryData();
@@ -143,16 +141,12 @@ public class ActionHandler {
 		}
 
 		// default settings with catalog ui target mag
-		double targetMag = catalogDataListener.getSettingsData().getTargetMagSpinnerValue();
-
 		// assemble catalog result with default settings & targe mag
+		double targetMag = catalogDataListener.getSettingsData().getTargetMagSpinnerValue();
 		this.result = new QueryResult(query, new CatalogSettings(targetMag));
 
-		// run query
-		//ApassFileReader fr = new ApassFileReader();
-		//List<FieldObject> referenceObjects = fr.runQueryFromFile(query);
-		
-		// runs query on selected on-line catalog
+		// runs query on selected on-line catalog, retruns list of field objects
+		// append this list to CatalogResut object
 		AstroCatalog catalog = CatalogFactory.createCatalog(query.getCatalogType());
 		List<FieldObject> fieldObjects = catalog.runQuery(query);
 		result.appendFieldObjects(fieldObjects);
@@ -181,17 +175,15 @@ public class ActionHandler {
 
 	/**
 	 * Writes radec file with selected table data to radec format text file in local
-	 * radec astroimagej folder <p> Example:
-	 * ./astroimagej/radec/wasp_12.Rc.020.radec.txt </p>
+	 * radec astroimagej folder 
+	 * 
+	 * <p> Example: ./astroimagej/radec/wasp_12.Rc.020.radec.txt </p>
 	 */
 	public void doSaveRaDecFile() {
-		// filter user selected records from accepted field objects
-		// List<FieldObject> selectedTableList = this.result.getSelectedRecords();
-
-		// writes radec
+		// writes radec with accepted (i.e. meet user filter specs) and selected records
 		this.fileWriter.writeRaDecFile(result);
 
-		// reverts catalog ui to query & settings used to get table data
+		// reverts catalog ui to query & settings used for on-line query
 		catalogDataListener.setQueryData(result.getQuery());
 		catalogDataListener.setSettingsData(result.getSettings());
 
@@ -204,7 +196,6 @@ public class ActionHandler {
 	 * Reads user-selected radec file, maps data to catalog table and ui control and
 	 * creates a new query object.
 	 */
-	// TTD replace with void & set button state in catalog settings
 	public void doImportRaDecFile() {
 		// import radec file and map to catalog result object
 		QueryResult radecResult = radecFileReader.importRaDecResult();

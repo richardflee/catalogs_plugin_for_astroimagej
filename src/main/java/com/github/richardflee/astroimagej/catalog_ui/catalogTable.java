@@ -21,13 +21,15 @@ import com.github.richardflee.astroimagej.enums.ColumnsEnum;
 
 /**
  * This class comprises a Java Swing JTable with CatalogTableModel data model. 
- * <p> The first row consisting of target object data then a series of reference  object row data. 
- *  Selected reference rows can be copied to an radec file for importing apertures into aij. 
+ * 
+ * <p> The first row consists of target object data; subsequent rows comprise a series of 
+ * reference  object data. Selected reference rows can be copied to an radec file for 
+ * importing apertures into aij.</p>
  * 
  * <p>The first column shows the projected astroimagej aperture number, T01 (target) then C02, C03 .. for selected
  * reference rows. If the user deselects  a reference row, the aperture number automatically clears and higher
  * aperture numbers adjust to maintain numerical sequence, e.g. T01, C02, [blank], C03 ...where [blank] denotes
- *  a deselected row</p>
+ *  a de-selected row</p>
  */
 public class CatalogTable {
 
@@ -90,51 +92,6 @@ public class CatalogTable {
 		}
 	}
 	
-	public class HeaderRenderer extends JLabel implements TableCellRenderer {
-		private static final long serialVersionUID = 1L;
-
-		public HeaderRenderer() {
-			setFont(new Font("Consolas", Font.BOLD, 12));
-			setForeground(Color.BLACK);
-			setBorder(BorderFactory.createEtchedBorder());
-		}
-
-		@Override
-		public boolean isOpaque() {
-			return true;
-		}
-
-		@Override
-		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
-				int row, int column) {
-			setText(value.toString());
-			setHorizontalAlignment(JLabel.CENTER);
-			return this;
-		}
-	}
-	
-	/*
-	 *
-	 */
-	class ApColumnRenderer extends DefaultTableCellRenderer {
-		
-		private static final long serialVersionUID = 1L;
-
-		@Override
-		public Component getTableCellRendererComponent(
-				JTable table, Object value, boolean isSelected, 
-				boolean hasFocus, int row, int column) {
-			Component cellComponent = super.getTableCellRendererComponent(
-					table, value, isSelected, hasFocus, row, column);
-			
-			// sets top (target) ApId cell = green, other ApIds = red + horiz text align
-			Color color = (row == 0) ? Color.GREEN : Color.RED;
-			cellComponent.setForeground(color);
-			setHorizontalAlignment(JLabel.CENTER);
-			return cellComponent;
-		}
-	}
-	
 	/**
 	 * Sets row height and column widths; applies text cell renderer
 	 * 
@@ -159,6 +116,58 @@ public class CatalogTable {
 			}
 		}
 	}
+	
+	/* 
+	 * This class encapsulates header text and cell formatting 
+	 */
+	private class HeaderRenderer extends JLabel implements TableCellRenderer {
+		private static final long serialVersionUID = 1L;
+
+		public HeaderRenderer() {
+			setFont(new Font("Consolas", Font.BOLD, 12));
+			setForeground(Color.BLACK);
+			setBorder(BorderFactory.createEtchedBorder());
+		}
+
+		@Override
+		public boolean isOpaque() {
+			return true;
+		}
+
+		@Override
+		public Component getTableCellRendererComponent(JTable table, Object value, 
+				boolean isSelected, boolean hasFocus, int row, int column) {
+			setText(value.toString());
+			setHorizontalAlignment(JLabel.CENTER);
+			return this;
+		}
+	}
+	
+
+	/* 
+	 * This class dedicated to setting aperture column GREEN (raget object) or 
+	 * RED (reference objects) ..
+	 */
+	private class ApColumnRenderer extends DefaultTableCellRenderer {
+		
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public Component getTableCellRendererComponent(
+				JTable table, Object value, boolean isSelected, 
+				boolean hasFocus, int row, int column) {
+			Component cellComponent = super.getTableCellRendererComponent(
+					table, value, isSelected, hasFocus, row, column);
+			
+			// sets top (target) ApId cell = green, other ApIds = red + horiz text align
+			Color color = (row == 0) ? Color.GREEN : Color.RED;
+			cellComponent.setForeground(color);
+			setHorizontalAlignment(JLabel.CENTER);
+			return cellComponent;
+		}
+	}
+	
+
 
 	public static void main(String[] args) {
 

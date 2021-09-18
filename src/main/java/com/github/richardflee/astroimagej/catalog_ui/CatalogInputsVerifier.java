@@ -6,7 +6,7 @@ import com.github.richardflee.astroimagej.enums.QueryEnum;
 import com.github.richardflee.astroimagej.utils.InputsVerifier;
 
 /**
- * Verifies user inputs to catalog dialog text fields.
+ * Verifies user inputs to catalog ui text fields.
  */
 public class CatalogInputsVerifier {
 	

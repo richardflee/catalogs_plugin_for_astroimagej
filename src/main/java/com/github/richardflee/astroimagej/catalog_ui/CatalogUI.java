@@ -46,20 +46,18 @@ import com.github.richardflee.astroimagej.utils.InputsVerifier;
  * <p> Specify and run on-line astronomical database queries </p>
  * 
  * <p> Sort and filter query results </p> <p> Options to save and reload data to
- * and freom astroimagej compatible radec file </p>
- * 
- * <p> Query result table and item select/deselect option is delegated to
- * CatalogTable class </p>
+ * and from astroimagej compatible radec file </p>
  * 
  * <p> Note: form design and layout in JFormDesigner v7.0.4 </p>
+ * 
+ * <p>Note that query result table and item select/deselect option is delegated to
+ * CatalogTable class </p>
  */
 public class CatalogUI extends JDialog implements CatalogDataListener {
 	private static final long serialVersionUID = 1L;
 
 	// statusLine font
-	private final String fontName = "Tahoma";
-	private final int fontSize = 13;
-	private Font font;
+	private Font statusLineFont;
 
 	// references to catable tables data model and button click event handler
 	protected CatalogTableModel catalogTableModel = null;
@@ -73,9 +71,11 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 	 * Initialises catalog_ui object references
 	 */
 	public CatalogUI(ActionHandler handler, CatalogTableModel catalogTableModel) {
+		
+		// JFormDesigner
 		initComponents();
 
-		font = new Font(fontName, Font.PLAIN, fontSize);
+		statusLineFont = new Font("Tahoma", Font.PLAIN, 13);
 
 		// catalog table & data model
 		this.catalogTableModel = catalogTableModel;
@@ -83,7 +83,6 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 
 		// button click event handlers
 		this.handler = handler;
-		// handler.setCatalogTableListener(catalogTableModel);
 
 		// configures button click events and query text input verifiers
 		setUpActionListeners();
@@ -101,23 +100,6 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		setButtonsEnabled(isTableData);
 	}
 
-	/*
-	 * Handles change in catalogCombo selection. Clears existing filterCombo list
-	 * and loads a new list based on CatalogType enum
-	 * 
-	 * @param ie event indicates an item was selected in the catalogCombo control
-	 */
-	private void selectCatalog(ItemEvent ie) {
-		if (ie.getStateChange() == ItemEvent.SELECTED) {
-			// get current catalogCombo selection & catalog type
-			String selectedCatalog = catalogCombo.getSelectedItem().toString().toUpperCase();
-			CatalogsEnum en = CatalogsEnum.valueOf(selectedCatalog);
-
-			// populate filterCombo and select first item
-			populateFilterCombo(selectedCatalog, en.getMagBands().get(0));
-		}
-	}
-
 	/**
 	 * Prints status message line, error messages indicated by ERROR in text line
 	 * 
@@ -129,18 +111,17 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		// sets text colour and font
 		Color fontColor = statusMessage.toUpperCase().contains("ERROR") ? Color.RED : Color.BLACK;
 		statusTextField.setForeground(fontColor);
-		statusTextField.setFont(font);
+		statusTextField.setFont(statusLineFont);
 		statusTextField.setText(statusMessage);
 	}
 
 	/**
 	 * Populates SIMBAD Data and Filter Mag sections with result of Simbad query.
-	 * Marks fields "." if no dat found.
+	 * Marks fields "." if no magnitude data for this objectId
 	 * 
 	 * @param simbadResult coordinates and catalog mags for user specified objectId;
-	 *                     null if no Simbad match
+	 *                     null if objectId is not found in Simbad database
 	 */
-
 	@Override
 	public void setSimbadData(SimbadResult simbadResult) {
 		// null => reset simbad data
@@ -208,13 +189,21 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		populateFilterCombo(selectedCatalog, selectedFilter);
 		filterCombo.setSelectedItem(query.getMagBand());
 	}
-
+	
+	/**
+	 * Compiles valid user form inputs into a CatalogQuery object.
+	 * 
+	 * @return CatalogQuery object; null if any user input is not valid
+	 */
 	@Override
 	public CatalogQuery getQueryData() {
+		
 		// return null query if invalid input
 		if (!verifyAllInputs()) {
 			return null;
 		}
+		
+		// copy text field data
 		CatalogQuery query = new CatalogQuery();
 		query.setObjectId(objectIdField.getText());
 		query.setRaHr(AstroCoords.raHms_To_raHr(raField.getText()));
@@ -222,6 +211,7 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		query.setFovAmin(Double.valueOf(fovField.getText()));
 		query.setMagLimit(Double.valueOf(magLimitField.getText()));
 
+		// copy combo data
 		query.setCatalogType(CatalogsEnum.getEnum(catalogCombo.getSelectedItem().toString()));
 		query.setMagBand(filterCombo.getSelectedItem().toString());
 
@@ -229,17 +219,17 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 	}
 
 	/*
-	 * Updates catalog sort and filter sections with current settings data
+	 * Updates catalog ui sort and filter sections with current settings data
 	 * 
 	 * @param settings encapsulates sort and filter user input parameters
 	 */
-
 	@Override
 	public void setSettingsData(CatalogSettings settings) {
-
+		
+		// user input nominal target magnitude
 		targetMagSpinner.setValue(settings.getTargetMagSpinnerValue());
 
-		// sett catalogui controls to default values
+		// set catalogui controls to default values
 		// mag limits
 		upperLimitSpinner.setValue(settings.getUpperLimitSpinnerValue());
 		lowerLimitSpinner.setValue(settings.getLowerLimitSpinnerValue());
@@ -264,15 +254,22 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		this.isTableData = settings.isTableData();
 	}
 
+	/*
+	 * Copies catalog ui user filter and sort selections to CatalogSettings object values 
+	 * 
+	 * @return compiled CatalogSettings object
+	 */
 	@Override
 	public CatalogSettings getSettingsData() {
 		CatalogSettings settings = new CatalogSettings();
+		
+		// target mag
 		settings.setTargetMagSpinnerValue((Double) targetMagSpinner.getValue());
 
 		// mag limits
-		settings.setUpperLimitSpinnerValue((Double) upperLimitSpinner.getValue());
-		settings.setLowerLimitSpinnerValue((Double) lowerLimitSpinner.getValue());
 		settings.setMagLimitsCheckBoxValue(isMagLimitsCheckBox.isSelected());
+		settings.setUpperLimitSpinnerValue(Double.valueOf(upperLimitSpinner.getValue().toString()));
+		settings.setLowerLimitSpinnerValue(Double.valueOf(lowerLimitSpinner.getValue().toString()));
 
 		// sort option
 		settings.setDistanceRadioButtonValue(distanceRadioButton.isSelected());
@@ -282,6 +279,23 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		settings.setnObsSpinnerValue((int) nObsSpinner.getValue());
 
 		return settings;
+	}
+	
+	/*
+	 * Handles change in catalogCombo selection. Clears existing filterCombo list
+	 * and loads a new list based on CatalogType enum
+	 * 
+	 * @param ie event indicates an item was selected in the catalogCombo control
+	 */
+	private void selectCatalog(ItemEvent ie) {
+		if (ie.getStateChange() == ItemEvent.SELECTED) {
+			// get current catalogCombo selection & catalog type
+			String selectedCatalog = catalogCombo.getSelectedItem().toString().toUpperCase();
+			CatalogsEnum en = CatalogsEnum.valueOf(selectedCatalog);
+
+			// populate filterCombo and select first item
+			populateFilterCombo(selectedCatalog, en.getMagBands().get(0));
+		}
 	}
 
 	/*

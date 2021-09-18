@@ -24,7 +24,7 @@ import com.github.richardflee.astroimagej.query_objects.QueryResult;
 import com.github.richardflee.astroimagej.utils.AstroCoords;
 
 /**
- * Plots VSP chart with apertures centred on selected catalog table records
+ * Plots VSP chart with apertures overlay on selected catalog table records
  */
 public class VspChart {
 	// chart size
@@ -100,7 +100,7 @@ public class VspChart {
 		this.g2d.setStroke(new BasicStroke(3));
 		this.g2d.setFont(new Font("Consolas", Font.BOLD, 14));
 
-		// draws selected reference apertures
+		// draws selected reference apertures meeting magnitude & other filter criteria
 		List<FieldObject> fieldObjects = result.getFieldObjects();
 		for (int i = 0; i < fieldObjects.size(); i++) {
 			drawAperture(fieldObjects.get(i));
@@ -110,6 +110,15 @@ public class VspChart {
 	}
 
 	/**
+	 * Closes vsp chart
+	 */
+	public void closeChart() {
+		if (this.dialog != null) {
+			this.dialog.dispose();
+		}
+	}
+	
+	/*
 	 * Initialises attributes
 	 * @param result
 	 *     current chart data set
@@ -118,16 +127,26 @@ public class VspChart {
 		// initialises fields with query result data
 		this.fovAmin = result.getQuery().getFovAmin();
 		this.target = result.getTargetObject();
-		// this.chartUri = result.getChartUri();
 	}
-
-	/**
-	 * Closes vsp chart
+	
+	
+	/*
+	 * Shows vsp chart scaled to fit a set size non-modal dialog.
+	 * 
+	 * @param scaledImage buffered image scale to SCALED_WIDTH retaining aspect ratio
 	 */
-	public void closeChart() {
-		if (this.dialog != null) {
-			this.dialog.dispose();
-		}
+	private void showVspChart(BufferedImage scaledImage) {
+		this.dialog = new JDialog();
+		this.dialog.getContentPane().add(new JLabel(new ImageIcon(scaledImage)));
+		this.dialog.setSize(new Dimension(scaledImage.getWidth(), scaledImage.getHeight()));
+
+		this.dialog.setTitle("VSP Star chart");
+		this.dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+
+		// prevents blocking by modal chatUi dialog ...
+		dialog.setModalExclusionType(Dialog.ModalExclusionType.APPLICATION_EXCLUDE);
+
+		dialog.setVisible(true);
 	}
 
 	/*
@@ -240,20 +259,6 @@ public class VspChart {
 		this.g2d = g2d;
 	}
 
-	private void showVspChart(BufferedImage scaledImage) {
-		this.dialog = new JDialog();
-		this.dialog.getContentPane().add(new JLabel(new ImageIcon(scaledImage)));
-		this.dialog.setSize(new Dimension(scaledImage.getWidth(), scaledImage.getHeight()));
-
-		this.dialog.setTitle("VSP Star chart");
-		this.dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-
-		// prevents blocking by modal chatUi dialog ...
-		dialog.setModalExclusionType(Dialog.ModalExclusionType.APPLICATION_EXCLUDE);
-
-		dialog.setVisible(true);
-	}
-
 	public static void main(String[] args) throws InterruptedException {
 		double tgtMag0 = 12.345;
 
@@ -277,16 +282,5 @@ public class VspChart {
 		// / N- E = up-left
 		result.setChartUri("https://app.aavso.org/vsp/chart/X26835JN.png?type=chart");
 
-//		// **********************************************************************************************************
-//
-//		VspChart vspChart = new VspChart();
-//		TimeUnit.SECONDS.sleep(1);
-//
-//		// demo repeat chart display with different apertures
-//		List<FieldObject> fieldObjects = result.getFieldObjects();
-//		for (int i = 1; i < 5; i++) {
-//			fieldObjects.get(i).setSelected(false);
-//			vspChart.drawChart(fieldObjects);
-//		}
 	}
 }
