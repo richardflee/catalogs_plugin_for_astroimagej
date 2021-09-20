@@ -5,7 +5,7 @@ import java.util.List;
 import com.github.richardflee.astroimagej.query_objects.FieldObject;
 
 /**
- * Interface for button click updateTable events 
+ * Interface to handle button click updateTable events 
  *
  */
 @FunctionalInterface

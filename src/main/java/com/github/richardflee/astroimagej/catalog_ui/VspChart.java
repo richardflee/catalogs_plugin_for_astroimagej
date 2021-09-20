@@ -16,12 +16,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 
-import com.github.richardflee.astroimagej.fileio.ApassFileReader;
-import com.github.richardflee.astroimagej.query_objects.CatalogQuery;
-import com.github.richardflee.astroimagej.query_objects.CatalogSettings;
 import com.github.richardflee.astroimagej.query_objects.FieldObject;
 import com.github.richardflee.astroimagej.query_objects.QueryResult;
-import com.github.richardflee.astroimagej.utils.AstroCoords;
 
 /**
  * Plots VSP chart with apertures overlay on selected catalog table records
@@ -260,27 +256,27 @@ public class VspChart {
 	}
 
 	public static void main(String[] args) throws InterruptedException {
-		double tgtMag0 = 12.345;
+//		double tgtMag0 = 12.345;
 
-		// build default catalog result object, init new result object
-		CatalogQuery query = new CatalogQuery();
-
-		// build default CatalogSettngs object, assign to result_settings
-		CatalogSettings settings = new CatalogSettings(tgtMag0);
-		QueryResult result = new QueryResult(query, settings);
-
-		// compile ref object list from apass file
-		ApassFileReader fr = new ApassFileReader();
-		List<FieldObject> referenceObjects = fr.runQueryFromFile(query);
-		result.appendFieldObjects(referenceObjects);
-
-		result.getQuery().setRaHr(AstroCoords.raHms_To_raHr("06:30:32.80"));
-		result.getQuery().setDecDeg(AstroCoords.decDms_To_decDeg("29:40:20.3"));
-		result.getQuery().setFovAmin(10.0);
-
-		// chart X26835JN: wasp12 / 06:30:32.80 / 29:40:20.3 / 10' fov / maglimit = 18.5
-		// / N- E = up-left
-		result.setChartUri("https://app.aavso.org/vsp/chart/X26835JN.png?type=chart");
+//		// build default catalog result object, init new result object
+//		CatalogQuery query = new CatalogQuery();
+//
+//		// build default CatalogSettngs object, assign to result_settings
+//		CatalogSettings settings = new CatalogSettings(tgtMag0);
+//		QueryResult result = new QueryResult(query, settings);
+//
+//		// compile ref object list from apass file
+//		ApassFileReader fr = new ApassFileReader();
+//		List<FieldObject> referenceObjects = fr.runQueryFromFile(query);
+//		result.appendFieldObjects(referenceObjects);
+//
+//		result.getQuery().setRaHr(AstroCoords.raHms_To_raHr("06:30:32.80"));
+//		result.getQuery().setDecDeg(AstroCoords.decDms_To_decDeg("29:40:20.3"));
+//		result.getQuery().setFovAmin(10.0);
+//
+//		// chart X26835JN: wasp12 / 06:30:32.80 / 29:40:20.3 / 10' fov / maglimit = 18.5
+//		// / N- E = up-left
+//		result.setChartUri("https://app.aavso.org/vsp/chart/X26835JN.png?type=chart");
 
 	}
 }

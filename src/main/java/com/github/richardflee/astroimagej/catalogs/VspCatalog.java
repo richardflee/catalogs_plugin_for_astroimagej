@@ -19,9 +19,13 @@ import com.github.richardflee.astroimagej.utils.CatalogUrls;
  * on photometry data user-specified parameters. <p> The search region is
  * centred on RA and DEC coordinates and covers a square fov. </p> <p> The query
  * response returns field star records with photometry data for the specified
- * magnitude band (B, V, Rc or Ic).</p> <p> Example url:
+ * magnitude band (B, V, Rc or Ic).
+ * 
+ * </p> <p> Example url:
  * https://app.aavso.org/vsp/api/chart/?format=json&fov=30.0&maglimit=14.5&ra=97.63665&dec=29.67230;
- * Refer getUrl() method for details</p> <p> Note that currently VSP API is not
+ * Refer getUrl() method for details</p> 
+ * 
+ * <p> Note that currently VSP API is not
  * documented on-line (2021-05)</p> <p> Json format response,
  * [root]/[photometry]/[fieldstar[1] ...fieldstar[n] where each field star
  * comprises coordinate data and an array of wave-band magnitude data.</p>
@@ -81,6 +85,11 @@ public class VspCatalog implements AstroCatalog {
 		}
 		return fieldObjects;
 	}
+	
+	@Override
+	public String getStatusMessage() {
+		return this.statusMessage;
+	}
 
 	/**
 	 * Extracts chart uri for current CatalogQuery parameters, orientated N-E = up-left
@@ -105,10 +114,6 @@ public class VspCatalog implements AstroCatalog {
 		return chartUri;
 	}
 
-	@Override
-	public String getStatusMessage() {
-		return this.statusMessage;
-	}
 
 	/*
 	 * Searches current field object for magBand photometry data
@@ -152,5 +157,4 @@ public class VspCatalog implements AstroCatalog {
 		System.out.println(chartUri);
 		result.setChartUri(chartUri);
 	}
-
 }

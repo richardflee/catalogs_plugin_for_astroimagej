@@ -51,7 +51,7 @@ class FieldObjectTest {
 	@DisplayName("Verify large angular separation wasp12 & sirius")
 	@Test
 	void testLargeRadSepAmin() {
-		sirius.setRadSepAmin(wasp12);
+		sirius.computeRadSepAmin(wasp12);
 		System.out.println(sirius.getRadSepAmin());
 		assertEquals(2791.3127738, sirius.getRadSepAmin(), tol);
 	}
@@ -59,7 +59,7 @@ class FieldObjectTest {
 	@DisplayName("Verify small angular separation wasp12 & bkg_164")
 	@Test
 	void testSmallRadSepAmin() {
-		bkg_164.setRadSepAmin(wasp12);
+		bkg_164.computeRadSepAmin(wasp12);
 		System.out.println(bkg_164.getRadSepAmin());
 		assertEquals(5.8246672, bkg_164.getRadSepAmin(), tol);
 	}

@@ -2,6 +2,10 @@ package com.github.richardflee.astroimagej.enums;
 
 import java.util.Arrays;
 
+/**
+ * Maps enums to text markers to delimit data sections in radec text files.
+ *
+ */
 public enum RaDecFilesEnum {
 	DATA_TABLE_START("#\n#*** DATA_TABLE_START\n"), DATA_TABLE_END("#*** DATA_TABLE_END\n"),
 	QUERY_DATA_LINE("#\n#*** QUERY_DATA_LINE\n"), CHART_URI_LINE("#\n#*** CHART_URI_LINE\n");

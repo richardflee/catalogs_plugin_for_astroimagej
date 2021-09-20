@@ -6,7 +6,7 @@ import com.github.richardflee.astroimagej.query_objects.CatalogQuery;
 import com.github.richardflee.astroimagej.query_objects.FieldObject;
 
 /**
- * Interface implemented by Variable Star Plotter and other catalogs 
+ * Interface implemented by on-line astronomical catalogs 
  */
 public interface AstroCatalog {
 	

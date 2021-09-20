@@ -18,7 +18,6 @@ public enum QueryEnum {
 	
 	private String strVal;
 	private static final Map<String, QueryEnum> getEnumMap =  new HashMap<>();
-//	private static final Map<QueryEnum, Integer> getIndexMap = new HashMap<>();
 	
 	QueryEnum(String value) {
 		this.strVal = value;
@@ -52,9 +51,6 @@ public enum QueryEnum {
 		return getEnumMap.get(String.valueOf(value));
 	}
 	
-//	private String getValue() {
-//		return this.strVal;
-//	}
 	
 	// initialise field_id look-up map 
 		static {

@@ -6,7 +6,7 @@ import com.github.richardflee.astroimagej.enums.SimbadEnum;
 import com.github.richardflee.astroimagej.query_objects.CatalogQuery;
 
 /**
- * Class methods to compiling url for on-line database queries.
+ * Class methods to compile url for an on-line database query.
  * 
  * <p> Simbad: http://simbad.u-strasbg.fr/guide/sim-url.htx </>p
  * 
@@ -95,7 +95,7 @@ public class CatalogUrls {
 			double raDeg = query.getRaHr() * 15.0;
 			String ra = String.format("&-c=%.8f", raDeg);
 			
-			// centre dec(deg), substitute leading '+' sign with %2b
+			// centre dec(deg), replace leading '+' sign with %2b
 			String dec = String.format("%.8f", query.getDecDeg());
 			dec = (dec.charAt(0) == '-') ? dec : PLUS_SIGN + dec;
 			

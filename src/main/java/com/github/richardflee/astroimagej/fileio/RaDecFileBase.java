@@ -9,7 +9,8 @@ import com.github.richardflee.astroimagej.utils.AstroCoords;
 
 /**
  * Base class for radec file reader and writer handles catalog table data.
- * <p>Data arrays are indexed by ColumnsEnum getIndex() to maintain sync between
+ * 
+ * <p>Data arrays are indexed by ColumnsEnum getIndex() to coordinate
  * table data read / write operations</p>
  */
 class RaDecFileBase {
@@ -74,7 +75,7 @@ class RaDecFileBase {
 		fo.setMagErr(magErr);
 
 		double deltaMag = Double.valueOf(terms[ColumnsEnum.MAG_DIFF_COL.getIndex()]);
-		fo.copyDeltaMag(deltaMag);
+		fo.setDeltaMag(deltaMag);
 
 		double radSepAmin = Double.valueOf(terms[ColumnsEnum.DIST_AMIN_COL.getIndex()]);
 		fo.setRadSepAmin(radSepAmin);

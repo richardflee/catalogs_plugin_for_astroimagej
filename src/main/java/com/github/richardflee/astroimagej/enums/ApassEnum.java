@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Associates mag and mag_err url fragments with APASS filter name
+ * Maps mag and mag_err url fragments to APASS filter name
  * 
  * <p>Format: [mag_url].[meg_err_url, SDSS mag bands include a pesky apostrophe (') hexadecimal 27 </p>
  */
@@ -66,7 +66,6 @@ public enum ApassEnum {
 		System.out.println(String.format("Test getEnum match %s: %b", "B", ApassEnum.getEnum("B") == ApassEnum.B));
 		System.out.println(String.format("Test getEnum match %s: %b", "SR", ApassEnum.getEnum("SR") == ApassEnum.SR));
 		System.out.println(String.format("Test getEnum match %s: %b", "SI", ApassEnum.getEnum("SI") == ApassEnum.SI));
-
 	}
 
 }

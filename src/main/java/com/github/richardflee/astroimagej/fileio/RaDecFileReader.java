@@ -20,11 +20,17 @@ import com.github.richardflee.astroimagej.query_objects.QueryResult;
 
 /**
  * Imports radec file data and populates catlog table and creates new query
- * object. Radec file format: <p> Block 1: data = astroimagej radec format data
- * to draw apertures on plate solve images </p> <p> Block 2: comment = header +
- * selected catalog table rows </p> <p> Block 3: comment = header + row of
- * catalog query data </p> <p> Comment lines have leading char "#". A single "#"
- * denotes break between blocks. </p>
+ * object. Comment lines have a leading char "#".Radec is split
+ *  into 4 sections, split by text lines mapped to RaDecFilesEnum enums. 
+ * 
+ * <p> Block 1: data = astroimagej radec format data
+ * to draw apertures on plate solve images </p>
+ * 
+ * <p>Block 2: data lines encoding catalog table data</p> 
+ * 
+ * <p>Block 3: data line encoding  catalog query data</p> 
+ * 
+ * <p>Block 4: text line somprising vsp chart chart uri for current query</p>
  */
 public class RaDecFileReader extends RaDecFileBase {
 

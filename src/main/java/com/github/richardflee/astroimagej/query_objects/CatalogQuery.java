@@ -8,8 +8,9 @@ import com.github.richardflee.astroimagej.enums.QueryEnum;
 import com.github.richardflee.astroimagej.utils.AstroCoords;
 
 /**
- * This class encapsulates catalog query parameters
- * <p>Defaults to wasp 12 default parameters for first use and and for unit tests</p>
+ * This class encapsulates parameters to run a query on on-line astronomical database
+ * 
+ * <p>Defaults to wasp 12 parameters</p>
  */
 public class CatalogQuery extends AbstractFieldObject {
 	private double fovAmin = 0.0;

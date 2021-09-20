@@ -11,17 +11,21 @@ import java.util.stream.Collectors;
 
 import com.github.richardflee.astroimagej.enums.RaDecFilesEnum;
 import com.github.richardflee.astroimagej.query_objects.CatalogQuery;
-import com.github.richardflee.astroimagej.query_objects.CatalogSettings;
 import com.github.richardflee.astroimagej.query_objects.FieldObject;
 import com.github.richardflee.astroimagej.query_objects.QueryResult;
 import com.github.richardflee.astroimagej.utils.AstroCoords;
 
 /**
- * Writes catalog table data to radec file format: <p>Block 1: data =
- * astroimagej radec format data to draw apertures on plate solve images</p>
- * <p>Block 2: comment = header + selected catalog table rows</p> <p>Block 3:
- * comment = header + row of catalog query data</p> <p>Comment lines have
- * leading char "#". A single "#" denotes break between blocks.</p>
+ * Writes catalog table data to radec file format: 
+ * 
+ * <p> Block 1: data = astroimagej radec format data
+ * to draw apertures on plate solve images </p>
+ * 
+ * <p>Block 2: data lines encoding catalog table data</p> 
+ * 
+ * <p>Block 3: data line encoding  catalog query data</p> 
+ * 
+ * <p>Block 4: text line somprising vsp chart chart uri for current query</p>
  */
 public class RaDecFileWriter extends RaDecFileBase {
 
@@ -155,55 +159,55 @@ public class RaDecFileWriter extends RaDecFileBase {
 		return lines;
 	}
 	
-	private int getIndex(List<String> lines, RaDecFilesEnum en) {
-		int matchIndex = -1;
-		for (int idx = 0; idx < lines.size(); idx++) {
-			if (lines.get(idx).contains(en.getStrVal()) == true) {
-				matchIndex = idx;
-				break;				
-			}
-		}		
-		return matchIndex;
-	}
+//	private int getIndex(List<String> lines, RaDecFilesEnum en) {
+//		int matchIndex = -1;
+//		for (int idx = 0; idx < lines.size(); idx++) {
+//			if (lines.get(idx).contains(en.getStrVal()) == true) {
+//				matchIndex = idx;
+//				break;				
+//			}
+//		}		
+//		return matchIndex;
+//	}
 
 	public static void main(String[] args) {
-		// compile result object from file
-		RaDecFileWriter fw = new RaDecFileWriter();
-		ApassFileReader fr = new ApassFileReader();
-		CatalogQuery query = new CatalogQuery();
-		
-		double targetMag = 13.579;
-		CatalogSettings settings = new CatalogSettings(targetMag);
-		
-		QueryResult result = new QueryResult(query, settings);
-
-		List<FieldObject> referenceObjects = fr.runQueryFromFile(query);
-		result.appendFieldObjects(referenceObjects);
-
-		List<String> lines = fw.compileRaDecList(result);
-		// lines.stream().forEach(System.out::print);
-		
-		fw.writeRaDecFile(result);
-		
-		// query
-		int matchIndex = fw.getIndex(lines, RaDecFilesEnum.QUERY_DATA_LINE);
-		System.out.println(lines.get(matchIndex + 2));
-		
-		//target
-		matchIndex = fw.getIndex(lines, RaDecFilesEnum.DATA_TABLE_START);
-		System.out.print(lines.get(matchIndex + 2));
-		
-		// 1st reference object
-		System.out.print(lines.get(matchIndex + 3));
-		
-		// last ref object
-		matchIndex = fw.getIndex(lines, RaDecFilesEnum.DATA_TABLE_END);
-		System.out.print(lines.get(matchIndex - 1));
-		System.out.println();
-		
-		// chart uri
-		matchIndex = fw.getIndex(lines, RaDecFilesEnum.CHART_URI_LINE);
-		System.out.print(lines.get(matchIndex + 1));
+//		// compile result object from file
+//		RaDecFileWriter fw = new RaDecFileWriter();
+//		ApassFileReader fr = new ApassFileReader();
+//		CatalogQuery query = new CatalogQuery();
+//		
+//		double targetMag = 13.579;
+//		CatalogSettings settings = new CatalogSettings(targetMag);
+//		
+//		QueryResult result = new QueryResult(query, settings);
+//
+//		List<FieldObject> referenceObjects = fr.runQueryFromFile(query);
+//		result.appendFieldObjects(referenceObjects);
+//
+//		List<String> lines = fw.compileRaDecList(result);
+//		// lines.stream().forEach(System.out::print);
+//		
+//		fw.writeRaDecFile(result);
+//		
+//		// query
+//		int matchIndex = fw.getIndex(lines, RaDecFilesEnum.QUERY_DATA_LINE);
+//		System.out.println(lines.get(matchIndex + 2));
+//		
+//		//target
+//		matchIndex = fw.getIndex(lines, RaDecFilesEnum.DATA_TABLE_START);
+//		System.out.print(lines.get(matchIndex + 2));
+//		
+//		// 1st reference object
+//		System.out.print(lines.get(matchIndex + 3));
+//		
+//		// last ref object
+//		matchIndex = fw.getIndex(lines, RaDecFilesEnum.DATA_TABLE_END);
+//		System.out.print(lines.get(matchIndex - 1));
+//		System.out.println();
+//		
+//		// chart uri
+//		matchIndex = fw.getIndex(lines, RaDecFilesEnum.CHART_URI_LINE);
+//		System.out.print(lines.get(matchIndex + 1));
 	}
 
 }

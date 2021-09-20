@@ -3,10 +3,7 @@ package com.github.richardflee.astroimagej.catalogs;
 import com.github.richardflee.astroimagej.enums.CatalogsEnum;
 
 /**
- * Creates an instance of catalog type selected in the catalog ui dialog.
- * <p>
- * currently only VSP catalog is the only implementation
- * <p/> 
+ * Creates an instance of catalog type (VSP, APASS ..) selected in the catalog ui dialog.
  */
 public class CatalogFactory {
 

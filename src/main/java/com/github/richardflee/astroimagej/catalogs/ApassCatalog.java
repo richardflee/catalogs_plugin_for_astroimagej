@@ -94,7 +94,7 @@ public class ApassCatalog implements AstroCatalog {
 	 */
 	private FieldObject compileFieldObject(String line) {
 		
-		// remove any blanks then splits line on tab char
+		// remove any blank characters then splits line on tab char
 		String[] terms = line.replace(" ", "").split("\t");
 		
 		// coordinate terms
@@ -102,21 +102,16 @@ public class ApassCatalog implements AstroCatalog {
 		double raHr = raDeg / 15.0;
 		double decDeg = Double.valueOf(terms[1]);
 		
-		// number obs
+		// number obs & mag terms
 		int nObs = Integer.valueOf(terms[2]);
-		
-		// mag terms
 		double mag = Double.valueOf(terms[3]);
 		double magErr = Double.valueOf(terms[4]);
 		
-		// create new field object, auto-name object id
+		// create new field object, auto-name object id & set params
 		FieldObject fo = new FieldObject(null, raHr, decDeg, mag, magErr);
-		
-		// set params
 		fo.setnObs(nObs);
 		fo.setTarget(false);
 		fo.setSelected(true);
-		
 		return fo;
 	}
 	
@@ -204,7 +199,5 @@ public class ApassCatalog implements AstroCatalog {
 		
 		System.out.println(String.format("No. download records: %d", fieldObjects.size()));
 		System.out.println(String.format("Status message: %s", apass.getStatusMessage()));
-		
 	}
-
 }

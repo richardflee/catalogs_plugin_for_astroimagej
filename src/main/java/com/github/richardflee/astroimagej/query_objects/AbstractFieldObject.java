@@ -4,7 +4,7 @@ import com.github.richardflee.astroimagej.utils.AstroCoords;
 
 
 /**
- * Base class for target and comparison objects
+ * Base class for target and comparison photometry  objects
  */
 public class AbstractFieldObject {
 	

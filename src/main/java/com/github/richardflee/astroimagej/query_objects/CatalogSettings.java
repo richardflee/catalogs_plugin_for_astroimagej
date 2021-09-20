@@ -1,7 +1,7 @@
 package com.github.richardflee.astroimagej.query_objects;
 
 /**
- * This class encapsulates catalog ui sort and filter controls data
+ * This class encapsulates catalog ui sort and filter controls methods and data
  */
 public class CatalogSettings {
 	// target mag value
@@ -26,11 +26,23 @@ public class CatalogSettings {
 	// flag enable / disable catalog ui buttons
 	private boolean isTableData;
 
-	// Default, parameter and copy constructors
+	// Constructors ..
+	// Default constructor 
+	
+	/**
+	 * Default constructor resets filter and sort controls to default values; 
+	 * current target spinner value is unchanged
+	 */
 	public CatalogSettings() {
 		resetDefaultSettings(null);
 	}
 
+	/**
+	 * One parameter constructor specifies new target spinner value;
+	 * resets filter and sort controls to default values; 
+	 * 
+	 * @param targetMag target spinner setting
+	 */
 	public CatalogSettings(double targetMag) {
 		resetDefaultSettings(targetMag);
 	}
@@ -63,16 +75,7 @@ public class CatalogSettings {
 		// no table data
 		this.isTableData = false;
 	}
-
-	private void resetDefaultSettings(Double targetMag) {
-		resetDefaultSettings();
-
-		// update targetmagspinner setting if targetMag not null
-		if (targetMag != null) {
-			targetMagSpinnerValue = targetMag;
-		}
-	}
-
+	
 	/**
 	 * sets distance sort option selected
 	 */
@@ -92,25 +95,49 @@ public class CatalogSettings {
 		upperLimitSpinnerValue = 0.0;
 		lowerLimitSpinnerValue = 0.0;
 		isMagLimitsCheckBoxValue = true;
-
+	}
+	
+	/**
+	 * Upper limit magnitude band; upper limit < 0.01 disables this limit <p> Note:
+	 * upper limit value is positive </p>
+	 * 
+	 * @return limit > 0.01 => sum of target and upper limit values, N/A otherwise
+	 */
+	public String getUpperLabelValue() {
+		double limit = this.upperLimitSpinnerValue;
+		double targetMag = this.targetMagSpinnerValue;
+		String labelStr = (Math.abs(limit) < 0.01) ? "N/A" : String.format("%.1f", limit + targetMag);
+		return labelStr;
 	}
 
+	/**
+	 * Lower limit magnitude band; lower limit < 0.01 disables this limit <p> Note:
+	 * lower limit value is negative </p>
+	 * 
+	 * @return |limit| > 0.01 => sum of target and lower limit values, N/A otherwise
+	 */
+	public String getLowerLabelValue() {
+		double limit = this.lowerLimitSpinnerValue;
+		double targetMag = this.targetMagSpinnerValue;
+		String labelStr = (Math.abs(limit) < 0.01) ? "N/A" : String.format("%.1f", limit + targetMag);
+		return labelStr;
+	}
 
-	private void resetDefaultSettings() {
-//		upperLimitSpinnerValue = 0.0;
-//		targetMagSpinnerValue = 12.0;
-////		lowerLimitSpinnerValue = 0.0;
-////		isMagLimitsCheckBoxValue = true;
-//		
-//		// number observations / APASS
-//		nObsSpinnerValue = 1;
-//		
+	// resets sort & filter defaults; optional update target mag data
+	private void resetDefaultSettings(Double targetMag) {
 		this.resetSortSeting();
 		this.resetFilterSettings();
+		
 		// record totals
 		totalLabelValue = 0;
 		filteredLabelValue = 0;
+
+		// update target ma gspinner setting if targetMag not null
+		if (targetMag != null) {
+			targetMagSpinnerValue = targetMag;
+		}
 	}
+
 
 	// auto getter - setters
 	public double getUpperLimitSpinnerValue() {
@@ -193,31 +220,7 @@ public class CatalogSettings {
 		this.isTableData = isTableData;
 	}
 
-	/**
-	 * Upper limit magnitude band; upper limit < 0.01 disables this limit <p> Note:
-	 * upper limit value is positive </p>
-	 * 
-	 * @return limit > 0.01 => sum of target and upper limit values, N/A otherwise
-	 */
-	public String getUpperLabelValue() {
-		double limit = this.upperLimitSpinnerValue;
-		double targetMag = this.targetMagSpinnerValue;
-		String labelStr = (Math.abs(limit) < 0.01) ? "N/A" : String.format("%.1f", limit + targetMag);
-		return labelStr;
-	}
-
-	/**
-	 * Lower limit magnitude band; lower limit < 0.01 disables this limit <p> Note:
-	 * lower limit value is negative </p>
-	 * 
-	 * @return |limit| > 0.01 => sum of target and lower limit values, N/A otherwise
-	 */
-	public String getLowerLabelValue() {
-		double limit = this.lowerLimitSpinnerValue;
-		double targetMag = this.targetMagSpinnerValue;
-		String labelStr = (Math.abs(limit) < 0.01) ? "N/A" : String.format("%.1f", limit + targetMag);
-		return labelStr;
-	}
+	
 
 	
 	@Override
