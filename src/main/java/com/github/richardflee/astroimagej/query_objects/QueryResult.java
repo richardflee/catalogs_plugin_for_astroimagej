@@ -19,6 +19,23 @@ import java.util.stream.Collectors;
  * ordered either by radial distance from the target star (in arcmin) or by the
  * absolute difference in magnitude. If user selected, reference objects are
  * identified as "C02", "C03" .. in sort order </p>
+ * 
+ * <p>Sources of target magnitude values:</p>
+ * <p>(1) Catalog UI spinner control - user input</p>
+ * <p>(2) CatalogSettings spinner value - copied from catalog ui value</p>
+ * <p>(3) CatalogResult / target object mag value - used to compute mag differences</p>
+ * <p>(4) Catalog Table value - current table display</p>
+ * <p>(4) Imported radec file value - equals table value when radec file saved</p>
+ * <p>(5) Properties file value - catalog ui value when properties file saved</p>
+ * <p></p>
+ * <p><b>Save Query Data</b> saves current catalog ui value to properties file</p>
+ * 
+ * <p><b>Run Catalog Query, Update Table</b> applies catalog ui value</p>
+ * 
+ * <p><b>Import RaDec File</b> applies radec file value</p>
+ * 
+ * <p><b>Save RaDecFile</b>	saves catalog table value
+ * 
  */
 public class QueryResult {
 
