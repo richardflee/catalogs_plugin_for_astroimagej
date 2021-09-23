@@ -32,6 +32,7 @@ public class ApassCatalog implements AstroCatalog {
 	private String statusMessage = null;
 
 	private static final int N_FIELDS = 5;
+	private final String VIZIER_APASS_CONNECTION_ERROR = "ERROR: Error in VIZIER.APASS internet connection";
 
 	public ApassCatalog() {
 	}
@@ -48,15 +49,8 @@ public class ApassCatalog implements AstroCatalog {
 		// compiles url
 		String url = CatalogUrls.urlBuilder(query);
 		
-		// extracts array of data lines from Vizier/APASS response
-		List<String> lines = importApassData(url);
-		
 		// converts data lines to array field objects
-		List<FieldObject> fieldObjects = getFieldObjects(lines);
-		
-		// status message
-		String statusMessage = String.format("Downloaded %d APASS records", fieldObjects.size());
-		setStatusMessage(statusMessage);
+		List<FieldObject> fieldObjects = importApassData(url);
 		
 		return fieldObjects;
 	}
@@ -122,8 +116,9 @@ public class ApassCatalog implements AstroCatalog {
 	 * @param url Vizier / APASS url specifying query parameters
 	 * @return list of data lines extractedd from query response
 	 */
-	private List<String> importApassData(String url) {
+	private List<FieldObject> importApassData(String url) {
 		String line;
+		List<FieldObject> fieldObjects = null;
 		List<String> lines = new ArrayList<>();
 		
 		// run Vizier query, add valid data lines to string array
@@ -131,6 +126,7 @@ public class ApassCatalog implements AstroCatalog {
 			// initialise connection
 			URL vizier = new URL(url);
 			URLConnection conn = vizier.openConnection();
+			conn.connect();
 			
 			BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 			// append valid data lines to lines array
@@ -139,11 +135,18 @@ public class ApassCatalog implements AstroCatalog {
 					lines.add(line);
 				}
 			in.close();
-		} catch (IOException e1) {
-			String statusMessage = "ERROR: Vizier/APASS download error";
+			
+			// converts data lines to array field objects
+			fieldObjects = getFieldObjects(lines);
+			
+			// status message
+			String statusMessage = String.format("Downloaded %d APASS records", fieldObjects.size());
 			setStatusMessage(statusMessage);
+			
+		} catch (IOException e1) {
+			setStatusMessage(VIZIER_APASS_CONNECTION_ERROR);
 		}
-		return lines;
+		return fieldObjects;
 	}
 
 

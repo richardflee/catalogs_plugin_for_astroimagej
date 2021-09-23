@@ -149,27 +149,30 @@ public class ActionHandler {
 		// append this list to CatalogResut object
 		AstroCatalog catalog = CatalogFactory.createCatalog(query.getCatalogType());
 		List<FieldObject> fieldObjects = catalog.runQuery(query);
-		result.appendFieldObjects(fieldObjects);
 		
-		// downloads VSP chart for current query parameters
-		// Example chart X26835JN: 
-		// wasp12 / 06:30:32.80 / 29:40:20.3 / 10' fov / maglimit = 18.5 / N- E = up-left
-		VspCatalog vspChart = new VspCatalog();
-		String chartUri = vspChart.downloadVspChart(query);
-		result.setChartUri(chartUri);
-
-		// applies current sort and default filter settings, populates catalog table
-		// with full dataset
-		updateCatalogTable(this.result);
-
-		// set catalog ui default settings, retaining current target spinner value
-		catalogDataListener.setSettingsData(result.getSettings());
-
-		// draws new chart, closing any chart that is already open
-		this.chart.drawChart(result);
+		if (fieldObjects != null) {
+			result.appendFieldObjects(fieldObjects);
+			
+			// downloads VSP chart for current query parameters
+			// Example chart X26835JN: 
+			// wasp12 / 06:30:32.80 / 29:40:20.3 / 10' fov / maglimit = 18.5 / N- E = up-left
+			VspCatalog vspChart = new VspCatalog();
+			String chartUri = vspChart.downloadVspChart(query);
+			result.setChartUri(chartUri);
+	
+			// applies current sort and default filter settings, populates catalog table
+			// with full dataset
+			updateCatalogTable(this.result);
+	
+			// set catalog ui default settings, retaining current target spinner value
+			catalogDataListener.setSettingsData(result.getSettings());
+	
+			// draws new chart, closing any chart that is already open
+			this.chart.drawChart(result);
+		}
 
 		// status message
-		String statusMessage = "Imported full dataset, sorted by radial distance to target position";
+		String statusMessage = catalog.getStatusMessage();
 		catalogDataListener.updateStatus(statusMessage);
 	}
 

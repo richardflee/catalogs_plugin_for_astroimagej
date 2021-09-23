@@ -73,11 +73,15 @@ public class VspChart {
 	 */
 	public void drawChart(QueryResult result) {
 		
+		String chartUri = result.getChartUri();
+		if (chartUri == null) {
+			return;
+		}
+		
 		// sets field attribute values
 		initChart(result);
 
 		// downloads and scales vsp chart as buffered image; null if download fails
-		String chartUri = result.getChartUri();
 		this.downloadImage = loadImage(chartUri);
 		if (this.downloadImage == null) {
 			String statusMessage = String.format("ERROR: Error downoading chart: %s", chartUri);

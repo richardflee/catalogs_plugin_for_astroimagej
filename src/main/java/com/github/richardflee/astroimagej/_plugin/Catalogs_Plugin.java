@@ -25,6 +25,8 @@ import ij.plugin.PlugIn;
  */
 
 public class Catalogs_Plugin implements PlugIn {
+	
+	private final static String VERSION_NUMBER = "ONEJAR-1.00a";
 
 	/**
 	 * ImageJ plug-in interface
@@ -79,6 +81,7 @@ public class Catalogs_Plugin implements PlugIn {
 		catalogUi.setSettingsData(settings);
 
 		// show JDialog as modal to lock-out AIJ toolbar while vsp_demo open
+		catalogUi.setTitle(String.format("Catalogs Plugin %s", VERSION_NUMBER));
 		catalogUi.setModal(true);
 		catalogUi.setVisible(true);
 	}

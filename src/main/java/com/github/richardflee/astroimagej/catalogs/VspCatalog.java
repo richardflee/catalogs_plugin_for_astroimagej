@@ -33,8 +33,10 @@ import com.github.richardflee.astroimagej.utils.CatalogUrls;
 public class VspCatalog implements AstroCatalog {
 
 	private String statusMessage = null;
-	private ObjectMapper objectMapper = null;
+	private final String VSP_CONNECTION_ERROR = "ERROR: Error in VSP internet connection";
 
+	private ObjectMapper objectMapper = null;
+	
 	// create Jackson object mapper to decode json response to vsp query
 	public VspCatalog() {
 		objectMapper = new ObjectMapper();
@@ -79,9 +81,10 @@ public class VspCatalog implements AstroCatalog {
 					fieldObjects.add(fo);
 				}
 			}
+			String statusMessage = String.format("Downloaded %d VSP records", fieldObjects.size());
+			setStatusMessage(statusMessage);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			setStatusMessage(VSP_CONNECTION_ERROR);
 		}
 		return fieldObjects;
 	}
@@ -108,8 +111,7 @@ public class VspCatalog implements AstroCatalog {
 			// full uri may include extraneous text
 			chartUri = root.findPath("image_uri").asText();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			setStatusMessage(VSP_CONNECTION_ERROR);
 		}
 		return chartUri;
 	}

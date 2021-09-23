@@ -15,22 +15,19 @@ import java.util.stream.Collectors;
  * databases in a list of FieldObjects
  * 
  *  <p> Target star data is the first list
- * item, identified "T01". The remainder is a list of reference star objects
- * ordered either by radial distance from the target star (in arcmin) or by the
- * absolute difference in magnitude. If user selected, reference objects are
- * identified as "C02", "C03" .. in sort order </p>
+ * item, identified "T01". The remainder comprises a list of reference star objects
+ * where selected records are identified as "C02", "C03" .. in sort order </p>
  * 
- * <p>Sources of target magnitude values:</p>
- * <p>(1) Catalog UI spinner control - user input</p>
- * <p>(2) CatalogSettings spinner value - copied from catalog ui value</p>
- * <p>(3) CatalogResult / target object mag value - used to compute mag differences</p>
- * <p>(4) Catalog Table value - current table display</p>
- * <p>(4) Imported radec file value - equals table value when radec file saved</p>
- * <p>(5) Properties file value - catalog ui value when properties file saved</p>
- * <p></p>
- * <p><b>Save Query Data</b> saves current catalog ui value to properties file</p>
+ * <p>Reference star records are ordered either by radial distance from the target star (in arcmin) or by the
+ * absolute difference in magnitude relative to user-input target star magnitude.</p>
  * 
- * <p><b>Run Catalog Query, Update Table</b> applies catalog ui value</p>
+ * <p><b>Handling target magnitude values:</b></p>
+ * 
+ * <p><i>Start:</i> reads properties file value and updates catalog ui target spinner</p>
+ * 
+ * <p><b>Save Query Data</b> saves current catalog ui target spinner value to properties file</p>
+ * 
+ * <p><b>Run Catalog Query, Update Table</b> applies catalog ui spinner value</p>
  * 
  * <p><b>Import RaDec File</b> applies radec file value</p>
  * 
@@ -203,6 +200,11 @@ public class QueryResult {
 	 * @param chartUri pre-processed vsp chart address
 	 */
 	public void setChartUri(String chartUri) {
+		
+		if (chartUri == null) {
+			return;
+		}
+		
 		// strip leading "#" from radec chart uri
 		chartUri = chartUri.startsWith("#") ? chartUri.substring(1) : chartUri;
 

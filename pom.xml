@@ -14,7 +14,7 @@
 
 	<groupId>com.github.richardflee.astroimagej</groupId>
 	<artifactId>catalogs_plugin</artifactId>
-	<version>ONEJAR-1.00-SNAPSHOT</version>
+	<version>ONEJAR-1.00a</version>
 
 	<!-- Output to jar format -->
 	<packaging>jar</packaging>
