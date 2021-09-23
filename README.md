@@ -1,0 +1,1 @@
+# catalogs_plugin_for_astroimagej
