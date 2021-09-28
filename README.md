@@ -19,3 +19,12 @@ As of Sept-2021, Windows and Linux AIJ  downloads are bundled with Java 7.  Refe
 
 The user form is configured as  a modal dialog to block user access to the AIJ toolbar. In testing, accessing
 AIJ toolbar with the dialog still open could cause a complete system crash, requiring a power cycle to reset. <br/>
+
+**Install and Remove Plugin JAR file**
+
+To run catalogs_plugin from AstroImageJ:</br>
+- download file: jar/catalogs_plugin_ONEJAR-1.00a.jar from github repo and copy to ./AstroImageJ/plugins folder.</br>
+- open AstroImageJ and from the toolbar, select Plugins => Catalogs Plugin.</br>
+
+To remove the plugin, delete file: ./AstroImageJ/Plugins/catalogs_plugin_ONEJAR-1.00a.jar.
+
