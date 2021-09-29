@@ -1,7 +1,9 @@
 package com.github.richardflee.astroimagej.fileio;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,8 +11,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.github.richardflee.astroimagej.enums.ColumnsEnum;
 import com.github.richardflee.astroimagej.enums.RaDecFilesEnum;
 import com.github.richardflee.astroimagej.query_objects.CatalogQuery;
+import com.github.richardflee.astroimagej.query_objects.CatalogSettings;
 import com.github.richardflee.astroimagej.query_objects.FieldObject;
 import com.github.richardflee.astroimagej.query_objects.QueryResult;
 import com.github.richardflee.astroimagej.utils.AstroCoords;
@@ -125,23 +129,27 @@ public class RaDecFileWriter extends RaDecFileBase {
 	private List<String> compileRaDecList(QueryResult result) {
 		List<String> lines = new ArrayList<>();
 
-		List<FieldObject> selectedList = result.getFieldObjects()
+		List<FieldObject> acceptedList = result.getFieldObjects()
 				.stream()
-				.filter(p -> p.isSelected() == true)
-				.filter(p -> p.isAccepted())
+				.filter(p -> p.isAccepted() == true)
 				.collect(Collectors.toList());
 
 		// astrominagej radec data block
+		// append accepted AND selected records
 		lines.add("#RA, Dec, RefStar, Centroid, Mag\n");
-		for (FieldObject fo : selectedList) {
-			String line = getFieldLine(fo) + "\n";
-			lines.add(line);
+		for (FieldObject fo : acceptedList) {
+			if (fo.isSelected() == true) {
+				String line = getFieldLine(fo) + "\n";
+				lines.add(line);
+			}
 		}
+		
 
 		// table block start
+		// append accepted records, includes selected & de-selected table records
 		lines.add(RaDecFilesEnum.DATA_TABLE_START.getStrVal());
 		lines.add("#Ap, ObjectId, RA, Dec, Mag, MagErr, MagDelta, RadSep, Nobs\n");
-		for (FieldObject fo : selectedList) {
+		for (FieldObject fo : acceptedList) {
 			lines.add(compileTableLine(fo));
 		}
 		// table block end
@@ -158,37 +166,66 @@ public class RaDecFileWriter extends RaDecFileBase {
 		lines.add(String.format("#%s\n", chartUri));
 		return lines;
 	}
-	
-//	private int getIndex(List<String> lines, RaDecFilesEnum en) {
-//		int matchIndex = -1;
-//		for (int idx = 0; idx < lines.size(); idx++) {
-//			if (lines.get(idx).contains(en.getStrVal()) == true) {
-//				matchIndex = idx;
-//				break;				
-//			}
-//		}		
-//		return matchIndex;
-//	}
+
 
 	public static void main(String[] args) {
-//		// compile result object from file
-//		RaDecFileWriter fw = new RaDecFileWriter();
-//		ApassFileReader fr = new ApassFileReader();
-//		CatalogQuery query = new CatalogQuery();
-//		
-//		double targetMag = 13.579;
-//		CatalogSettings settings = new CatalogSettings(targetMag);
-//		
-//		QueryResult result = new QueryResult(query, settings);
-//
-//		List<FieldObject> referenceObjects = fr.runQueryFromFile(query);
-//		result.appendFieldObjects(referenceObjects);
-//
-//		List<String> lines = fw.compileRaDecList(result);
-//		// lines.stream().forEach(System.out::print);
-//		
-//		fw.writeRaDecFile(result);
-//		
+		// compile result object from file
+		RaDecFileWriter fw = new RaDecFileWriter();
+		CatalogQuery query = new CatalogQuery();
+		
+		double targetMag = 13.579;
+		CatalogSettings settings = new CatalogSettings(targetMag);		
+		QueryResult result = new QueryResult(query, settings);
+		
+		// import apass file data 
+		String src = "c:/temp/apass_data.txt";
+		List<FieldObject> fieldObjects = new ArrayList<>();
+		String line = "";
+		try (BufferedReader br = new BufferedReader(new FileReader(new File(src)))) {
+			while ((line = br.readLine()) != null) {
+				FieldObject fo = new FieldObject();
+				String[] terms = line.split("\t");
+
+				for (int idx = 0; idx < terms.length; idx++) {
+					String term = terms[idx];
+					if (idx == ColumnsEnum.OBJECTID_COL.getIndex()) {
+						fo.setObjectId(term);
+					} else if (idx == ColumnsEnum.RA2000_COL.getIndex()) {
+						Double raHr = Double.parseDouble(term);
+						fo.setRaHr(raHr);
+					} else if (idx == ColumnsEnum.DEC2000_COL.getIndex()) {
+						Double decDeg = Double.parseDouble(term);
+						fo.setDecDeg(decDeg);
+					} else if (idx == ColumnsEnum.MAG_COL.getIndex()) {
+						fo.setMag(Double.parseDouble(term));
+					} else if (idx == ColumnsEnum.MAG_ERR_COL.getIndex()) {
+						fo.setMagErr(Double.parseDouble(term));
+					} else if (idx == ColumnsEnum.NOBS_COL.getIndex()) {
+						fo.setnObs(Integer.parseInt(term));
+					}
+				}
+				fo.setTarget(false);
+				fieldObjects.add(fo);
+			}
+
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		//fieldObjects.get(1).setSelected(false);
+		FieldObject selecto = fieldObjects.get(1);
+		System.out.println(String.format("Deselected star: %s",  selecto.getObjectId()));
+		selecto.setSelected(false);
+		System.out.println();
+		
+		result.appendFieldObjects(fieldObjects);
+				
+		List<String> lines = fw.compileRaDecList(result);		
+		fw.writeRaDecFile(result);
+		
+		System.out.println(fw.getStatusMessage());
+		System.out.println();
+		lines.stream().forEach(System.out::print);
+		
 //		// query
 //		int matchIndex = fw.getIndex(lines, RaDecFilesEnum.QUERY_DATA_LINE);
 //		System.out.println(lines.get(matchIndex + 2));
