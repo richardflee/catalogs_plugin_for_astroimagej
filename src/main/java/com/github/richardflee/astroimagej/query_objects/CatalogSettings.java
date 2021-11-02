@@ -20,8 +20,9 @@ public class CatalogSettings {
 	private int nObsSpinnerValue;
 
 	// record totals
-	private int totalLabelValue;
-	private int filteredLabelValue;
+	private int totalRecordsValue;
+	private int filteredRecordsValue;
+	private int selectedRecordsValue;
 
 	// flag enable / disable catalog ui buttons
 	private boolean isTableData;
@@ -69,8 +70,9 @@ public class CatalogSettings {
 		this.nObsSpinnerValue = settings.getnObsSpinnerValue();
 
 		// record totals
-		this.totalLabelValue = Integer.valueOf(settings.getTotalLabelValue());
-		this.filteredLabelValue = Integer.valueOf(settings.getFilteredLabelValue());
+		this.totalRecordsValue = Integer.valueOf(settings.getTotalRecordsValue());
+		this.filteredRecordsValue = Integer.valueOf(settings.getFilteredRecordsValue());
+		this.selectedRecordsValue = Integer.valueOf(settings.getSelectedRecordsValue());
 
 		// no table data
 		this.isTableData = false;
@@ -129,8 +131,8 @@ public class CatalogSettings {
 		this.resetFilterSettings();
 		
 		// record totals
-		totalLabelValue = 0;
-		filteredLabelValue = 0;
+		totalRecordsValue = 0;
+		filteredRecordsValue = 0;
 
 		// update target ma gspinner setting if targetMag not null
 		if (targetMag != null) {
@@ -196,20 +198,30 @@ public class CatalogSettings {
 		this.nObsSpinnerValue = nObsSpinnerValue;
 	}
 
-	public String getTotalLabelValue() {
-		return Integer.toString(totalLabelValue);
+	public String getTotalRecordsValue() {
+		return Integer.toString(totalRecordsValue);
 	}
 
-	public void setTotalLabelValue(int nTotalRecords) {
-		this.totalLabelValue = (nTotalRecords >= 0) ? nTotalRecords : 0;
+	public void setTotalRecordsValue(int nTotalRecords) {
+		this.totalRecordsValue = (nTotalRecords >= 0) ? nTotalRecords : 0;
 	}
 
-	public String getFilteredLabelValue() {
-		return Integer.toString(filteredLabelValue);
+	public String getFilteredRecordsValue() {
+		return Integer.toString(filteredRecordsValue);
 	}
 
-	public void setFilteredLabelValue(int nFilteredRecords) {
-		this.filteredLabelValue = (nFilteredRecords >= 0) ? nFilteredRecords : 0;
+	public void setFilteredRecordsValue(int nFilteredRecords) {
+		this.filteredRecordsValue = (nFilteredRecords >= 0) ? nFilteredRecords : 0;
+	}
+	
+	
+
+	public int getSelectedRecordsValue() {
+		return selectedRecordsValue;
+	}
+
+	public void setSelectedRecordsValue(int selectedRecordsValue) {
+		this.selectedRecordsValue = selectedRecordsValue;
 	}
 
 	public boolean isTableData() {
@@ -229,8 +241,8 @@ public class CatalogSettings {
 				+ upperLimitSpinnerValue + ", lowerLimitSpinnerValue=" + lowerLimitSpinnerValue
 				+ ", isMagLimitsCheckBoxValue=" + isMagLimitsCheckBoxValue + ", distanceRadioButtonValue="
 				+ distanceRadioButtonValue + ", deltaMagRadioButtonValue=" + deltaMagRadioButtonValue
-				+ ", nObsSpinnerValue=" + nObsSpinnerValue + ", totalLabelValue=" + totalLabelValue
-				+ ", filteredLabelValue=" + filteredLabelValue + ", isTableData=" + isTableData + "]";
+				+ ", nObsSpinnerValue=" + nObsSpinnerValue + ", totalLabelValue=" + totalRecordsValue
+				+ ", filteredLabelValue=" + filteredRecordsValue + ", isTableData=" + isTableData + "]";
 	}
 
 	public static void main(String[] args) {

@@ -241,8 +241,9 @@ public class QueryResult {
 	 *  and flag indicating whether is catalog table is populated 
 	 */
 	private void setTotalsAndButtons() {
-		settings.setTotalLabelValue(getRecordsTotal());
-		settings.setFilteredLabelValue(getAcceptedTotal());
+		settings.setTotalRecordsValue(getRecordsTotal());
+		settings.setFilteredRecordsValue(getAcceptedTotal());
+		settings.setSelectedRecordsValue(getSelectedTotal());
 		
 		// flags catalog table is populated
 		settings.setTableData(getRecordsTotal() > 0);
@@ -288,6 +289,19 @@ public class QueryResult {
 		long count = getFieldObjects().stream().filter(p -> p.isAccepted()).count() - 1;
 		return Math.toIntExact(count);
 	}
+	
+	/**
+	 * Number of user selected reference field objects, excludes target object
+	 * @return total selected field objects
+	 */
+	public int getSelectedTotal() {
+		long count = getFieldObjects().stream()
+					.filter(p -> p.isAccepted())
+					.filter(p -> p.isSelected())
+					.count() - 1;
+		return Math.toIntExact(count);
+	}
+	
 
 	/**
 	 * Returns first item from list where isTarget is true

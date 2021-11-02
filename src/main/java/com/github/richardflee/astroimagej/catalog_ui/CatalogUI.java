@@ -247,8 +247,9 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		lowerLabel.setText(settings.getLowerLabelValue());
 
 		// record numbers
-		totalLabel.setText(String.format("%s", settings.getTotalLabelValue()));
-		filteredLabel.setText(String.format("%s", settings.getFilteredLabelValue()));
+		totalRecordsField.setText(String.format("%s", settings.getTotalRecordsValue()));
+		filteredRecordsField.setText(String.format("%s", settings.getFilteredRecordsValue()));
+		selectedRecordsField.setText(String.format("%s", settings.getSelectedRecordsValue()));
 
 		// update enable buttons flag
 		this.isTableData = settings.isTableData();
@@ -473,12 +474,14 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		saveRaDecButton = new JButton();
 		importRaDecButton = new JButton();
 		clearButton = new JButton();
-		panel8 = new JPanel();
-		label19 = new JLabel();
-		label20 = new JLabel();
-		filteredLabel = new JLabel();
-		totalLabel = new JLabel();
 		statusTextField = new JTextField();
+		panel9 = new JPanel();
+		label15 = new JLabel();
+		label18 = new JLabel();
+		label22 = new JLabel();
+		totalRecordsField = new JTextField();
+		selectedRecordsField = new JTextField();
+		filteredRecordsField = new JTextField();
 
 		//======== this ========
 		setTitle("On-line Catalog Query");
@@ -660,7 +663,7 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 					panel2.setLayout(panel2Layout);
 					panel2Layout.setHorizontalGroup(
 						panel2Layout.createParallelGroup()
-							.addComponent(tableScrollPane, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 728, Short.MAX_VALUE)
+							.addComponent(tableScrollPane, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 747, Short.MAX_VALUE)
 					);
 					panel2Layout.setVerticalGroup(
 						panel2Layout.createParallelGroup()
@@ -867,7 +870,6 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 										.addComponent(isMagLimitsCheckBox)
 										.addGap(0, 0, Short.MAX_VALUE))))
 					);
-					panel5Layout.linkSize(SwingConstants.HORIZONTAL, new Component[] {lowerLimitSpinner, targetMagSpinner, upperLimitSpinner});
 					panel5Layout.setVerticalGroup(
 						panel5Layout.createParallelGroup()
 							.addGroup(panel5Layout.createSequentialGroup()
@@ -991,13 +993,10 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 							.addGroup(panel7Layout.createSequentialGroup()
 								.addContainerGap()
 								.addGroup(panel7Layout.createParallelGroup()
-									.addGroup(panel7Layout.createSequentialGroup()
-										.addGroup(panel7Layout.createParallelGroup()
-											.addComponent(simbadButton, GroupLayout.PREFERRED_SIZE, 139, GroupLayout.PREFERRED_SIZE)
-											.addComponent(saveQueryButton)
-											.addComponent(catalogQueryButton)
-											.addComponent(importRaDecButton))
-										.addGap(0, 0, Short.MAX_VALUE))
+									.addComponent(simbadButton, GroupLayout.PREFERRED_SIZE, 139, GroupLayout.PREFERRED_SIZE)
+									.addComponent(saveQueryButton)
+									.addComponent(catalogQueryButton)
+									.addComponent(importRaDecButton)
 									.addGroup(GroupLayout.Alignment.TRAILING, panel7Layout.createSequentialGroup()
 										.addGap(0, 0, Short.MAX_VALUE)
 										.addGroup(panel7Layout.createParallelGroup()
@@ -1031,79 +1030,96 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 					);
 				}
 
-				//======== panel8 ========
-				{
-
-					//---- label19 ----
-					label19.setText("Total records:");
-
-					//---- label20 ----
-					label20.setText("Filtered records:");
-
-					//---- filteredLabel ----
-					filteredLabel.setText("0");
-
-					//---- totalLabel ----
-					totalLabel.setText("0");
-
-					GroupLayout panel8Layout = new GroupLayout(panel8);
-					panel8.setLayout(panel8Layout);
-					panel8Layout.setHorizontalGroup(
-						panel8Layout.createParallelGroup()
-							.addGroup(panel8Layout.createSequentialGroup()
-								.addContainerGap()
-								.addGroup(panel8Layout.createParallelGroup()
-									.addComponent(label19, GroupLayout.Alignment.TRAILING)
-									.addComponent(label20, GroupLayout.Alignment.TRAILING))
-								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-								.addGroup(panel8Layout.createParallelGroup()
-									.addComponent(totalLabel)
-									.addComponent(filteredLabel, GroupLayout.PREFERRED_SIZE, 61, GroupLayout.PREFERRED_SIZE))
-								.addContainerGap(318, Short.MAX_VALUE))
-					);
-					panel8Layout.setVerticalGroup(
-						panel8Layout.createParallelGroup()
-							.addGroup(panel8Layout.createSequentialGroup()
-								.addContainerGap()
-								.addGroup(panel8Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-									.addComponent(label19)
-									.addComponent(totalLabel))
-								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-								.addGroup(panel8Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-									.addComponent(label20)
-									.addComponent(filteredLabel, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE))
-								.addContainerGap(21, Short.MAX_VALUE))
-					);
-				}
-
 				//---- statusTextField ----
 				statusTextField.setEditable(false);
 				statusTextField.setToolTipText("/html>\nStatus line\n<html>");
 				statusTextField.setBackground(new Color(240, 240, 240));
+
+				//======== panel9 ========
+				{
+					panel9.setBorder(new TitledBorder("Record counts"));
+					panel9.setPreferredSize(new Dimension(190, 164));
+
+					//---- label15 ----
+					label15.setText("Total");
+
+					//---- label18 ----
+					label18.setText("Selected");
+
+					//---- label22 ----
+					label22.setText("Filtered");
+
+					//---- totalRecordsField ----
+					totalRecordsField.setToolTipText("<html>\nSet the target mag upper limit\n<p>Setting Upper = 0 disables this limit</p>\n<p>Range: 0 - 5 mag in 0.1 mag increment</p>\n</html>");
+					totalRecordsField.setEditable(false);
+					totalRecordsField.setText("1000");
+
+					//---- selectedRecordsField ----
+					selectedRecordsField.setToolTipText("<html>\nSet the target mag lower limit\n<p>Setting Lower = 0 disables this limit</p>\n<p>Range: -5 - 0 mag in 0.1 mag increment</p>\n</html>\n");
+					selectedRecordsField.setEditable(false);
+					selectedRecordsField.setText("0");
+
+					//---- filteredRecordsField ----
+					filteredRecordsField.setToolTipText("<html>\nSet the nominal target mag for the selected filter band\n<p>Use the scroll control  or type value in text box</p>\n<p>Range: 5.5 - 25 mag in 0.1 mag increment</p>\n</html>");
+					filteredRecordsField.setEditable(false);
+					filteredRecordsField.setText("0");
+
+					GroupLayout panel9Layout = new GroupLayout(panel9);
+					panel9.setLayout(panel9Layout);
+					panel9Layout.setHorizontalGroup(
+						panel9Layout.createParallelGroup()
+							.addGroup(panel9Layout.createSequentialGroup()
+								.addContainerGap()
+								.addGroup(panel9Layout.createParallelGroup()
+									.addComponent(label22, GroupLayout.Alignment.TRAILING)
+									.addComponent(label15, GroupLayout.Alignment.TRAILING)
+									.addComponent(label18, GroupLayout.Alignment.TRAILING))
+								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+								.addGroup(panel9Layout.createParallelGroup()
+									.addGroup(GroupLayout.Alignment.TRAILING, panel9Layout.createParallelGroup(GroupLayout.Alignment.TRAILING, false)
+										.addComponent(filteredRecordsField, GroupLayout.Alignment.LEADING)
+										.addComponent(totalRecordsField, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 43, Short.MAX_VALUE))
+									.addComponent(selectedRecordsField, GroupLayout.Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 43, GroupLayout.PREFERRED_SIZE))
+								.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+					);
+					panel9Layout.setVerticalGroup(
+						panel9Layout.createParallelGroup()
+							.addGroup(panel9Layout.createSequentialGroup()
+								.addContainerGap()
+								.addGroup(panel9Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+									.addComponent(label15)
+									.addComponent(totalRecordsField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+								.addGroup(panel9Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+									.addComponent(label22)
+									.addComponent(filteredRecordsField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+								.addGroup(panel9Layout.createParallelGroup()
+									.addComponent(label18)
+									.addComponent(selectedRecordsField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+								.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+					);
+				}
 
 				GroupLayout contentPanelLayout = new GroupLayout(contentPanel);
 				contentPanel.setLayout(contentPanelLayout);
 				contentPanelLayout.setHorizontalGroup(
 					contentPanelLayout.createParallelGroup()
 						.addGroup(contentPanelLayout.createSequentialGroup()
+							.addComponent(panel7, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 							.addGroup(contentPanelLayout.createParallelGroup()
 								.addGroup(contentPanelLayout.createSequentialGroup()
-									.addComponent(panel7, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-									.addGap(34, 34, 34)
-									.addGroup(contentPanelLayout.createParallelGroup()
-										.addGroup(contentPanelLayout.createSequentialGroup()
-											.addComponent(panel3, GroupLayout.PREFERRED_SIZE, 203, GroupLayout.PREFERRED_SIZE)
-											.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-											.addComponent(panel4, GroupLayout.PREFERRED_SIZE, 117, GroupLayout.PREFERRED_SIZE))
-										.addComponent(panel1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-										.addGroup(contentPanelLayout.createSequentialGroup()
-											.addComponent(panel5, GroupLayout.PREFERRED_SIZE, 203, GroupLayout.PREFERRED_SIZE)
-											.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-											.addComponent(panel6, GroupLayout.PREFERRED_SIZE, 117, GroupLayout.PREFERRED_SIZE))))
+									.addComponent(panel3, GroupLayout.PREFERRED_SIZE, 203, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+									.addComponent(panel4, GroupLayout.PREFERRED_SIZE, 117, GroupLayout.PREFERRED_SIZE))
+								.addComponent(panel1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 								.addGroup(contentPanelLayout.createSequentialGroup()
-									.addContainerGap()
-									.addComponent(panel8, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
-							.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+									.addComponent(panel5, GroupLayout.PREFERRED_SIZE, 203, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+									.addComponent(panel6, GroupLayout.PREFERRED_SIZE, 117, GroupLayout.PREFERRED_SIZE))
+								.addComponent(panel9, GroupLayout.PREFERRED_SIZE, 133, GroupLayout.PREFERRED_SIZE))
+							.addGap(15, 15, 15)
 							.addComponent(panel2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 						.addComponent(statusTextField, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 1261, Short.MAX_VALUE)
 				);
@@ -1113,21 +1129,21 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 							.addGroup(contentPanelLayout.createParallelGroup()
 								.addGroup(contentPanelLayout.createSequentialGroup()
 									.addContainerGap()
-									.addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
-										.addComponent(panel7, GroupLayout.Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+									.addGroup(contentPanelLayout.createParallelGroup()
 										.addGroup(contentPanelLayout.createSequentialGroup()
 											.addComponent(panel1, GroupLayout.PREFERRED_SIZE, 279, GroupLayout.PREFERRED_SIZE)
 											.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 											.addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
-												.addComponent(panel4, GroupLayout.DEFAULT_SIZE, 141, Short.MAX_VALUE)
-												.addComponent(panel3, GroupLayout.DEFAULT_SIZE, 141, Short.MAX_VALUE))
-											.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+												.addComponent(panel4, GroupLayout.PREFERRED_SIZE, 141, GroupLayout.PREFERRED_SIZE)
+												.addComponent(panel3, GroupLayout.PREFERRED_SIZE, 141, GroupLayout.PREFERRED_SIZE))
+											.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 											.addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
 												.addComponent(panel5, GroupLayout.PREFERRED_SIZE, 159, GroupLayout.PREFERRED_SIZE)
-												.addComponent(panel6, GroupLayout.PREFERRED_SIZE, 159, GroupLayout.PREFERRED_SIZE))))
+												.addComponent(panel6, GroupLayout.PREFERRED_SIZE, 159, GroupLayout.PREFERRED_SIZE)))
+										.addComponent(panel7, GroupLayout.Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 									.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-									.addComponent(panel8, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-									.addGap(0, 84, Short.MAX_VALUE))
+									.addComponent(panel9, GroupLayout.PREFERRED_SIZE, 131, GroupLayout.PREFERRED_SIZE)
+									.addGap(0, 40, Short.MAX_VALUE))
 								.addComponent(panel2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 							.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
 							.addComponent(statusTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
@@ -1212,12 +1228,14 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 	protected JButton saveRaDecButton;
 	protected JButton importRaDecButton;
 	protected JButton clearButton;
-	private JPanel panel8;
-	private JLabel label19;
-	private JLabel label20;
-	protected JLabel filteredLabel;
-	protected JLabel totalLabel;
 	private JTextField statusTextField;
+	private JPanel panel9;
+	private JLabel label15;
+	private JLabel label18;
+	private JLabel label22;
+	protected JTextField totalRecordsField;
+	protected JTextField selectedRecordsField;
+	protected JTextField filteredRecordsField;
 	// JFormDesigner - End of variables declaration //GEN-END:variables
 
 }

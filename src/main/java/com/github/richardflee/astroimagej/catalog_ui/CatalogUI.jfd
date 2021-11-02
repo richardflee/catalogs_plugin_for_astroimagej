@@ -10,8 +10,8 @@ new FormModel {
 				name: "dialogPane"
 				"border": new javax.swing.border.EmptyBorder( 12, 12, 12, 12 )
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-					"$horizontalGroup": "par l {seq {par l {seq {comp panel7:::p::p, space :p:34:p, par l {seq l {comp panel3:::p:203:p, space :::p, comp panel4:::p:117:p}, comp panel1:::::p, seq l {comp panel5:::p:203:p, space :::p, comp panel6:::p:117:p}}}, seq l {space :::p, comp panel8:::p::p}}, space :::p, comp panel2:::::x}, comp statusTextField::t::1261:x}"
-					"$verticalGroup": "par l {seq {par l {seq l {space :::p, par l:::p {comp panel7::t:p::p, seq {comp panel1:::p:279:p, space :::p, par l:::p {comp panel4::::141:x, comp panel3::::141:x}, space :::x, par l:::p {comp panel5:::p:159:p, comp panel6:::p:159:p}}}, space :::p, comp panel8:::p::p, space :0:84:x}, comp panel2:::::x}, space u:::p, comp statusTextField:::p::p}}"
+					"$horizontalGroup": "par l {seq {comp panel7:::p::p, space :::p, par l {seq l {comp panel3:::p:203:p, space :::p, comp panel4:::p:117:p}, comp panel1:::::p, seq l {comp panel5:::p:203:p, space :::p, comp panel6:::p:117:p}, comp panel9::l:p:133:p}, space :p:15:p, comp panel2:::::x}, comp statusTextField::t::1261:x}"
+					"$verticalGroup": "par l {seq {par l {seq l {space :::p, par l {seq {comp panel1:::p:279:p, space :::p, par l:::p {comp panel4:::p:141:p, comp panel3:::p:141:p}, space :p::p, par l:::p {comp panel5:::p:159:p, comp panel6:::p:159:p}}, comp panel7::t:p::p}, space :::p, comp panel9:::p:131:p, space :0:40:x}, comp panel2:::::x}, space u:::p, comp statusTextField:::p::p}}"
 				} ) {
 					name: "contentPanel"
 					"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
@@ -125,7 +125,7 @@ new FormModel {
 						} )
 					} )
 					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-						"$horizontalGroup": "par l {comp tableScrollPane::t::728:x}"
+						"$horizontalGroup": "par l {comp tableScrollPane::t::747:x}"
 						"$verticalGroup": "par l {comp tableScrollPane::l::782:x}"
 					} ) {
 						name: "panel2"
@@ -211,7 +211,7 @@ new FormModel {
 						} )
 					} )
 					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-						"$horizontalGroup": "par l {seq {space :::p, par l {seq {par l {comp label14::t:p::p, comp label6::t:p::p, comp label13::t:p::p}, space :0:20:x, par t {comp upperLimitSpinner:1:t:p:60:p, comp lowerLimitSpinner:1:t:p:60:p, comp targetMagSpinner:1::p:60:p}, space u:::p, par l {comp upperLabel::l:p::p, comp label16::l:p::p, comp lowerLabel::l:p::p}, space ::15:x}, seq l {comp isMagLimitsCheckBox:::p::p, space :0:0:x}}}}"
+						"$horizontalGroup": "par l {seq {space :::p, par l {seq {par l {comp label14::t:p::p, comp label6::t:p::p, comp label13::t:p::p}, space :0:20:x, par t {comp upperLimitSpinner::t:p:60:p, comp lowerLimitSpinner::t:p:60:p, comp targetMagSpinner:::p:60:p}, space u:::p, par l {comp upperLabel::l:p::p, comp label16::l:p::p, comp lowerLabel::l:p::p}, space ::15:x}, seq l {comp isMagLimitsCheckBox:::p::p, space :0:0:x}}}}"
 						"$verticalGroup": "par l {seq l {space :::p, par b {comp label6::b:p::p, comp upperLimitSpinner::b:p::p, comp upperLabel::b:p::p}, space :::p, par b {comp label14::b:p::p, comp targetMagSpinner::b:p::p, comp label16::b:p::p}, space :::p, par l {comp label13:::p::p, par b:l {comp lowerLimitSpinner::b:p::p, comp lowerLabel::b:p::p}}, space u:::p, comp isMagLimitsCheckBox:::p::p, space :::x}}"
 					} ) {
 						name: "panel5"
@@ -320,7 +320,7 @@ new FormModel {
 						} )
 					} )
 					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-						"$horizontalGroup": "par l {seq {space :::p, par l {seq {par l {comp simbadButton:2::p:139:p, comp saveQueryButton:2:l:p::p, comp catalogQueryButton:2:l:p::p, comp importRaDecButton:2:l:p::p}, space :0:0:x}, seq t {space :0:0:x, par l {comp closeButton:2:t:p:139:p, comp updateButton:2:t:p::p, comp clearButton:2:t:p::p, comp saveRaDecButton:2:t:p::p}}}, space :::p}}"
+						"$horizontalGroup": "par l {seq {space :::p, par l {comp simbadButton:2::p:139:p, comp saveQueryButton:2:l:p::p, comp catalogQueryButton:2:l:p::p, comp importRaDecButton:2:l:p::p, seq t {space :0:0:x, par l {comp closeButton:2:t:p:139:p, comp updateButton:2:t:p::p, comp clearButton:2:t:p::p, comp saveRaDecButton:2:t:p::p}}}, space :::p}}"
 						"$verticalGroup": "par l {seq l {space :::p, comp simbadButton:::p:39:p, space u:::p, comp saveQueryButton:::p:39:p, space u:::p, comp catalogQueryButton:::p:39:p, space u:::p, comp importRaDecButton:::p:39:p, space s:::p, comp saveRaDecButton:::p:39:p, space ::159:x, comp updateButton:::p:39:p, space :p:23:p, comp clearButton:::p:39:p, space u:::p, comp closeButton:::p:39:p, space :::p}}"
 					} ) {
 						name: "panel7"
@@ -389,39 +389,58 @@ new FormModel {
 							}
 						} )
 					} )
-					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-						"$horizontalGroup": "par l {seq {space :::p, par l {comp label19::t:p::p, comp label20::t:p::p}, space :::p, par l {comp totalLabel:::p::p, comp filteredLabel:::p:61:p}, space ::318:x}}"
-						"$verticalGroup": "par l {seq l {space :::p, par b {comp label19::b:p::p, comp totalLabel::b:p::p}, space :::p, par b {comp label20::b:p::p, comp filteredLabel::b:p:30:p}, space ::21:x}}"
-					} ) {
-						name: "panel8"
-						add( new FormComponent( "javax.swing.JLabel" ) {
-							name: "label19"
-							"text": "Total records:"
-						} )
-						add( new FormComponent( "javax.swing.JLabel" ) {
-							name: "label20"
-							"text": "Filtered records:"
-						} )
-						add( new FormComponent( "javax.swing.JLabel" ) {
-							name: "filteredLabel"
-							"text": "0"
-							auxiliary() {
-								"JavaCodeGenerator.variableModifiers": 4
-							}
-						} )
-						add( new FormComponent( "javax.swing.JLabel" ) {
-							name: "totalLabel"
-							"text": "0"
-							auxiliary() {
-								"JavaCodeGenerator.variableModifiers": 4
-							}
-						} )
-					} )
 					add( new FormComponent( "javax.swing.JTextField" ) {
 						name: "statusTextField"
 						"editable": false
 						"toolTipText": "/html>\nStatus line\n<html>"
 						"background": new java.awt.Color( 240, 240, 240, 255 )
+					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+						"$horizontalGroup": "par l {seq {space :::p, par l {comp label22::t:p::p, comp label15::t:p::p, comp label18::t:p::p}, space :::x, par l {par t:t::p {comp filteredRecordsField::l:::x, comp totalRecordsField::l::43:x}, comp selectedRecordsField::t:p:43:p}, space :::x}}"
+						"$verticalGroup": "par l {seq l {space :::p, par b {comp label15::b:p::p, comp totalRecordsField::b:p::p}, space :::p, par b {comp label22::b:p::p, comp filteredRecordsField::b:p::p}, space :::p, par l {comp label18:::p::p, comp selectedRecordsField:::p::p}, space :::x}}"
+					} ) {
+						name: "panel9"
+						"border": new javax.swing.border.TitledBorder( "Record counts" )
+						"preferredSize": #Dimension0
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label15"
+							"text": "Total"
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label18"
+							"text": "Selected"
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label22"
+							"text": "Filtered"
+						} )
+						add( new FormComponent( "javax.swing.JTextField" ) {
+							name: "totalRecordsField"
+							"toolTipText": "<html>\nSet the target mag upper limit\n<p>Setting Upper = 0 disables this limit</p>\n<p>Range: 0 - 5 mag in 0.1 mag increment</p>\n</html>"
+							"editable": false
+							"text": "1000"
+							auxiliary() {
+								"JavaCodeGenerator.variableModifiers": 4
+							}
+						} )
+						add( new FormComponent( "javax.swing.JTextField" ) {
+							name: "selectedRecordsField"
+							"toolTipText": "<html>\nSet the target mag lower limit\n<p>Setting Lower = 0 disables this limit</p>\n<p>Range: -5 - 0 mag in 0.1 mag increment</p>\n</html>\n"
+							"editable": false
+							"text": "0"
+							auxiliary() {
+								"JavaCodeGenerator.variableModifiers": 4
+							}
+						} )
+						add( new FormComponent( "javax.swing.JTextField" ) {
+							name: "filteredRecordsField"
+							"toolTipText": "<html>\nSet the nominal target mag for the selected filter band\n<p>Use the scroll control  or type value in text box</p>\n<p>Range: 5.5 - 25 mag in 0.1 mag increment</p>\n</html>"
+							"editable": false
+							"text": "0"
+							auxiliary() {
+								"JavaCodeGenerator.variableModifiers": 4
+							}
+						} )
 					} )
 				}, new FormLayoutConstraints( class java.lang.String ) {
 					"value": "Center"
