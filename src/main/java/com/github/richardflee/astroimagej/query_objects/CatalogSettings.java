@@ -23,6 +23,9 @@ public class CatalogSettings {
 	private int totalRecordsValue;
 	private int filteredRecordsValue;
 	private int selectedRecordsValue;
+	
+	// DSS fits flag
+	private boolean isSaveDssCheckBoxValue;
 
 	// flag enable / disable catalog ui buttons
 	private boolean isTableData;
@@ -73,6 +76,9 @@ public class CatalogSettings {
 		this.totalRecordsValue = Integer.valueOf(settings.getTotalRecordsValue());
 		this.filteredRecordsValue = Integer.valueOf(settings.getFilteredRecordsValue());
 		this.selectedRecordsValue = Integer.valueOf(settings.getSelectedRecordsValue());
+		
+		// DSS flag
+		this.isSaveDssCheckBoxValue = settings.isSaveDssCheckBoxValue();
 
 		// no table data
 		this.isTableData = false;
@@ -233,8 +239,14 @@ public class CatalogSettings {
 	}
 
 	
+	public boolean isSaveDssCheckBoxValue() {
+		return isSaveDssCheckBoxValue;
+	}
 
-	
+	public void setSaveDssCheckBoxValue(boolean isSaveDssCheckBoxValue) {
+		this.isSaveDssCheckBoxValue = isSaveDssCheckBoxValue;
+	}
+
 	@Override
 	public String toString() {
 		return "CatalogSettings [targetMagSpinnerValue=" + targetMagSpinnerValue + ", upperLimitSpinnerValue="

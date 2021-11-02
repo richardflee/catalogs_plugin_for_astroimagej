@@ -278,6 +278,8 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 
 		// number of observations
 		settings.setnObsSpinnerValue((int) nObsSpinner.getValue());
+		
+		settings.setSaveDssCheckBoxValue(isSaveDssCheckBox.isSelected());
 
 		return settings;
 	}
@@ -385,7 +387,6 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		isValid = isValid && InputsVerifier.isValidFov(fovField.getText());
 		isValid = isValid && InputsVerifier.isValidMagLimit(magLimitField.getText());
 		return isValid;
-
 	}
 
 	/*
@@ -404,6 +405,9 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		saveRaDecButton.setEnabled(isTableData);
 		updateButton.setEnabled(isTableData);
 		clearButton.setEnabled(isTableData);
+		
+		// save dss checkbox in sync with save radec
+		isSaveDssCheckBox.setEnabled(isTableData);
 	}
 
 	private void initComponents() {
@@ -431,6 +435,7 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		label11 = new JLabel();
 		filterCombo = new JComboBox<>();
 		label12 = new JLabel();
+		isSaveDssCheckBox = new JCheckBox();
 		panel2 = new JPanel();
 		tableScrollPane = new JScrollPane();
 		panel3 = new JPanel();
@@ -562,6 +567,10 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 					//---- label12 ----
 					label12.setText("Filter:");
 
+					//---- isSaveDssCheckBox ----
+					isSaveDssCheckBox.setText("Save DSS Fits File");
+					isSaveDssCheckBox.setSelected(true);
+
 					GroupLayout panel1Layout = new GroupLayout(panel1);
 					panel1.setLayout(panel1Layout);
 					panel1Layout.setHorizontalGroup(
@@ -578,22 +587,28 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 									.addComponent(label12, GroupLayout.Alignment.TRAILING))
 								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 								.addGroup(panel1Layout.createParallelGroup()
-									.addComponent(filterCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-									.addComponent(catalogCombo, GroupLayout.PREFERRED_SIZE, 96, GroupLayout.PREFERRED_SIZE)
 									.addGroup(panel1Layout.createSequentialGroup()
-										.addGroup(panel1Layout.createParallelGroup(GroupLayout.Alignment.TRAILING, false)
-											.addComponent(fovField, GroupLayout.Alignment.LEADING)
-											.addComponent(decField, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 96, Short.MAX_VALUE)
-											.addComponent(raField, GroupLayout.Alignment.LEADING)
-											.addComponent(magLimitField))
-										.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+										.addComponent(filterCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+										.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
+										.addComponent(isSaveDssCheckBox))
+									.addGroup(panel1Layout.createSequentialGroup()
 										.addGroup(panel1Layout.createParallelGroup()
-											.addComponent(label7)
-											.addComponent(label8)
-											.addComponent(label9)
-											.addComponent(label10)))
-									.addComponent(objectIdField, GroupLayout.PREFERRED_SIZE, 187, GroupLayout.PREFERRED_SIZE))
-								.addContainerGap(55, Short.MAX_VALUE))
+											.addComponent(catalogCombo, GroupLayout.PREFERRED_SIZE, 96, GroupLayout.PREFERRED_SIZE)
+											.addGroup(panel1Layout.createSequentialGroup()
+												.addGroup(panel1Layout.createParallelGroup(GroupLayout.Alignment.TRAILING, false)
+													.addComponent(fovField, GroupLayout.Alignment.LEADING)
+													.addComponent(decField, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 96, Short.MAX_VALUE)
+													.addComponent(raField, GroupLayout.Alignment.LEADING)
+													.addComponent(magLimitField))
+												.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+												.addGroup(panel1Layout.createParallelGroup()
+													.addComponent(label7)
+													.addComponent(label8)
+													.addComponent(label9)
+													.addComponent(label10)))
+											.addComponent(objectIdField, GroupLayout.PREFERRED_SIZE, 187, GroupLayout.PREFERRED_SIZE))
+										.addGap(0, 0, Short.MAX_VALUE)))
+								.addContainerGap())
 					);
 					panel1Layout.setVerticalGroup(
 						panel1Layout.createParallelGroup()
@@ -645,7 +660,8 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 								.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
 								.addGroup(panel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 									.addComponent(filterCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-									.addComponent(label12))
+									.addComponent(label12)
+									.addComponent(isSaveDssCheckBox))
 								.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 					);
 				}
@@ -663,7 +679,7 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 					panel2.setLayout(panel2Layout);
 					panel2Layout.setHorizontalGroup(
 						panel2Layout.createParallelGroup()
-							.addComponent(tableScrollPane, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 747, Short.MAX_VALUE)
+							.addComponent(tableScrollPane, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 740, Short.MAX_VALUE)
 					);
 					panel2Layout.setVerticalGroup(
 						panel2Layout.createParallelGroup()
@@ -1070,17 +1086,18 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 						panel9Layout.createParallelGroup()
 							.addGroup(panel9Layout.createSequentialGroup()
 								.addContainerGap()
-								.addGroup(panel9Layout.createParallelGroup()
-									.addComponent(label22, GroupLayout.Alignment.TRAILING)
-									.addComponent(label15, GroupLayout.Alignment.TRAILING)
-									.addComponent(label18, GroupLayout.Alignment.TRAILING))
-								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-								.addGroup(panel9Layout.createParallelGroup()
-									.addGroup(GroupLayout.Alignment.TRAILING, panel9Layout.createParallelGroup(GroupLayout.Alignment.TRAILING, false)
-										.addComponent(filteredRecordsField, GroupLayout.Alignment.LEADING)
-										.addComponent(totalRecordsField, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 43, Short.MAX_VALUE))
-									.addComponent(selectedRecordsField, GroupLayout.Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 43, GroupLayout.PREFERRED_SIZE))
-								.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+								.addComponent(label15)
+								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+								.addComponent(totalRecordsField, GroupLayout.PREFERRED_SIZE, 43, GroupLayout.PREFERRED_SIZE)
+								.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+								.addComponent(label22)
+								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+								.addComponent(filteredRecordsField, GroupLayout.PREFERRED_SIZE, 43, GroupLayout.PREFERRED_SIZE)
+								.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+								.addComponent(label18)
+								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+								.addComponent(selectedRecordsField, GroupLayout.PREFERRED_SIZE, 43, GroupLayout.PREFERRED_SIZE)
+								.addGap(0, 0, Short.MAX_VALUE))
 					);
 					panel9Layout.setVerticalGroup(
 						panel9Layout.createParallelGroup()
@@ -1088,13 +1105,9 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 								.addContainerGap()
 								.addGroup(panel9Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 									.addComponent(label15)
-									.addComponent(totalRecordsField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-								.addGroup(panel9Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+									.addComponent(totalRecordsField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+									.addComponent(filteredRecordsField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 									.addComponent(label22)
-									.addComponent(filteredRecordsField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-								.addGroup(panel9Layout.createParallelGroup()
 									.addComponent(label18)
 									.addComponent(selectedRecordsField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 								.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -1110,15 +1123,16 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 							.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 							.addGroup(contentPanelLayout.createParallelGroup()
 								.addGroup(contentPanelLayout.createSequentialGroup()
+									.addGap(0, 0, Short.MAX_VALUE)
+									.addComponent(panel5, GroupLayout.PREFERRED_SIZE, 203, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+									.addComponent(panel6, GroupLayout.PREFERRED_SIZE, 117, GroupLayout.PREFERRED_SIZE))
+								.addGroup(contentPanelLayout.createSequentialGroup()
 									.addComponent(panel3, GroupLayout.PREFERRED_SIZE, 203, GroupLayout.PREFERRED_SIZE)
 									.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 									.addComponent(panel4, GroupLayout.PREFERRED_SIZE, 117, GroupLayout.PREFERRED_SIZE))
 								.addComponent(panel1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addGroup(contentPanelLayout.createSequentialGroup()
-									.addComponent(panel5, GroupLayout.PREFERRED_SIZE, 203, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-									.addComponent(panel6, GroupLayout.PREFERRED_SIZE, 117, GroupLayout.PREFERRED_SIZE))
-								.addComponent(panel9, GroupLayout.PREFERRED_SIZE, 133, GroupLayout.PREFERRED_SIZE))
+								.addComponent(panel9, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 334, Short.MAX_VALUE))
 							.addGap(15, 15, 15)
 							.addComponent(panel2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 						.addComponent(statusTextField, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 1261, Short.MAX_VALUE)
@@ -1142,8 +1156,8 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 												.addComponent(panel6, GroupLayout.PREFERRED_SIZE, 159, GroupLayout.PREFERRED_SIZE)))
 										.addComponent(panel7, GroupLayout.Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 									.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-									.addComponent(panel9, GroupLayout.PREFERRED_SIZE, 131, GroupLayout.PREFERRED_SIZE)
-									.addGap(0, 40, Short.MAX_VALUE))
+									.addComponent(panel9, GroupLayout.PREFERRED_SIZE, 73, GroupLayout.PREFERRED_SIZE)
+									.addGap(0, 98, Short.MAX_VALUE))
 								.addComponent(panel2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 							.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
 							.addComponent(statusTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
@@ -1185,6 +1199,7 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 	private JLabel label11;
 	protected JComboBox<String> filterCombo;
 	private JLabel label12;
+	protected JCheckBox isSaveDssCheckBox;
 	private JPanel panel2;
 	protected JScrollPane tableScrollPane;
 	private JPanel panel3;

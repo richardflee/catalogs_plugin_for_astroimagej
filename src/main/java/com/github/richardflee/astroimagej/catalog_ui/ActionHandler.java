@@ -8,6 +8,7 @@ import com.github.richardflee.astroimagej.catalogs.CatalogFactory;
 import com.github.richardflee.astroimagej.catalogs.SimbadCatalog;
 import com.github.richardflee.astroimagej.catalogs.VspCatalog;
 import com.github.richardflee.astroimagej.exceptions.SimbadNotFoundException;
+import com.github.richardflee.astroimagej.fileio.DssWriter;
 import com.github.richardflee.astroimagej.fileio.PropertiesFileIO;
 import com.github.richardflee.astroimagej.fileio.RaDecFileReader;
 import com.github.richardflee.astroimagej.fileio.RaDecFileWriter;
@@ -185,13 +186,19 @@ public class ActionHandler {
 	public void doSaveRaDecFile() {
 		// writes radec with accepted (i.e. meet user filter specs) and selected records
 		this.fileWriter.writeRaDecFile(result);
+		String message = fileWriter.getStatusMessage();
 
 		// reverts catalog ui to query & settings used for on-line query
 		catalogDataListener.setQueryData(result.getQuery());
 		catalogDataListener.setSettingsData(result.getSettings());
+		
+		// TTDO DSS fit option
+		if (catalogDataListener.getSettingsData().isSaveDssCheckBoxValue() == true) {
+			DssWriter.downloadDssFits(result.getQuery());
+		} 
+		
 
 		// status line
-		String message = fileWriter.getStatusMessage();
 		catalogDataListener.updateStatus(message);
 	}
 
@@ -222,6 +229,8 @@ public class ActionHandler {
 
 		// closes vsp chart if necessary and draws new chart
 		this.chart.drawChart(result);
+		
+		
 
 		// status line
 		String statusMessage = radecFileReader.getStatusMessage();

@@ -10,14 +10,14 @@ new FormModel {
 				name: "dialogPane"
 				"border": new javax.swing.border.EmptyBorder( 12, 12, 12, 12 )
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-					"$horizontalGroup": "par l {seq {comp panel7:::p::p, space :::p, par l {seq l {comp panel3:::p:203:p, space :::p, comp panel4:::p:117:p}, comp panel1:::::p, seq l {comp panel5:::p:203:p, space :::p, comp panel6:::p:117:p}, comp panel9::l:p:133:p}, space :p:15:p, comp panel2:::::x}, comp statusTextField::t::1261:x}"
-					"$verticalGroup": "par l {seq {par l {seq l {space :::p, par l {seq {comp panel1:::p:279:p, space :::p, par l:::p {comp panel4:::p:141:p, comp panel3:::p:141:p}, space :p::p, par l:::p {comp panel5:::p:159:p, comp panel6:::p:159:p}}, comp panel7::t:p::p}, space :::p, comp panel9:::p:131:p, space :0:40:x}, comp panel2:::::x}, space u:::p, comp statusTextField:::p::p}}"
+					"$horizontalGroup": "par l {seq {comp panel7:::p::p, space :::p, par l {seq l {space :0:0:x, comp panel5:::p:203:p, space :::p, comp panel6:::p:117:p}, seq l {comp panel3:::p:203:p, space :::p, comp panel4:::p:117:p}, comp panel1:::::p, comp panel9::t::334:x}, space :p:15:p, comp panel2:::::x}, comp statusTextField::t::1261:x}"
+					"$verticalGroup": "par l {seq {par l {seq l {space :::p, par l {seq {comp panel1:::p:279:p, space :::p, par l:::p {comp panel4:::p:141:p, comp panel3:::p:141:p}, space :p::p, par l:::p {comp panel5:::p:159:p, comp panel6:::p:159:p}}, comp panel7::t:p::p}, space :::p, comp panel9:::p:73:p, space :0:98:x}, comp panel2:::::x}, space u:::p, comp statusTextField:::p::p}}"
 				} ) {
 					name: "contentPanel"
 					"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
 					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-						"$horizontalGroup": "par l {seq l {space :p:15:p, par l {comp label1::t:p::p, comp label2::t:p::p, comp label3::t:p::p, comp label4::t:p::p, comp label5::t:p::p, comp label11::t:p::p, comp label12::t:p::p}, space :::p, par l {comp filterCombo:::p::p, comp catalogCombo::l:p:96:p, seq {par t:::p {comp fovField::l:::x, comp decField::l::96:x, comp raField::l:::x, comp magLimitField:::::x}, space :::p, par l {comp label7:::p::p, comp label8:::p::p, comp label9:::p::p, comp label10:::p::p}}, comp objectIdField::l:p:187:p}, space ::55:x}}"
-						"$verticalGroup": "par l {seq l {space :::p, par b {comp label1::b:p::p, comp objectIdField::b:p::p}, par l {seq {space :p:16:p, comp label2:::p::p}, seq {space u:::p, par b {comp raField::b:p::p, comp label7::b:p::p}}}, par l {seq {space :p:16:p, comp label3:::p::p}, seq {space u:::p, par b {comp decField::b:p::p, comp label8::b:p::p}}}, par l {seq {space :p:16:p, comp label4:::p::p}, seq {space u:::p, par b {comp fovField::b:p::p, comp label9::b:p::p}}}, par l {seq {space :p:16:p, comp label5:::p::p}, seq {space u:::p, par b {comp magLimitField::b:p::p, comp label10::b:p::p}}}, space u:::p, par b {comp catalogCombo::b:p::p, comp label11::b:p::p}, space u:::p, par b {comp filterCombo::b:p::p, comp label12::b:p::p}, space :::x}}"
+						"$horizontalGroup": "par l {seq l {space :p:15:p, par l {comp label1::t:p::p, comp label2::t:p::p, comp label3::t:p::p, comp label4::t:p::p, comp label5::t:p::p, comp label11::t:p::p, comp label12::t:p::p}, space :::p, par l {seq {comp filterCombo:::p::p, space ::45:x, comp isSaveDssCheckBox:::p::p}, seq {par l {comp catalogCombo::l:p:96:p, seq {par t:::p {comp fovField::l:::x, comp decField::l::96:x, comp raField::l:::x, comp magLimitField:::::x}, space :::p, par l {comp label7:::p::p, comp label8:::p::p, comp label9:::p::p, comp label10:::p::p}}, comp objectIdField::l:p:187:p}, space :0:0:x}}, space :::p}}"
+						"$verticalGroup": "par l {seq l {space :::p, par b {comp label1::b:p::p, comp objectIdField::b:p::p}, par l {seq {space :p:16:p, comp label2:::p::p}, seq {space u:::p, par b {comp raField::b:p::p, comp label7::b:p::p}}}, par l {seq {space :p:16:p, comp label3:::p::p}, seq {space u:::p, par b {comp decField::b:p::p, comp label8::b:p::p}}}, par l {seq {space :p:16:p, comp label4:::p::p}, seq {space u:::p, par b {comp fovField::b:p::p, comp label9::b:p::p}}}, par l {seq {space :p:16:p, comp label5:::p::p}, seq {space u:::p, par b {comp magLimitField::b:p::p, comp label10::b:p::p}}}, space u:::p, par b {comp catalogCombo::b:p::p, comp label11::b:p::p}, space u:::p, par b {comp filterCombo::b:p::p, comp label12::b:p::p, comp isSaveDssCheckBox::b:p::p}, space :::x}}"
 					} ) {
 						name: "panel1"
 						"border": new javax.swing.border.TitledBorder( "Catalog Query settings" )
@@ -123,9 +123,17 @@ new FormModel {
 							name: "label12"
 							"text": "Filter:"
 						} )
+						add( new FormComponent( "javax.swing.JCheckBox" ) {
+							name: "isSaveDssCheckBox"
+							"text": "Save DSS Fits File"
+							"selected": true
+							auxiliary() {
+								"JavaCodeGenerator.variableModifiers": 4
+							}
+						} )
 					} )
 					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-						"$horizontalGroup": "par l {comp tableScrollPane::t::747:x}"
+						"$horizontalGroup": "par l {comp tableScrollPane::t::740:x}"
 						"$verticalGroup": "par l {comp tableScrollPane::l::782:x}"
 					} ) {
 						name: "panel2"
@@ -396,8 +404,8 @@ new FormModel {
 						"background": new java.awt.Color( 240, 240, 240, 255 )
 					} )
 					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-						"$horizontalGroup": "par l {seq {space :::p, par l {comp label22::t:p::p, comp label15::t:p::p, comp label18::t:p::p}, space :::x, par l {par t:t::p {comp filteredRecordsField::l:::x, comp totalRecordsField::l::43:x}, comp selectedRecordsField::t:p:43:p}, space :::x}}"
-						"$verticalGroup": "par l {seq l {space :::p, par b {comp label15::b:p::p, comp totalRecordsField::b:p::p}, space :::p, par b {comp label22::b:p::p, comp filteredRecordsField::b:p::p}, space :::p, par l {comp label18:::p::p, comp selectedRecordsField:::p::p}, space :::x}}"
+						"$horizontalGroup": "par l {seq {space :::p, comp label15:::p::p, space :::p, comp totalRecordsField:::p:43:p, space u:::p, comp label22:::p::p, space :::p, comp filteredRecordsField:::p:43:p, space u:::p, comp label18:::p::p, space :::p, comp selectedRecordsField:::p:43:p, space :0:0:x}}"
+						"$verticalGroup": "par l {seq l {space :::p, par b {comp label15::b:p::p, comp totalRecordsField::b:p::p, comp filteredRecordsField::b:p::p, comp label22::b:p::p, comp label18::b:p::p, comp selectedRecordsField::b:p::p}, space :::x}}"
 					} ) {
 						name: "panel9"
 						"border": new javax.swing.border.TitledBorder( "Record counts" )
