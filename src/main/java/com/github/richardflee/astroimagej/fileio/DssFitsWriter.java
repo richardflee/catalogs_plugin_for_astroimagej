@@ -22,7 +22,7 @@ import com.github.richardflee.astroimagej.utils.CatalogUrls;
  * comparison stars. </p> <p> SkyView Ref:
  * https://skyview.gsfc.nasa.gov/current/docs/batchpage.html </p>
  */
-public class DssWriter {
+public class DssFitsWriter {
 
 	/**
 	 * Compile fits filename based on catalog query data. If this is a new file in
@@ -39,19 +39,21 @@ public class DssWriter {
 
 		// connect a File variable with the compiled fits filename & get file path
 		File file = getFile(query);
-		String filePath = file.toString();
-		System.out.println(filePath);
+		// String filePath = file.toString();
+		String filename = file.getName();
+		// System.out.println(filePath);
+		System.out.println(filename);
 
 		// if fits file does not already exist
 		// attempts to download & save a new dss fits file
-		String message = String.format("Fit file: %s already exists", filePath);
+		String message = String.format("Fit file: %s already exists", filename);
 		if (!file.exists()) {
 			try {
 				InputStream in = new URL(skyUrl).openStream();
-				Files.copy(in, Paths.get(filePath));
-				message = String.format("Saved fits file: %s", filePath);
+				Files.copy(in, Paths.get(file.toString()));
+				message = String.format("Saved fits file: %s", filename);
 			} catch (IOException e) {
-				message = String.format("Error in writing file: %s", filePath);
+				message = String.format("Error in writing file: %s", filename);
 			}
 		}
 		return message;
@@ -66,7 +68,6 @@ public class DssWriter {
 	private static File getFile(CatalogQuery query) {
 		// path to radec file, create new folder if necessary
 		File dir = new File(System.getProperty("user.dir"), "dss");
-		dir.mkdirs();
 		File file = new File(dir, compileFilename(query));
 		return file;
 	}
@@ -78,7 +79,7 @@ public class DssWriter {
 	 */
 	private static String compileFilename(CatalogQuery query) {
 		String filename = String.join(".", Arrays.asList(query.getObjectId(), 
-				String.format("%03d", query.getFovAmin().intValue()), ".fits"));
+				String.format("%03d", query.getFovAmin().intValue()), "fits"));
 		return filename.replace(" ", "_");
 	}
 

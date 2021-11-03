@@ -187,7 +187,7 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		// populate filterCombo
 		String selectedFilter = query.getMagBand();
 		populateFilterCombo(selectedCatalog, selectedFilter);
-		filterCombo.setSelectedItem(query.getMagBand());
+		// filterCombo.setSelectedItem(query.getMagBand());
 	}
 	
 	/**

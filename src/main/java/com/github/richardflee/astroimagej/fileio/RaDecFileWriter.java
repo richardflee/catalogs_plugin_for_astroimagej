@@ -29,7 +29,7 @@ import com.github.richardflee.astroimagej.utils.AstroCoords;
  * 
  * <p>Block 3: data line encoding  catalog query data</p> 
  * 
- * <p>Block 4: text line somprising vsp chart chart uri for current query</p>
+ * <p>Block 4: text line comprises vsp chart chart uri for current query</p>
  */
 public class RaDecFileWriter extends RaDecFileBase {
 
@@ -40,6 +40,12 @@ public class RaDecFileWriter extends RaDecFileBase {
 		super();
 		// compile data lines first
 		isDataBlock = true;
+		
+		// first use, create new radec and dss folders in user.dir path
+		File dir = new File(System.getProperty("user.dir"), "radec");
+		dir.mkdirs();
+		dir = new File(System.getProperty("user.dir"), "dss");
+		dir.mkdirs();
 	}
 
 	/**
@@ -93,7 +99,6 @@ public class RaDecFileWriter extends RaDecFileBase {
 	private File getFile(CatalogQuery query) {
 		// path to radec file, create new folder if necessary
 		File dir = new File(System.getProperty("user.dir"), "radec");
-		dir.mkdirs();
 		File file = new File(dir, compileFilename(query));
 		return file;
 	}

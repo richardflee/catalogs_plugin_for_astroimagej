@@ -8,7 +8,7 @@ import com.github.richardflee.astroimagej.catalogs.CatalogFactory;
 import com.github.richardflee.astroimagej.catalogs.SimbadCatalog;
 import com.github.richardflee.astroimagej.catalogs.VspCatalog;
 import com.github.richardflee.astroimagej.exceptions.SimbadNotFoundException;
-import com.github.richardflee.astroimagej.fileio.DssWriter;
+import com.github.richardflee.astroimagej.fileio.DssFitsWriter;
 import com.github.richardflee.astroimagej.fileio.PropertiesFileIO;
 import com.github.richardflee.astroimagej.fileio.RaDecFileReader;
 import com.github.richardflee.astroimagej.fileio.RaDecFileWriter;
@@ -192,14 +192,14 @@ public class ActionHandler {
 		catalogDataListener.setQueryData(result.getQuery());
 		catalogDataListener.setSettingsData(result.getSettings());
 		
-		// TTDO DSS fit option
+		// option to download dss fits file from SkyView server
+		String dssMessage = "DSS Fits file option not selected";
 		if (catalogDataListener.getSettingsData().isSaveDssCheckBoxValue() == true) {
-			DssWriter.downloadDssFits(result.getQuery());
+			dssMessage = DssFitsWriter.downloadDssFits(result.getQuery());
 		} 
-		
 
 		// status line
-		catalogDataListener.updateStatus(message);
+		catalogDataListener.updateStatus(message + "; " + dssMessage);
 	}
 
 	/**
