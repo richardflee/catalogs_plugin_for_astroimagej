@@ -10,6 +10,7 @@ import com.github.richardflee.astroimagej.catalog_ui.CatalogUI;
 import com.github.richardflee.astroimagej.fileio.PropertiesFileIO;
 import com.github.richardflee.astroimagej.query_objects.CatalogQuery;
 import com.github.richardflee.astroimagej.query_objects.CatalogSettings;
+import com.github.richardflee.astroimagej.query_objects.ObservationSite;
 
 import ij.IJ;
 import ij.plugin.PlugIn;
@@ -75,6 +76,10 @@ public class Catalogs_Plugin implements PlugIn {
 		// or default data if properties file not found
 		CatalogQuery query = pf.getPropertiesQueryData();
 		catalogUi.setQueryData(query);
+		
+		// Coordinates Converter observatory & utc data or null if data error
+		ObservationSite site = pf.getObservationSiteData();
+		catalogUi.setObservationSiteData(site);
 		
 		// apply properties target mag
 		CatalogSettings settings = pf.getPropertiesSettingsData();

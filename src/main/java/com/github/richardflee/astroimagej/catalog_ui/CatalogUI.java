@@ -9,10 +9,11 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ItemEvent;
+import java.time.LocalDate;
 
-import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -32,11 +33,13 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
+import com.github.lgooddatepicker.components.DatePicker;
 import com.github.richardflee.astroimagej.enums.CatalogsEnum;
 import com.github.richardflee.astroimagej.enums.QueryEnum;
 import com.github.richardflee.astroimagej.listeners.CatalogDataListener;
 import com.github.richardflee.astroimagej.query_objects.CatalogQuery;
 import com.github.richardflee.astroimagej.query_objects.CatalogSettings;
+import com.github.richardflee.astroimagej.query_objects.ObservationSite;
 import com.github.richardflee.astroimagej.query_objects.SimbadResult;
 import com.github.richardflee.astroimagej.utils.AstroCoords;
 import com.github.richardflee.astroimagej.utils.InputsVerifier;
@@ -80,6 +83,10 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		// catalog table & data model
 		this.catalogTableModel = catalogTableModel;
 		new CatalogTable(this, catalogTableModel);
+		
+		DatePicker datePicker = new DatePicker();
+		datePicker.setDate(LocalDate.now());
+		visDatePickerPanel.add(datePicker);
 
 		// button click event handlers
 		this.handler = handler;
@@ -98,6 +105,11 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		// start in "no data" state
 		this.isTableData = false;
 		setButtonsEnabled(isTableData);
+		
+		
+		
+		
+		
 	}
 
 	/**
@@ -284,6 +296,44 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		return settings;
 	}
 	
+	
+	@Override
+	public void setObservationSiteData(ObservationSite site) {
+		if (site == null) {
+			site= new ObservationSite();
+		}
+		
+		String data = AstroCoords.degToDms(site.getSiteLongitudeDeg());
+		siteLongField.setText(data);
+		
+		data = AstroCoords.degToDms(site.getSiteLatitudeDeg());
+		siteLatField.setText(data);
+		
+		data = String.format("%4.0f", site.getSiteAlt());
+		siteAltField.setText(data);
+		
+		data = String.format("%3.1f", site.getUtcOffsetHr());
+		utcOffsetField.setText(data);			
+	}
+
+	@Override
+	public ObservationSite getObservationSiteData() {
+		ObservationSite site = new ObservationSite();
+		
+		double data = AstroCoords.dmsToDeg(siteLongField.getText());
+		site.setSiteLongitudeDeg(data);
+		
+		data = AstroCoords.dmsToDeg(siteLatField.getText());
+		site.setSiteLatitudeDeg(data);
+		
+		data = Double.valueOf(siteAltField.getText());
+		site.setSiteAlt(data);
+		
+		data = Double.valueOf(utcOffsetField.getText());
+		site.setUtcOffsetHr(data);		
+		return site;
+	}
+	
 	/*
 	 * Handles change in catalogCombo selection. Clears existing filterCombo list
 	 * and loads a new list based on CatalogType enum
@@ -359,6 +409,10 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		clearButton.addActionListener(e -> {
 			handler.doClearTable();
 			setButtonsEnabled(false);
+		});
+		
+		visPlotterButton.addActionListener(e -> {
+			handler.doPlotVisibility();
 		});
 
 		closeButton.addActionListener(e -> System.exit(0));
@@ -479,6 +533,7 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		saveRaDecButton = new JButton();
 		importRaDecButton = new JButton();
 		clearButton = new JButton();
+		visPlotterButton = new JButton();
 		statusTextField = new JTextField();
 		panel9 = new JPanel();
 		label15 = new JLabel();
@@ -487,6 +542,25 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		totalRecordsField = new JTextField();
 		selectedRecordsField = new JTextField();
 		filteredRecordsField = new JTextField();
+		panel10 = new JPanel();
+		label19 = new JLabel();
+		label20 = new JLabel();
+		label23 = new JLabel();
+		siteLongField = new JTextField();
+		siteAltField = new JTextField();
+		siteLatField = new JTextField();
+		label21 = new JLabel();
+		utcOffsetField = new JTextField();
+		panel11 = new JPanel();
+		label24 = new JLabel();
+		label26 = new JLabel();
+		sunSetField = new JTextField();
+		twilightEndField = new JTextField();
+		label27 = new JLabel();
+		twilightStartField = new JTextField();
+		label25 = new JLabel();
+		sunRiseField = new JTextField();
+		visDatePickerPanel = new JPanel();
 
 		//======== this ========
 		setTitle("On-line Catalog Query");
@@ -589,7 +663,7 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 								.addGroup(panel1Layout.createParallelGroup()
 									.addGroup(panel1Layout.createSequentialGroup()
 										.addComponent(filterCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-										.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
+										.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 										.addComponent(isSaveDssCheckBox))
 									.addGroup(panel1Layout.createSequentialGroup()
 										.addGroup(panel1Layout.createParallelGroup()
@@ -679,11 +753,11 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 					panel2.setLayout(panel2Layout);
 					panel2Layout.setHorizontalGroup(
 						panel2Layout.createParallelGroup()
-							.addComponent(tableScrollPane, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 740, Short.MAX_VALUE)
+							.addComponent(tableScrollPane, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 778, Short.MAX_VALUE)
 					);
 					panel2Layout.setVerticalGroup(
 						panel2Layout.createParallelGroup()
-							.addComponent(tableScrollPane, GroupLayout.DEFAULT_SIZE, 782, Short.MAX_VALUE)
+							.addComponent(tableScrollPane)
 					);
 				}
 
@@ -1002,6 +1076,10 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 					clearButton.setText("Clear");
 					clearButton.setToolTipText("<html>\nClears current query result data and  removes catalog table records\n</html>");
 
+					//---- visPlotterButton ----
+					visPlotterButton.setText("Plot Altitude");
+					visPlotterButton.setToolTipText("<html>\nCloses Catalog Query dialog and returns control to AstroImageJ application\n<p>WARNING: Discaards any unsaved settings</p>\n</html>");
+
 					GroupLayout panel7Layout = new GroupLayout(panel7);
 					panel7.setLayout(panel7Layout);
 					panel7Layout.setHorizontalGroup(
@@ -1009,17 +1087,21 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 							.addGroup(panel7Layout.createSequentialGroup()
 								.addContainerGap()
 								.addGroup(panel7Layout.createParallelGroup()
-									.addComponent(simbadButton, GroupLayout.PREFERRED_SIZE, 139, GroupLayout.PREFERRED_SIZE)
-									.addComponent(saveQueryButton)
-									.addComponent(catalogQueryButton)
-									.addComponent(importRaDecButton)
+									.addGroup(panel7Layout.createSequentialGroup()
+										.addGroup(panel7Layout.createParallelGroup()
+											.addComponent(simbadButton, GroupLayout.PREFERRED_SIZE, 139, GroupLayout.PREFERRED_SIZE)
+											.addComponent(saveQueryButton)
+											.addComponent(catalogQueryButton)
+											.addComponent(importRaDecButton))
+										.addGap(0, 0, Short.MAX_VALUE))
 									.addGroup(GroupLayout.Alignment.TRAILING, panel7Layout.createSequentialGroup()
 										.addGap(0, 0, Short.MAX_VALUE)
 										.addGroup(panel7Layout.createParallelGroup()
+											.addComponent(saveRaDecButton, GroupLayout.Alignment.TRAILING)
 											.addComponent(closeButton, GroupLayout.Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 139, GroupLayout.PREFERRED_SIZE)
 											.addComponent(updateButton, GroupLayout.Alignment.TRAILING)
 											.addComponent(clearButton, GroupLayout.Alignment.TRAILING)
-											.addComponent(saveRaDecButton, GroupLayout.Alignment.TRAILING))))
+											.addComponent(visPlotterButton, GroupLayout.Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 139, GroupLayout.PREFERRED_SIZE))))
 								.addContainerGap())
 					);
 					panel7Layout.linkSize(SwingConstants.HORIZONTAL, new Component[] {catalogQueryButton, clearButton, closeButton, importRaDecButton, saveQueryButton, saveRaDecButton, simbadButton, updateButton});
@@ -1036,13 +1118,14 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 								.addComponent(importRaDecButton, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE)
 								.addGap(18, 18, 18)
 								.addComponent(saveRaDecButton, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE)
-								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 159, Short.MAX_VALUE)
+								.addGap(127, 127, 127)
 								.addComponent(updateButton, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE)
 								.addGap(23, 23, 23)
 								.addComponent(clearButton, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE)
 								.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
 								.addComponent(closeButton, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE)
-								.addContainerGap())
+								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 87, Short.MAX_VALUE)
+								.addComponent(visPlotterButton, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE))
 					);
 				}
 
@@ -1114,28 +1197,210 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 					);
 				}
 
+				//======== panel10 ========
+				{
+					panel10.setBorder(new TitledBorder("Geographic Location and UTC Offset"));
+					panel10.setPreferredSize(new Dimension(190, 164));
+
+					//---- label19 ----
+					label19.setText("Lon:");
+
+					//---- label20 ----
+					label20.setText("Alt:");
+
+					//---- label23 ----
+					label23.setText("Lat:");
+
+					//---- siteLongField ----
+					siteLongField.setToolTipText("<html>\nSet the target mag upper limit\n<p>Setting Upper = 0 disables this limit</p>\n<p>Range: 0 - 5 mag in 0.1 mag increment</p>\n</html>");
+					siteLongField.setEditable(false);
+					siteLongField.setText("000:00:00.00");
+
+					//---- siteAltField ----
+					siteAltField.setToolTipText("<html>\nSet the target mag lower limit\n<p>Setting Lower = 0 disables this limit</p>\n<p>Range: -5 - 0 mag in 0.1 mag increment</p>\n</html>\n");
+					siteAltField.setEditable(false);
+					siteAltField.setText("1000");
+
+					//---- siteLatField ----
+					siteLatField.setToolTipText("<html>\nSet the nominal target mag for the selected filter band\n<p>Use the scroll control  or type value in text box</p>\n<p>Range: 5.5 - 25 mag in 0.1 mag increment</p>\n</html>");
+					siteLatField.setEditable(false);
+					siteLatField.setText("+00:00:00.00");
+
+					//---- label21 ----
+					label21.setText("UTC offset:");
+
+					//---- utcOffsetField ----
+					utcOffsetField.setToolTipText("<html>\nSet the target mag lower limit\n<p>Setting Lower = 0 disables this limit</p>\n<p>Range: -5 - 0 mag in 0.1 mag increment</p>\n</html>\n");
+					utcOffsetField.setEditable(false);
+					utcOffsetField.setText("0.0");
+
+					GroupLayout panel10Layout = new GroupLayout(panel10);
+					panel10.setLayout(panel10Layout);
+					panel10Layout.setHorizontalGroup(
+						panel10Layout.createParallelGroup()
+							.addGroup(panel10Layout.createSequentialGroup()
+								.addContainerGap()
+								.addComponent(label19)
+								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+								.addComponent(siteLongField, GroupLayout.PREFERRED_SIZE, 96, GroupLayout.PREFERRED_SIZE)
+								.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+								.addComponent(label23)
+								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+								.addComponent(siteLatField, GroupLayout.PREFERRED_SIZE, 72, GroupLayout.PREFERRED_SIZE)
+								.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+								.addComponent(label20)
+								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+								.addComponent(siteAltField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addGap(18, 18, 18)
+								.addComponent(label21)
+								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+								.addComponent(utcOffsetField, GroupLayout.PREFERRED_SIZE, 46, GroupLayout.PREFERRED_SIZE)
+								.addGap(0, 0, Short.MAX_VALUE))
+					);
+					panel10Layout.linkSize(SwingConstants.HORIZONTAL, new Component[] {siteLatField, siteLongField});
+					panel10Layout.setVerticalGroup(
+						panel10Layout.createParallelGroup()
+							.addGroup(panel10Layout.createSequentialGroup()
+								.addGroup(panel10Layout.createParallelGroup()
+									.addGroup(panel10Layout.createSequentialGroup()
+										.addGap(13, 13, 13)
+										.addGroup(panel10Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+											.addComponent(label21)
+											.addComponent(utcOffsetField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+									.addGroup(GroupLayout.Alignment.TRAILING, panel10Layout.createSequentialGroup()
+										.addContainerGap()
+										.addGroup(panel10Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+											.addComponent(label19)
+											.addComponent(label23)
+											.addComponent(siteLatField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+											.addComponent(label20)
+											.addComponent(siteAltField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+											.addComponent(siteLongField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))))
+								.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+					);
+				}
+
+				//======== panel11 ========
+				{
+					panel11.setBorder(new TitledBorder("Civil Solar Times "));
+					panel11.setPreferredSize(new Dimension(190, 164));
+
+					//---- label24 ----
+					label24.setText("Sunset:");
+
+					//---- label26 ----
+					label26.setText("Twi End:");
+
+					//---- sunSetField ----
+					sunSetField.setToolTipText("<html>\nSet the target mag upper limit\n<p>Setting Upper = 0 disables this limit</p>\n<p>Range: 0 - 5 mag in 0.1 mag increment</p>\n</html>");
+					sunSetField.setEditable(false);
+					sunSetField.setText("18:11");
+
+					//---- twilightEndField ----
+					twilightEndField.setToolTipText("<html>\nSet the nominal target mag for the selected filter band\n<p>Use the scroll control  or type value in text box</p>\n<p>Range: 5.5 - 25 mag in 0.1 mag increment</p>\n</html>");
+					twilightEndField.setEditable(false);
+					twilightEndField.setText("18:11");
+
+					//---- label27 ----
+					label27.setText("Twi Start:");
+
+					//---- twilightStartField ----
+					twilightStartField.setToolTipText("<html>\nSet the nominal target mag for the selected filter band\n<p>Use the scroll control  or type value in text box</p>\n<p>Range: 5.5 - 25 mag in 0.1 mag increment</p>\n</html>");
+					twilightStartField.setEditable(false);
+					twilightStartField.setText("18:11");
+
+					//---- label25 ----
+					label25.setText("Sunrise");
+
+					//---- sunRiseField ----
+					sunRiseField.setToolTipText("<html>\nSet the target mag upper limit\n<p>Setting Upper = 0 disables this limit</p>\n<p>Range: 0 - 5 mag in 0.1 mag increment</p>\n</html>");
+					sunRiseField.setEditable(false);
+					sunRiseField.setText("18:11");
+
+					GroupLayout panel11Layout = new GroupLayout(panel11);
+					panel11.setLayout(panel11Layout);
+					panel11Layout.setHorizontalGroup(
+						panel11Layout.createParallelGroup()
+							.addGroup(panel11Layout.createSequentialGroup()
+								.addContainerGap()
+								.addComponent(label24)
+								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+								.addComponent(sunSetField, GroupLayout.PREFERRED_SIZE, 47, GroupLayout.PREFERRED_SIZE)
+								.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+								.addComponent(label26)
+								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+								.addComponent(twilightEndField, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE)
+								.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+								.addComponent(label27)
+								.addGap(5, 5, 5)
+								.addComponent(twilightStartField, GroupLayout.PREFERRED_SIZE, 47, GroupLayout.PREFERRED_SIZE)
+								.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+								.addComponent(label25)
+								.addGap(5, 5, 5)
+								.addComponent(sunRiseField, GroupLayout.PREFERRED_SIZE, 47, GroupLayout.PREFERRED_SIZE)
+								.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+					);
+					panel11Layout.linkSize(SwingConstants.HORIZONTAL, new Component[] {sunSetField, twilightEndField});
+					panel11Layout.setVerticalGroup(
+						panel11Layout.createParallelGroup()
+							.addGroup(panel11Layout.createSequentialGroup()
+								.addContainerGap()
+								.addGroup(panel11Layout.createParallelGroup()
+									.addGroup(panel11Layout.createSequentialGroup()
+										.addGap(3, 3, 3)
+										.addComponent(label25))
+									.addComponent(sunRiseField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+									.addGroup(panel11Layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+										.addGroup(panel11Layout.createParallelGroup()
+											.addGroup(panel11Layout.createSequentialGroup()
+												.addGap(3, 3, 3)
+												.addComponent(label27))
+											.addComponent(twilightStartField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+										.addGroup(panel11Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+											.addComponent(label24)
+											.addComponent(sunSetField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+											.addComponent(label26)
+											.addComponent(twilightEndField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))))
+								.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+					);
+				}
+
+				//======== visDatePickerPanel ========
+				{
+					visDatePickerPanel.setBorder(null);
+					visDatePickerPanel.setLayout(new FlowLayout());
+				}
+
 				GroupLayout contentPanelLayout = new GroupLayout(contentPanel);
 				contentPanel.setLayout(contentPanelLayout);
 				contentPanelLayout.setHorizontalGroup(
 					contentPanelLayout.createParallelGroup()
-						.addGroup(contentPanelLayout.createSequentialGroup()
-							.addComponent(panel7, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-							.addGroup(contentPanelLayout.createParallelGroup()
+						.addGroup(GroupLayout.Alignment.TRAILING, contentPanelLayout.createSequentialGroup()
+							.addContainerGap()
+							.addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+								.addComponent(statusTextField, GroupLayout.DEFAULT_SIZE, 1300, Short.MAX_VALUE)
 								.addGroup(contentPanelLayout.createSequentialGroup()
-									.addGap(0, 0, Short.MAX_VALUE)
-									.addComponent(panel5, GroupLayout.PREFERRED_SIZE, 203, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-									.addComponent(panel6, GroupLayout.PREFERRED_SIZE, 117, GroupLayout.PREFERRED_SIZE))
-								.addGroup(contentPanelLayout.createSequentialGroup()
-									.addComponent(panel3, GroupLayout.PREFERRED_SIZE, 203, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-									.addComponent(panel4, GroupLayout.PREFERRED_SIZE, 117, GroupLayout.PREFERRED_SIZE))
-								.addComponent(panel1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addComponent(panel9, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 334, Short.MAX_VALUE))
-							.addGap(15, 15, 15)
-							.addComponent(panel2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-						.addComponent(statusTextField, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 1261, Short.MAX_VALUE)
+									.addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING, false)
+										.addComponent(panel10, GroupLayout.DEFAULT_SIZE, 508, Short.MAX_VALUE)
+										.addComponent(panel11, GroupLayout.DEFAULT_SIZE, 508, Short.MAX_VALUE)
+										.addGroup(contentPanelLayout.createSequentialGroup()
+											.addComponent(panel7, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+											.addGap(18, 18, 18)
+											.addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
+												.addComponent(panel9, GroupLayout.DEFAULT_SIZE, 327, Short.MAX_VALUE)
+												.addGroup(contentPanelLayout.createSequentialGroup()
+													.addComponent(panel3, GroupLayout.PREFERRED_SIZE, 203, GroupLayout.PREFERRED_SIZE)
+													.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+													.addComponent(panel4, GroupLayout.PREFERRED_SIZE, 117, GroupLayout.PREFERRED_SIZE))
+												.addComponent(panel1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+												.addGroup(contentPanelLayout.createSequentialGroup()
+													.addComponent(panel5, GroupLayout.PREFERRED_SIZE, 203, GroupLayout.PREFERRED_SIZE)
+													.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+													.addComponent(panel6, GroupLayout.PREFERRED_SIZE, 117, GroupLayout.PREFERRED_SIZE))
+												.addComponent(visDatePickerPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+									.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+									.addComponent(panel2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+							.addContainerGap())
 				);
 				contentPanelLayout.setVerticalGroup(
 					contentPanelLayout.createParallelGroup()
@@ -1143,7 +1408,7 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 							.addGroup(contentPanelLayout.createParallelGroup()
 								.addGroup(contentPanelLayout.createSequentialGroup()
 									.addContainerGap()
-									.addGroup(contentPanelLayout.createParallelGroup()
+									.addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
 										.addGroup(contentPanelLayout.createSequentialGroup()
 											.addComponent(panel1, GroupLayout.PREFERRED_SIZE, 279, GroupLayout.PREFERRED_SIZE)
 											.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
@@ -1151,15 +1416,20 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 												.addComponent(panel4, GroupLayout.PREFERRED_SIZE, 141, GroupLayout.PREFERRED_SIZE)
 												.addComponent(panel3, GroupLayout.PREFERRED_SIZE, 141, GroupLayout.PREFERRED_SIZE))
 											.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-											.addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
+											.addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
 												.addComponent(panel5, GroupLayout.PREFERRED_SIZE, 159, GroupLayout.PREFERRED_SIZE)
-												.addComponent(panel6, GroupLayout.PREFERRED_SIZE, 159, GroupLayout.PREFERRED_SIZE)))
-										.addComponent(panel7, GroupLayout.Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+												.addComponent(panel6, GroupLayout.PREFERRED_SIZE, 159, GroupLayout.PREFERRED_SIZE))
+											.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+											.addComponent(panel9, GroupLayout.PREFERRED_SIZE, 73, GroupLayout.PREFERRED_SIZE)
+											.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+											.addComponent(visDatePickerPanel, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE))
+										.addComponent(panel7, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 									.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-									.addComponent(panel9, GroupLayout.PREFERRED_SIZE, 73, GroupLayout.PREFERRED_SIZE)
-									.addGap(0, 98, Short.MAX_VALUE))
+									.addComponent(panel11, GroupLayout.PREFERRED_SIZE, 73, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+									.addComponent(panel10, GroupLayout.PREFERRED_SIZE, 73, GroupLayout.PREFERRED_SIZE))
 								.addComponent(panel2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-							.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+							.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 							.addComponent(statusTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 				);
 			}
@@ -1168,11 +1438,6 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		contentPane.add(dialogPane, BorderLayout.CENTER);
 		pack();
 		setLocationRelativeTo(getOwner());
-
-		//---- buttonGroup1 ----
-		ButtonGroup buttonGroup1 = new ButtonGroup();
-		buttonGroup1.add(distanceRadioButton);
-		buttonGroup1.add(deltaMagRadioButton);
 		// JFormDesigner - End of component initialization //GEN-END:initComponents
 	}
 
@@ -1243,6 +1508,7 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 	protected JButton saveRaDecButton;
 	protected JButton importRaDecButton;
 	protected JButton clearButton;
+	protected JButton visPlotterButton;
 	private JTextField statusTextField;
 	private JPanel panel9;
 	private JLabel label15;
@@ -1251,6 +1517,24 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 	protected JTextField totalRecordsField;
 	protected JTextField selectedRecordsField;
 	protected JTextField filteredRecordsField;
+	private JPanel panel10;
+	private JLabel label19;
+	private JLabel label20;
+	private JLabel label23;
+	protected JTextField siteLongField;
+	protected JTextField siteAltField;
+	protected JTextField siteLatField;
+	private JLabel label21;
+	protected JTextField utcOffsetField;
+	private JPanel panel11;
+	private JLabel label24;
+	private JLabel label26;
+	protected JTextField sunSetField;
+	protected JTextField twilightEndField;
+	private JLabel label27;
+	protected JTextField twilightStartField;
+	private JLabel label25;
+	protected JTextField sunRiseField;
+	private JPanel visDatePickerPanel;
 	// JFormDesigner - End of variables declaration //GEN-END:variables
-
 }

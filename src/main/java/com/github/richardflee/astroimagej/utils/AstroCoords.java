@@ -114,4 +114,33 @@ public class AstroCoords {
 		}		
 		return sxInput;
 	}
+	
+	public static double dmsToDeg(String dms) {
+		int sign = (dms.charAt(0) == '-') ? -1 : 1;
+
+		// split input at ':' delim and coerce elements into appropriate range
+		String[] el = dms.split(":");
+		double dd = Math.abs(Double.valueOf(el[0])) % 360.0;
+
+		double mm = Double.valueOf(el[1]) % 60;
+		double ss = Double.valueOf(el[2]) % 60;
+		return sign * (dd + mm / 60 + ss / 3600);
+	}
+
+	public static String degToDms(double angDeg) {
+		String sign = (angDeg >= 0) ? "+" : "-";
+
+		// coerce input data into range ±90.0
+		double data = Math.abs(angDeg % 360.0);
+
+		// extract dd, mm, ss terms
+		int dd = (int) (1.0 * data);
+		int mm = (int) ((data - dd) * 60);
+		Double ss = ((data - dd) * 60 - mm) * 60;
+
+		// compile, format and return sexagesimal dec
+		return sign + String.format("%02d", dd) + ":" + String.format("%02d", mm) + ":"
+				+ String.format("%5.2f", ss).replace(' ', '0');
+
+	}
 }

@@ -282,6 +282,10 @@ public class ActionHandler {
 		String statusMessage = "Cleared catalog result table, reset sort and filter settings";
 		catalogDataListener.updateStatus(statusMessage);
 	}
+	
+	public void doPlotVisibility() {
+		System.out.println("visible");
+	}
 
 	/*
 	 * Sorts QueryResult result object records relative to target object. <p>Sort

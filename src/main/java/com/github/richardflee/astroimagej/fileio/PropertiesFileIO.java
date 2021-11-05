@@ -15,6 +15,7 @@ import com.github.richardflee.astroimagej.enums.CatalogsEnum;
 import com.github.richardflee.astroimagej.enums.QueryEnum;
 import com.github.richardflee.astroimagej.query_objects.CatalogQuery;
 import com.github.richardflee.astroimagej.query_objects.CatalogSettings;
+import com.github.richardflee.astroimagej.query_objects.ObservationSite;
 import com.github.richardflee.astroimagej.utils.AstroCoords;
 
 /**
@@ -24,13 +25,21 @@ import com.github.richardflee.astroimagej.utils.AstroCoords;
  *
  */
 public class PropertiesFileIO {
+	
+	private static final String CATALOG_PROPERTIES_FILE = "catalogs_plugin.properties";
+	private static final String AIJ_PREFS_FILE = "AIJ_Prefs.txt";
+	
 	private String propertiesFilePath = null;
+	private String aijPrefsFilePath = null;
 
 	
 	public PropertiesFileIO() {
 		// set properties path
 		String homePath = Paths.get(System.getProperty("user.home")).toAbsolutePath().toString();
-		this.propertiesFilePath = Paths.get(homePath, ".astroimagej", "catalogs_plugin.properties").toString();
+		this.propertiesFilePath = Paths.get(homePath, ".astroimagej", CATALOG_PROPERTIES_FILE).toString();
+		
+		// AIJ_Prefs.txt
+		this.aijPrefsFilePath = Paths.get(homePath, ".astroimagej", AIJ_PREFS_FILE).toString();
 
 		// if no properties file, create new file with default query & settings data
 		File file = new File(propertiesFilePath);
@@ -180,6 +189,28 @@ public class PropertiesFileIO {
 		}
 		return message;
 	}
+	
+	public ObservationSite getObservationSiteData() {
+		ObservationSite site = null;
+		try (InputStream input = new FileInputStream(this.aijPrefsFilePath)) {
+			Properties prop = new Properties();
+			prop.load(input);
+
+			// import observation site parameters from AIJ_Prefs.txt & create new Site
+			// object
+			double siteLongDeg = Double.parseDouble(prop.getProperty(".coords.lon").toString());
+			double siteLatDeg = Double.parseDouble(prop.getProperty(".coords.lat").toString());
+			double siteElevation = Double.parseDouble(prop.getProperty(".coords.alt").toString());
+			double utcOffsetHr = Double.parseDouble(prop.getProperty(".coords.nowTimeZoneOffset").toString());
+						
+			site = new ObservationSite(siteLongDeg, siteLatDeg, siteElevation, utcOffsetHr);
+		} catch (NullPointerException | IOException ex) {
+			String message = "Failed to read Observation Site data: \n" + this.aijPrefsFilePath;
+			JOptionPane.showMessageDialog(null, message);
+		}
+		return site;
+	}
+
 
 	// returns formatted query properties item
 	private String queryStr(QueryEnum en) {
@@ -197,7 +228,11 @@ public class PropertiesFileIO {
 	}
 
 	public static void main(String[] args) {
+		
 		PropertiesFileIO pf = new PropertiesFileIO();
+		
+		ObservationSite site = pf.getObservationSiteData();
+		System.out.println(site.toString());
 
 		CatalogQuery query = new CatalogQuery();
 		query.setObjectId("fred");
