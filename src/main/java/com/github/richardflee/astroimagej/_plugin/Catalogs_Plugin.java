@@ -1,6 +1,7 @@
 package com.github.richardflee.astroimagej._plugin;
 
 import java.awt.EventQueue;
+import java.time.LocalDate;
 
 import javax.swing.UIManager;
 
@@ -11,6 +12,8 @@ import com.github.richardflee.astroimagej.fileio.PropertiesFileIO;
 import com.github.richardflee.astroimagej.query_objects.CatalogQuery;
 import com.github.richardflee.astroimagej.query_objects.CatalogSettings;
 import com.github.richardflee.astroimagej.query_objects.ObservationSite;
+import com.github.richardflee.astroimagej.query_objects.SolarTimes;
+import com.github.richardflee.astroimagej.visibility_plotter.Solar;
 
 import ij.IJ;
 import ij.plugin.PlugIn;
@@ -77,9 +80,13 @@ public class Catalogs_Plugin implements PlugIn {
 		CatalogQuery query = pf.getPropertiesQueryData();
 		catalogUi.setQueryData(query);
 		
-		// Coordinates Converter observatory & utc data or null if data error
+		// Coordinates Converter observatory & utc data; null if data error
 		ObservationSite site = pf.getObservationSiteData();
 		catalogUi.setObservationSiteData(site);
+		
+		Solar solar = new Solar(site);
+		SolarTimes solarTimes = solar.getCivilSunTimes(LocalDate.now());
+		catalogUi.setSolarTimes(solarTimes);
 		
 		// apply properties target mag
 		CatalogSettings settings = pf.getPropertiesSettingsData();

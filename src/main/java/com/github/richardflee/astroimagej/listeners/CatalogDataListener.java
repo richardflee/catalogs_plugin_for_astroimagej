@@ -23,8 +23,7 @@ public interface CatalogDataListener {
 	
 	// Coordinates Converter observatory and utc data
 	public void setObservationSiteData(ObservationSite site);
-	public void setSolarTimes(SolarTimes sunRiseSetData);
-	// public ObservationSite getObservationSiteData();
+	public void setSolarTimes(SolarTimes solarTimes);
 	
 	// maps result of query Simabd on-line database to catalog ui controls
 	public void setSimbadData(SimbadResult simbadResult);

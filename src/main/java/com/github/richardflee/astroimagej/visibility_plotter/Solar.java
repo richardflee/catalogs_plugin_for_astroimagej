@@ -60,50 +60,70 @@ public class Solar {
 	// field variables
 	private ObservationSite site = null;
 	private TimesConverter solarTimesConverter = null;
-	
-	public Solar(ObservationSite site, LocalDate siteCivilDate) {
+
+	public Solar(ObservationSite site) {
 		this.site = site;
 		this.solarTimesConverter = new TimesConverter(site);
 	}
-	
-	
-	private LocalTime getCivilSunTime(LocalDate siteCivilDate, CoordsEnum en, double zenDeg) {
-		
-		double utcOffsetHr = site.getUtcOffsetHr();
-		LocalDateTime civilNoon = LocalDateTime.of(siteCivilDate, TimesConverter.LOCAL_TIME_NOON);
-		LocalDateTime utcNoon = 
-				TimesConverter.convertCivilDateTimeToUtc(civilNoon, utcOffsetHr);
-		
-		LocalTime utcTime = utcZenithAngleTime(zenDeg, utcNoon, en);
-		LocalDateTime utcDateTime = LocalDateTime.of(siteCivilDate, utcTime);
-		LocalDateTime civilDateTime = 
-				TimesConverter.convertUtcToCivilDateTime(utcDateTime, utcOffsetHr);
-		
-		return civilDateTime.toLocalTime();
-		
-	}
-	
-	public SolarTimes getCivilSunTimes(LocalDate siteCivilDate) {
 
+	/**
+	 * Computes sunset, sunrise and twilight local civil times for specified date
+	 * 
+	 * @param siteCivilDate observation date
+	 * @return SolarTimes object encapsulating solar civil times in HH:mm format
+	 */
+	public SolarTimes getCivilSunTimes(LocalDate siteCivilDate) {
+		// default SolarTimes data object
 		SolarTimes solarTimes = new SolarTimes();
-		LocalTime civilTime = getCivilSunTime(siteCivilDate, 
-				CoordsEnum.SUN_SETTING, Solar.ZENITH_RISESET_DEG);
-		solarTimes.setCivilSunSetValue(civilTime);
 		
-		civilTime = getCivilSunTime(siteCivilDate, 
-				CoordsEnum.SUN_SETTING, Solar.ZENITH_TWILIGHT_DEG);
+		// observation evening sunset
+		CoordsEnum en = CoordsEnum.SUN_SETTING;
+		double zenDeg = Solar.ZENITH_RISESET_DEG;
+		LocalTime civilTime = getCivilSunTime(siteCivilDate, en, zenDeg);
+		solarTimes.setCivilSunSetValue(civilTime);
+
+		// observation evening twilight ends
+		en = CoordsEnum.SUN_SETTING;
+		zenDeg = Solar.ZENITH_TWILIGHT_DEG;
+		civilTime = getCivilSunTime(siteCivilDate, en, zenDeg);
 		solarTimes.setCivilTwilightEndsValue(civilTime);
 		
-		civilTime = getCivilSunTime(siteCivilDate.plusDays(1), 
-				CoordsEnum.SUN_RISING, Solar.ZENITH_TWILIGHT_DEG);
+		// next morning twilight starts
+		en = CoordsEnum.SUN_RISING;
+		zenDeg = Solar.ZENITH_TWILIGHT_DEG;
+	    civilTime = getCivilSunTime(siteCivilDate.plusDays(1), en, zenDeg);
 		solarTimes.setCivilTwilightStartsValue(civilTime);
 		
-		civilTime = getCivilSunTime(siteCivilDate.plusDays(1), 
-				CoordsEnum.SUN_RISING, Solar.ZENITH_RISESET_DEG);
+		// next morning sunrise
+		en = CoordsEnum.SUN_RISING;
+		zenDeg = Solar.ZENITH_RISESET_DEG;
+		civilTime = getCivilSunTime(siteCivilDate.plusDays(1), en, zenDeg);
 		solarTimes.setCivilSunRiseValue(civilTime);
 		return solarTimes;
 	}
 	
+	/*
+	 * Computes one of sunset, sunrise or twilight local civil time for specified date
+	 * 
+	 * @param siteCivilDate observation date
+	 * @param en SUN_RISING or SUN_SETTING flag
+	 * @param zenDeg Sun's zenith angle in deg
+	 * @return sunset, sunrise or twilight in local civil time
+	 */
+	private LocalTime getCivilSunTime(LocalDate siteCivilDate, CoordsEnum en, double zenDeg) {
+		// convert local civil noon to utc date-time
+		double utcOffsetHr = site.getUtcOffsetHr();
+		LocalDateTime civilNoon = LocalDateTime.of(siteCivilDate, TimesConverter.LOCAL_TIME_NOON);
+		LocalDateTime utcNoon = TimesConverter.convertCivilDateTimeToUtc(civilNoon, utcOffsetHr);
+		
+		// get sunset/rise/twilight utc date-time
+		LocalTime utcTime = utcZenithAngleTime(zenDeg, utcNoon, en);
+		LocalDateTime utcDateTime = LocalDateTime.of(siteCivilDate, utcTime);
+		
+		// convert utc -> local civil time
+		LocalDateTime civilDateTime = TimesConverter.convertUtcToCivilDateTime(utcDateTime, utcOffsetHr);
+		return civilDateTime.toLocalTime();
+	}
 
 	/*
 	 * Double iteration to compute utc time for Sun at specified zenith angle <p>PA
@@ -188,8 +208,7 @@ public class Solar {
 		double solarLongDeg = MathUtils.reduceToRange(nu + wg, 360);
 
 		// maps solar longitude ecliptic coordinates to ra, dec in equatorial coords
-		Map<CoordsEnum, Double> map = Solar.convertEclipticToEquatorial(solarLongDeg, 0.0,
-				utcDateTime.toLocalDate());
+		Map<CoordsEnum, Double> map = Solar.convertEclipticToEquatorial(solarLongDeg, 0.0, utcDateTime.toLocalDate());
 		return map;
 	}
 
@@ -295,37 +314,34 @@ public class Solar {
 		LocalDateTime utcDateTime = LocalDateTime.of(localDate, TimesConverter.LOCAL_TIME_0);
 		double jd0 = TimesConverter.convertUtcToJD0(utcDateTime);
 		double t = (jd0 - TimesConverter.JD_2000) / TimesConverter.C_DAYS;
-		double de = (Solar.ECL_1 * t + Solar.ECL_2 * Math.pow(t, 2) + Solar.ECL_3 * Math.pow(t, 3))
-				/ 3600;
+		double de = (Solar.ECL_1 * t + Solar.ECL_2 * Math.pow(t, 2) + Solar.ECL_3 * Math.pow(t, 3)) / 3600;
 		double obliquity = AstroCoords.dmsToDeg(Solar.ECL_0) + de;
 		return obliquity;
 	}
 
 	public static void main(String[] args) {
-		 // gwch site
-//		 double siteLongDeg = 0.0;
-//		 double siteLatDeg = 55.0; // 42.37N
-//		 double siteElevation = 0.0;
-//		 ObservationSite gwchSite = new ObservationSite(siteLongDeg, siteLatDeg,
-//		 siteElevation, 0.0);
-//		
-//		 LocalDate siteCivilDate = LocalDate.of(1979, 9, 22);
-//		 Solar solarTimes = new Solar(gwchSite, siteCivilDate);
-//		
-//		 System.out.println(String.format("\nGreenwich Date: %s",
-//		 siteCivilDate.toString()));
-//		 
-		 
-		 
-		 
-//		 System.out.println(solarTimes.getSunSetValue());
-//		 System.out.println(solarTimes.getTwilightEndValue());
-//		 System.out.println(solarTimes.getTwilightStartValue());
-//		 System.out.println(solarTimes.getSunRiseValue());
-//		 System.out.println(String.format("Never sets: %b",
-//		 solarTimes.isSunNeverSets()));
-//		// System.out.println(String.format("Never rises: %b",
-//		 solarTimes.isSunNeverRises()));
+		// gwch site
+		// double siteLongDeg = 0.0;
+		// double siteLatDeg = 55.0; // 42.37N
+		// double siteElevation = 0.0;
+		// ObservationSite gwchSite = new ObservationSite(siteLongDeg, siteLatDeg,
+		// siteElevation, 0.0);
+		//
+		// LocalDate siteCivilDate = LocalDate.of(1979, 9, 22);
+		// Solar solarTimes = new Solar(gwchSite, siteCivilDate);
+		//
+		// System.out.println(String.format("\nGreenwich Date: %s",
+		// siteCivilDate.toString()));
+		//
+
+		// System.out.println(solarTimes.getSunSetValue());
+		// System.out.println(solarTimes.getTwilightEndValue());
+		// System.out.println(solarTimes.getTwilightStartValue());
+		// System.out.println(solarTimes.getSunRiseValue());
+		// System.out.println(String.format("Never sets: %b",
+		// solarTimes.isSunNeverSets()));
+		// // System.out.println(String.format("Never rises: %b",
+		// solarTimes.isSunNeverRises()));
 		//
 		//// System.out.println();
 		//// System.out.println(solarTimes.getUtcSunSet().toString());
@@ -333,28 +349,26 @@ public class Solar {
 		//// System.out.println(solarTimes.getUtcTwilightStarts().toString());
 		//// System.out.println(solarTimes.getUtcSunRise().toString());
 		//
-		 double siteLong = -71.05; // 71.05W
-		 double siteLat = 42.37; // 42.37N
-		 double siteAlt = 0.0;
-		 double utcOffsetHr = -5.0;
-		 ObservationSite bostonSite = new ObservationSite(siteLong, siteLat,  siteAlt, utcOffsetHr);
-		
-		 LocalDate siteCivilDate = LocalDate.of(1986, 3, 10);
-		 Solar solar = new Solar(bostonSite, siteCivilDate);
-		
-		 System.out.println(String.format("\nBoston Date: %s",
-		 siteCivilDate.toString()));
-		 
-		 // sunset and twilight end times end of observation day
-		 SolarTimes st = solar.getCivilSunTimes(siteCivilDate);
-		 System.out.println(st.toString());
-		 System.out.println();
-		 
-		 //  sunrise and twilight start times start of observation dat
-		 st = solar.getCivilSunTimes(siteCivilDate.minusDays(1));
-		 System.out.println(st.toString());
-		 
-		
+		double siteLong = -71.05; // 71.05W
+		double siteLat = 42.37; // 42.37N
+		double siteAlt = 0.0;
+		double utcOffsetHr = -5.0;
+		ObservationSite bostonSite = new ObservationSite(siteLong, siteLat, siteAlt, utcOffsetHr);
+
+		LocalDate siteCivilDate = LocalDate.of(1986, 3, 10);
+		Solar solar = new Solar(bostonSite);
+
+		System.out.println(String.format("\nBoston Date: %s", siteCivilDate.toString()));
+
+		// sunset and twilight end times end of observation day
+		SolarTimes st = solar.getCivilSunTimes(siteCivilDate);
+		System.out.println(st.toString());
+		System.out.println();
+
+		// sunrise and twilight start times start of observation dat
+		st = solar.getCivilSunTimes(siteCivilDate.minusDays(1));
+		System.out.println(st.toString());
+
 		// solarTimes.isSunNeverSets()));
 		//// System.out.println(String.format("Never rises: %b",
 		// solarTimes.isSunNeverRises()));

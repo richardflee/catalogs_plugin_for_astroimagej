@@ -313,12 +313,11 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 	}
 	
 	@Override
-	public void setSolarTimes(SolarTimes sunData) {
-		
-		sunSetField.setText(sunData.getCivilSunSetValue());
-		twilightEndField.setText(sunData.getCivilTwilightEndsValue());
-		twilightStartField.setText(sunData.getCivilTwilightStartsValue());
-		sunRiseField.setText(sunData.getCivilSunRiseValue());
+	public void setSolarTimes(SolarTimes solarTimes) {
+		sunSetField.setText(solarTimes.getCivilSunSetValue());
+		twilightEndField.setText(solarTimes.getCivilTwilightEndsValue());
+		twilightStartField.setText(solarTimes.getCivilTwilightStartsValue());
+		sunRiseField.setText(solarTimes.getCivilSunRiseValue());
 	}
 
 //	@Override
