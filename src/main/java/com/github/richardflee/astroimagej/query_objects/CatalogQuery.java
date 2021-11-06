@@ -12,7 +12,7 @@ import com.github.richardflee.astroimagej.utils.AstroCoords;
  * 
  * <p>Defaults to wasp 12 parameters</p>
  */
-public class CatalogQuery extends AbstractFieldObject {
+public class CatalogQuery extends BaseFieldObject {
 	private double fovAmin = 0.0;
 	private double magLimit = 0.0;
 	private CatalogsEnum catalogType = null;
@@ -22,7 +22,7 @@ public class CatalogQuery extends AbstractFieldObject {
 	 * No arguments constructor defaults to WASP12 parameters
 	 */
 	public CatalogQuery() {
-		super("wasp 12", AstroCoords.raHms_To_raHr("06:30:32.797"), AstroCoords.decDms_To_decDeg("+29:40:20.27"));
+		super("wasp 12", AstroCoords.raHmsToRaHr("06:30:32.797"), AstroCoords.decDmsToDecDeg("+29:40:20.27"));
 
 		this.fovAmin = 60.0;
 		this.magLimit = 15.0;
@@ -57,8 +57,8 @@ public class CatalogQuery extends AbstractFieldObject {
 		// compile data by QueryEnum index
 		String[] terms = new String[QueryEnum.size];
 		terms[QueryEnum.OBJECT_ID.getIndex()] = String.format("#%s", super.getObjectId());
-		terms[QueryEnum.RA_HMS.getIndex()] = String.format("%s", AstroCoords.raHr_To_raHms(super.getRaHr()));
-		terms[QueryEnum.DEC_DMS.getIndex()] = String.format("%s", AstroCoords.decDeg_To_decDms(super.getDecDeg()));
+		terms[QueryEnum.RA_HMS.getIndex()] = String.format("%s", AstroCoords.raHrToRaHms(super.getRaHr()));
+		terms[QueryEnum.DEC_DMS.getIndex()] = String.format("%s", AstroCoords.decDegToDecDms(super.getDecDeg()));
 		terms[QueryEnum.FOV_AMIN.getIndex()] = String.format("%.1f", getFovAmin());
 		terms[QueryEnum.MAG_LIMIT.getIndex()] = String.format("%.1f", getMagLimit());
 		terms[QueryEnum.CATALOG_DROPDOWN.getIndex()] = String.format("%s", getCatalogType().toString());
@@ -88,10 +88,10 @@ public class CatalogQuery extends AbstractFieldObject {
 		query.setObjectId(objectId);
 
 		String raHms = terms[QueryEnum.RA_HMS.getIndex()];
-		query.setRaHr(AstroCoords.raHms_To_raHr(raHms));
+		query.setRaHr(AstroCoords.raHmsToRaHr(raHms));
 
 		String decDms = terms[QueryEnum.DEC_DMS.getIndex()];
-		query.setDecDeg((AstroCoords.decDms_To_decDeg(decDms)));
+		query.setDecDeg((AstroCoords.decDmsToDecDeg(decDms)));
 
 		String fovAmin = terms[QueryEnum.FOV_AMIN.getIndex()];
 		query.setFovAmin(Double.valueOf(fovAmin));

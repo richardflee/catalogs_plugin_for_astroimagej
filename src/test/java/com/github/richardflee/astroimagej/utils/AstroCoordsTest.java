@@ -20,7 +20,7 @@ class AstroCoordsTest {
 		"23:59:59.99, 	23.999996",		// max ra
 	})
 	void testRaHr_To_RaHms_IsCorrect(String raHms, Double raHr) {
-		assertEquals(raHms, AstroCoords.raHr_To_raHms(raHr));
+		assertEquals(raHms, AstroCoords.raHrToRaHms(raHr));
 	}
 	
 	@DisplayName("Verify dec conversion from numeric (deg) to sexagesimal format in range ±90:00:00.00")
@@ -35,7 +35,7 @@ class AstroCoordsTest {
 		"-90:00:00.00, 	-90.000000",		
 	})
 	void testDecDeg_To_DecDms_IsCorrect(String decDms, Double decDeg) {
-		assertEquals(decDms, AstroCoords.decDeg_To_decDms(decDeg));
+		assertEquals(decDms, AstroCoords.decDegToDecDms(decDeg));
 	}
 	
 	@DisplayName("Verify ra conversion from sexagesimal to numeric (hr) in range 0.0 to 23:59:59.99")
@@ -46,7 +46,7 @@ class AstroCoordsTest {
 		"23.999996,		23:59:59.986", 		// max ra
 	})
 	void testRaHms_To_RaHr_IsCorrect(Double raHr, String raHms) {
-		assertEquals(raHr, AstroCoords.raHms_To_raHr(raHms), epsilon);
+		assertEquals(raHr, AstroCoords.raHmsToRaHr(raHms), epsilon);
 	}
 	
 
@@ -62,7 +62,7 @@ class AstroCoordsTest {
 		"-90.000000,	-90:00:00.00",	 	
 	})
 	void testDecDms_To_DecDeg_IsCorrect(Double decDeg, String decDms) {
-		assertEquals(decDeg, AstroCoords.decDms_To_decDeg(decDms), epsilon);
+		assertEquals(decDeg, AstroCoords.decDmsToDecDeg(decDms), epsilon);
 	}
 	
 	@DisplayName("Verify formatting of raHms input")

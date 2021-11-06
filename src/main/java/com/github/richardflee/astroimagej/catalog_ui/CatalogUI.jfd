@@ -535,7 +535,7 @@ new FormModel {
 							name: "sunSetField"
 							"toolTipText": "<html>\nSet the target mag upper limit\n<p>Setting Upper = 0 disables this limit</p>\n<p>Range: 0 - 5 mag in 0.1 mag increment</p>\n</html>"
 							"editable": false
-							"text": "18:11"
+							"text": "00:00"
 							auxiliary() {
 								"JavaCodeGenerator.variableModifiers": 4
 							}
@@ -544,7 +544,7 @@ new FormModel {
 							name: "twilightEndField"
 							"toolTipText": "<html>\nSet the nominal target mag for the selected filter band\n<p>Use the scroll control  or type value in text box</p>\n<p>Range: 5.5 - 25 mag in 0.1 mag increment</p>\n</html>"
 							"editable": false
-							"text": "18:11"
+							"text": "00:00"
 							auxiliary() {
 								"JavaCodeGenerator.variableModifiers": 4
 							}
@@ -557,7 +557,7 @@ new FormModel {
 							name: "twilightStartField"
 							"toolTipText": "<html>\nSet the nominal target mag for the selected filter band\n<p>Use the scroll control  or type value in text box</p>\n<p>Range: 5.5 - 25 mag in 0.1 mag increment</p>\n</html>"
 							"editable": false
-							"text": "18:11"
+							"text": "00:00"
 							auxiliary() {
 								"JavaCodeGenerator.variableModifiers": 4
 							}
@@ -570,7 +570,7 @@ new FormModel {
 							name: "sunRiseField"
 							"toolTipText": "<html>\nSet the target mag upper limit\n<p>Setting Upper = 0 disables this limit</p>\n<p>Range: 0 - 5 mag in 0.1 mag increment</p>\n</html>"
 							"editable": false
-							"text": "18:11"
+							"text": "00:00"
 							auxiliary() {
 								"JavaCodeGenerator.variableModifiers": 4
 							}

@@ -14,7 +14,7 @@ public class AstroCoords {
 	 * @param raHr in numeric format in units hr
 	 * @return ra in sexagesimal format HH:MM:SS.SS
 	 */
-	public static String raHr_To_raHms(Double raHr) {
+	public static String raHrToRaHms(Double raHr) {
 		// coerce input data into range 0..24 (hr)
 		double data = (raHr >= 0) ? raHr % 24 : (24 + raHr % 24);
 		
@@ -37,7 +37,7 @@ public class AstroCoords {
 	 * @param decDeg in numeric format, where dec is in units deg
 	 * @return dec in sexagesimal format DD:MM:SS.SS
 	 */
-	public static String decDeg_To_decDms(Double decDeg) {
+	public static String decDegToDecDms(Double decDeg) {
 		String sign = (decDeg >= 0) ? "+" : "-";
 		
 		// coerce input data into range ±90.0
@@ -62,7 +62,7 @@ public class AstroCoords {
 	 * @param raHms in sexagesimal format HH:MM:SS.SS
 	 * @return numeric ra in units hr (hh.hhhh)
 	 */
-	public static Double raHms_To_raHr(String raHms) {
+	public static Double raHmsToRaHr(String raHms) {
 
 		boolean isNegative = raHms.charAt(0) == '-';
 		
@@ -81,7 +81,7 @@ public class AstroCoords {
 	 * @param decDms in sexagesimal format DD:MM:SS.SS
 	 * @return numeric dec in units deg (±dd.dddd)
 	 */
-	public static Double decDms_To_decDeg(String decDms) {
+	public static Double decDmsToDecDeg(String decDms) {
 		int sign = (decDms.charAt(0) == '-') ? -1 : 1;
 		
 		// split input at ':' delim and coerce elements into appropriate range
@@ -108,9 +108,9 @@ public class AstroCoords {
 		String sxInput = input;
 		// converts sexagesimal => numeric => sexagesimal to force formatting
 		if (en == QueryEnum.RA_HMS) {
-			sxInput = AstroCoords.raHr_To_raHms(AstroCoords.raHms_To_raHr(input));
+			sxInput = AstroCoords.raHrToRaHms(AstroCoords.raHmsToRaHr(input));
 		} else if (en == QueryEnum.DEC_DMS) {
-			sxInput = AstroCoords.decDeg_To_decDms(AstroCoords.decDms_To_decDeg(input));
+			sxInput = AstroCoords.decDegToDecDms(AstroCoords.decDmsToDecDeg(input));
 		}		
 		return sxInput;
 	}

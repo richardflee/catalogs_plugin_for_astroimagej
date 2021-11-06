@@ -4,6 +4,7 @@ import com.github.richardflee.astroimagej.query_objects.CatalogQuery;
 import com.github.richardflee.astroimagej.query_objects.CatalogSettings;
 import com.github.richardflee.astroimagej.query_objects.ObservationSite;
 import com.github.richardflee.astroimagej.query_objects.SimbadResult;
+import com.github.richardflee.astroimagej.query_objects.SolarTimes;
 
 /**
  * Specifies interface to read from and write to catalog ui controls
@@ -22,7 +23,8 @@ public interface CatalogDataListener {
 	
 	// Coordinates Converter observatory and utc data
 	public void setObservationSiteData(ObservationSite site);
-	public ObservationSite getObservationSiteData();
+	public void setSolarTimes(SolarTimes sunRiseSetData);
+	// public ObservationSite getObservationSiteData();
 	
 	// maps result of query Simabd on-line database to catalog ui controls
 	public void setSimbadData(SimbadResult simbadResult);

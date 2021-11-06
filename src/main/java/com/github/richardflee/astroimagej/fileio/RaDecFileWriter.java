@@ -111,8 +111,8 @@ public class RaDecFileWriter extends RaDecFileBase {
 	 * ref = 1 and mag = catalog mag for this filter band</p>
 	 */
 	private String getFieldLine(FieldObject fo) {
-		String line = AstroCoords.raHr_To_raHms(fo.getRaHr()) + ",";
-		line += AstroCoords.decDeg_To_decDms(fo.getDecDeg()) + ",";
+		String line = AstroCoords.raHrToRaHms(fo.getRaHr()) + ",";
+		line += AstroCoords.decDegToDecDms(fo.getDecDeg()) + ",";
 		if (isDataBlock) {
 			line += fo.isTarget() ? "0,1,99.99" : String.format("1,1,%.3f", fo.getMag());
 			isDataBlock = false;

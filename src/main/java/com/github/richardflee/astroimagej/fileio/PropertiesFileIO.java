@@ -71,10 +71,10 @@ public class PropertiesFileIO {
 			query.setObjectId(objectId);
 
 			String raHms = prop.getProperty(queryStr(QueryEnum.RA_HMS));
-			query.setRaHr(AstroCoords.raHms_To_raHr(raHms));
+			query.setRaHr(AstroCoords.raHmsToRaHr(raHms));
 
 			String decDms = prop.getProperty(queryStr(QueryEnum.DEC_DMS));
-			query.setDecDeg(AstroCoords.decDms_To_decDeg(decDms));
+			query.setDecDeg(AstroCoords.decDmsToDecDeg(decDms));
 
 			String fovStr = prop.getProperty(queryStr(QueryEnum.FOV_AMIN));
 			query.setFovAmin(Double.parseDouble(fovStr));
@@ -162,10 +162,10 @@ public class PropertiesFileIO {
 			String objectId = query.getObjectId();
 			prop.setProperty(queryStr(QueryEnum.OBJECT_ID), objectId);
 
-			String raHms = AstroCoords.raHr_To_raHms(query.getRaHr());
+			String raHms = AstroCoords.raHrToRaHms(query.getRaHr());
 			prop.setProperty(queryStr(QueryEnum.RA_HMS), raHms);
 
-			String decDms = AstroCoords.decDeg_To_decDms(query.getDecDeg());
+			String decDms = AstroCoords.decDegToDecDms(query.getDecDeg());
 			prop.setProperty(queryStr(QueryEnum.DEC_DMS), decDms);
 
 			String fovStr = String.format("%.1f", query.getFovAmin());

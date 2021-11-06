@@ -6,7 +6,7 @@ import com.github.richardflee.astroimagej.utils.AstroCoords;
 /**
  * Base class for target and comparison photometry  objects
  */
-public class AbstractFieldObject {
+public class BaseFieldObject {
 	
 	protected String objectId = null;
 	protected double raHr = 0.0;
@@ -19,7 +19,7 @@ public class AbstractFieldObject {
 	 * @param raHr object RA2000 coordinate in units Hr, range 0.0 - 24.0
 	 * @param decDeg object DEC2000 coordinate in units deg, range ±90°
 	 */
-	public AbstractFieldObject(String objectId, double raHr, double decDeg) {
+	public BaseFieldObject(String objectId, double raHr, double decDeg) {
 		this.raHr = raHr;
 		this.decDeg = decDeg;
 		setObjectId(objectId);
@@ -30,8 +30,8 @@ public class AbstractFieldObject {
 	 * @return object name format: HHMMSSSS±DDMMSSSS
 	 */
 	private String compileObjectId() {
-		String raHms = AstroCoords.raHr_To_raHms(raHr);
-		String decDms = AstroCoords.decDeg_To_decDms(decDeg);
+		String raHms = AstroCoords.raHrToRaHms(raHr);
+		String decDms = AstroCoords.decDegToDecDms(decDeg);
 		String id = raHms + decDms;
 		return id.replace(":", "").replace(".", "");			
 	}
@@ -76,9 +76,9 @@ public class AbstractFieldObject {
 		String decDms = "+29:40:20.27";
 		String expectedId = "06303280+29402027";
 		
-		double raHr = AstroCoords.raHms_To_raHr(raHms);
-		double decDeg = AstroCoords.decDms_To_decDeg(decDms);
-		AbstractFieldObject afo = new AbstractFieldObject(null, raHr, decDeg);
+		double raHr = AstroCoords.raHmsToRaHr(raHms);
+		double decDeg = AstroCoords.decDmsToDecDeg(decDms);
+		BaseFieldObject afo = new BaseFieldObject(null, raHr, decDeg);
 		
 		String compiledId = afo.getObjectId();
 		boolean match = compiledId.contentEquals(expectedId);

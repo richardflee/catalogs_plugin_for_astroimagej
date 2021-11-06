@@ -120,10 +120,10 @@ public class CatalogTableModel extends AbstractTableModel implements CatalogTabl
 			data = (String) objectRow.getObjectId();
 
 		} else if (en == ColumnsEnum.RA2000_COL) {
-			data = (String) AstroCoords.raHr_To_raHms(objectRow.getRaHr());
+			data = (String) AstroCoords.raHrToRaHms(objectRow.getRaHr());
 
 		} else if (en == ColumnsEnum.DEC2000_COL) {
-			data = (String) AstroCoords.decDeg_To_decDms(objectRow.getDecDeg());
+			data = (String) AstroCoords.decDegToDecDms(objectRow.getDecDeg());
 
 		} else if (en == ColumnsEnum.MAG_COL) {
 			data = (String) String.format("%.3f", objectRow.getMag());

@@ -22,29 +22,29 @@ class FieldObjectTest {
 		
 		wasp12 = 
 			new FieldObject("wasp12", 
-				AstroCoords.raHms_To_raHr("06:30:32.797"), 
-				AstroCoords.decDms_To_decDeg("+29:40:20.27"), 
+				AstroCoords.raHmsToRaHr("06:30:32.797"), 
+				AstroCoords.decDmsToDecDeg("+29:40:20.27"), 
 				0.0, 0.0);
-		System.out.println(AstroCoords.raHms_To_raHr("06:30:32.797"));
-		System.out.println(AstroCoords.decDms_To_decDeg("+29:40:20.27"));
+		System.out.println(AstroCoords.raHmsToRaHr("06:30:32.797"));
+		System.out.println(AstroCoords.decDmsToDecDeg("+29:40:20.27"));
 		System.out.println();
 		
 		sirius = 
 			new FieldObject("Sirius", 
-				AstroCoords.raHms_To_raHr("06:45:08.917"), 
-				AstroCoords.decDms_To_decDeg("-16:42:58.02"), 
+				AstroCoords.raHmsToRaHr("06:45:08.917"), 
+				AstroCoords.decDmsToDecDeg("-16:42:58.02"), 
 				0.0, 0.0);
-		System.out.println(AstroCoords.raHms_To_raHr("06:45:08.917"));
-		System.out.println(AstroCoords.decDms_To_decDeg("-16:42:58.02"));
+		System.out.println(AstroCoords.raHmsToRaHr("06:45:08.917"));
+		System.out.println(AstroCoords.decDmsToDecDeg("-16:42:58.02"));
 		System.out.println();
 		
 		bkg_164 = 
 				new FieldObject("bkg_164", 
-						AstroCoords.raHms_To_raHr("06:30:47.77"), 
-						AstroCoords.decDms_To_decDeg("29:35:30.4"), 
+						AstroCoords.raHmsToRaHr("06:30:47.77"), 
+						AstroCoords.decDmsToDecDeg("29:35:30.4"), 
 						0.0, 0.0);
-		System.out.println(AstroCoords.raHms_To_raHr("006:30:47.77"));
-		System.out.println(AstroCoords.decDms_To_decDeg("29:35:30.4"));
+		System.out.println(AstroCoords.raHmsToRaHr("006:30:47.77"));
+		System.out.println(AstroCoords.decDmsToDecDeg("29:35:30.4"));
 		System.out.println();
 	}
 

@@ -69,8 +69,8 @@ public class VspCatalog implements AstroCatalog {
 				// create a new FieldObject, and add object coordinates + auid
 				FieldObject fo = new FieldObject();
 				fo.setObjectId(foNode.findPath("auid").asText());
-				fo.setRaHr(AstroCoords.raHms_To_raHr(foNode.path("ra").asText()));
-				fo.setDecDeg(AstroCoords.decDms_To_decDeg(foNode.path("dec").asText()));
+				fo.setRaHr(AstroCoords.raHmsToRaHr(foNode.path("ra").asText()));
+				fo.setDecDeg(AstroCoords.decDmsToDecDeg(foNode.path("dec").asText()));
 
 				// if node matching magBand is found then add mag & magErr
 				// to fieldObject (fo) and append to result list

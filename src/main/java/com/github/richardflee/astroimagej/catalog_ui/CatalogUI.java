@@ -41,6 +41,7 @@ import com.github.richardflee.astroimagej.query_objects.CatalogQuery;
 import com.github.richardflee.astroimagej.query_objects.CatalogSettings;
 import com.github.richardflee.astroimagej.query_objects.ObservationSite;
 import com.github.richardflee.astroimagej.query_objects.SimbadResult;
+import com.github.richardflee.astroimagej.query_objects.SolarTimes;
 import com.github.richardflee.astroimagej.utils.AstroCoords;
 import com.github.richardflee.astroimagej.utils.InputsVerifier;
 
@@ -105,11 +106,6 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		// start in "no data" state
 		this.isTableData = false;
 		setButtonsEnabled(isTableData);
-		
-		
-		
-		
-		
 	}
 
 	/**
@@ -150,12 +146,12 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 
 		// Simbad catalog match for user objectId
 		// update catalog ra
-		String raHms = AstroCoords.raHr_To_raHms(simbadResult.getSimbadRaHr());
+		String raHms = AstroCoords.raHrToRaHms(simbadResult.getSimbadRaHr());
 		raField.setText(raHms);
 		raField.setForeground(Color.black);
 
 		// update catalog dec
-		String decDms = AstroCoords.decDeg_To_decDms(simbadResult.getSimbadDecDeg());
+		String decDms = AstroCoords.decDegToDecDms(simbadResult.getSimbadDecDeg());
 		decField.setText(decDms);
 		decField.setForeground(Color.black);
 
@@ -186,8 +182,8 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 	@Override
 	public void setQueryData(CatalogQuery query) {
 		objectIdField.setText(query.getObjectId());
-		raField.setText(AstroCoords.raHr_To_raHms(query.getRaHr()));
-		decField.setText(AstroCoords.decDeg_To_decDms(query.getDecDeg()));
+		raField.setText(AstroCoords.raHrToRaHms(query.getRaHr()));
+		decField.setText(AstroCoords.decDegToDecDms(query.getDecDeg()));
 		fovField.setText(String.format("%.1f", query.getFovAmin()));
 		magLimitField.setText(String.format("%.1f", query.getMagLimit()));
 
@@ -218,8 +214,8 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		// copy text field data
 		CatalogQuery query = new CatalogQuery();
 		query.setObjectId(objectIdField.getText());
-		query.setRaHr(AstroCoords.raHms_To_raHr(raField.getText()));
-		query.setDecDeg(AstroCoords.decDms_To_decDeg(decField.getText()));
+		query.setRaHr(AstroCoords.raHmsToRaHr(raField.getText()));
+		query.setDecDeg(AstroCoords.decDmsToDecDeg(decField.getText()));
 		query.setFovAmin(Double.valueOf(fovField.getText()));
 		query.setMagLimit(Double.valueOf(magLimitField.getText()));
 
@@ -315,24 +311,33 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		data = String.format("%3.1f", site.getUtcOffsetHr());
 		utcOffsetField.setText(data);			
 	}
-
+	
 	@Override
-	public ObservationSite getObservationSiteData() {
-		ObservationSite site = new ObservationSite();
+	public void setSolarTimes(SolarTimes sunData) {
 		
-		double data = AstroCoords.dmsToDeg(siteLongField.getText());
-		site.setSiteLongitudeDeg(data);
-		
-		data = AstroCoords.dmsToDeg(siteLatField.getText());
-		site.setSiteLatitudeDeg(data);
-		
-		data = Double.valueOf(siteAltField.getText());
-		site.setSiteAlt(data);
-		
-		data = Double.valueOf(utcOffsetField.getText());
-		site.setUtcOffsetHr(data);		
-		return site;
+		sunSetField.setText(sunData.getCivilSunSetValue());
+		twilightEndField.setText(sunData.getCivilTwilightEndsValue());
+		twilightStartField.setText(sunData.getCivilTwilightStartsValue());
+		sunRiseField.setText(sunData.getCivilSunRiseValue());
 	}
+
+//	@Override
+//	public ObservationSite getObservationSiteData() {
+//		ObservationSite site = new ObservationSite();
+//		
+//		double data = AstroCoords.dmsToDeg(siteLongField.getText());
+//		site.setSiteLongitudeDeg(data);
+//		
+//		data = AstroCoords.dmsToDeg(siteLatField.getText());
+//		site.setSiteLatitudeDeg(data);
+//		
+//		data = Double.valueOf(siteAltField.getText());
+//		site.setSiteAlt(data);
+//		
+//		data = Double.valueOf(utcOffsetField.getText());
+//		site.setUtcOffsetHr(data);		
+//		return site;
+//	}
 	
 	/*
 	 * Handles change in catalogCombo selection. Clears existing filterCombo list
@@ -1294,12 +1299,12 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 					//---- sunSetField ----
 					sunSetField.setToolTipText("<html>\nSet the target mag upper limit\n<p>Setting Upper = 0 disables this limit</p>\n<p>Range: 0 - 5 mag in 0.1 mag increment</p>\n</html>");
 					sunSetField.setEditable(false);
-					sunSetField.setText("18:11");
+					sunSetField.setText("00:00");
 
 					//---- twilightEndField ----
 					twilightEndField.setToolTipText("<html>\nSet the nominal target mag for the selected filter band\n<p>Use the scroll control  or type value in text box</p>\n<p>Range: 5.5 - 25 mag in 0.1 mag increment</p>\n</html>");
 					twilightEndField.setEditable(false);
-					twilightEndField.setText("18:11");
+					twilightEndField.setText("00:00");
 
 					//---- label27 ----
 					label27.setText("Twi Start:");
@@ -1307,7 +1312,7 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 					//---- twilightStartField ----
 					twilightStartField.setToolTipText("<html>\nSet the nominal target mag for the selected filter band\n<p>Use the scroll control  or type value in text box</p>\n<p>Range: 5.5 - 25 mag in 0.1 mag increment</p>\n</html>");
 					twilightStartField.setEditable(false);
-					twilightStartField.setText("18:11");
+					twilightStartField.setText("00:00");
 
 					//---- label25 ----
 					label25.setText("Sunrise");
@@ -1315,7 +1320,7 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 					//---- sunRiseField ----
 					sunRiseField.setToolTipText("<html>\nSet the target mag upper limit\n<p>Setting Upper = 0 disables this limit</p>\n<p>Range: 0 - 5 mag in 0.1 mag increment</p>\n</html>");
 					sunRiseField.setEditable(false);
-					sunRiseField.setText("18:11");
+					sunRiseField.setText("00:00");
 
 					GroupLayout panel11Layout = new GroupLayout(panel11);
 					panel11.setLayout(panel11Layout);

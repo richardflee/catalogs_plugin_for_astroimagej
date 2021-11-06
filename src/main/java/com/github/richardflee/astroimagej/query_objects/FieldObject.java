@@ -8,7 +8,7 @@ import com.github.richardflee.astroimagej.utils.AstroCoords;
  * encapsulate coordinate and magnitude data for a single Comparison or
  * Reference star.
  */
-public class FieldObject extends AbstractFieldObject {
+public class FieldObject extends BaseFieldObject {
 	
 	private double mag = 0.0;
 	private double magErr = 0.0;
@@ -28,8 +28,8 @@ public class FieldObject extends AbstractFieldObject {
 	 */	
 	public FieldObject() {
 		super( "sirius", 
-				AstroCoords.raHms_To_raHr("06:45:08.917"),
-				AstroCoords.decDms_To_decDeg("-16:42:58.02"));		
+				AstroCoords.raHmsToRaHr("06:45:08.917"),
+				AstroCoords.decDmsToDecDeg("-16:42:58.02"));		
 		this.mag = -1.46;
 		this.magErr = 0.02;
 	}

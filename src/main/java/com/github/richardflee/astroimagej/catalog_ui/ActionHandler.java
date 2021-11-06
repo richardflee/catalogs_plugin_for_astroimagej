@@ -333,7 +333,7 @@ public class ActionHandler {
 
 		System.out.println(String.format("Default object WASP 12: %s", q0.getObjectId()));
 		System.out.println(
-				String.format("Default decDms +29:40:20.27: %s", AstroCoords.decDeg_To_decDms(q0.getDecDeg())));
+				String.format("Default decDms +29:40:20.27: %s", AstroCoords.decDegToDecDms(q0.getDecDeg())));
 
 		System.out.println(String.format("\nModified query object freddy: %s", q1.getObjectId()));
 		System.out.println(String.format("Modified query decDeg -23.456: %.3f", q1.getDecDeg()));

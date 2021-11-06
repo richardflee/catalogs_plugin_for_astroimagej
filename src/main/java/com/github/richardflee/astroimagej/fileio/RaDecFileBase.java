@@ -28,8 +28,8 @@ class RaDecFileBase {
 		String[] terms = new String[ColumnsEnum.size];
 		terms[ColumnsEnum.AP_COL.getIndex()] = String.format("#%s", fo.getApertureId());
 		terms[ColumnsEnum.OBJECTID_COL.getIndex()] = String.format("%s", fo.getObjectId());
-		terms[ColumnsEnum.RA2000_COL.getIndex()] = String.format("%s", AstroCoords.raHr_To_raHms(fo.getRaHr()));
-		terms[ColumnsEnum.DEC2000_COL.getIndex()] = String.format("%s", AstroCoords.decDeg_To_decDms(fo.getDecDeg()));
+		terms[ColumnsEnum.RA2000_COL.getIndex()] = String.format("%s", AstroCoords.raHrToRaHms(fo.getRaHr()));
+		terms[ColumnsEnum.DEC2000_COL.getIndex()] = String.format("%s", AstroCoords.decDegToDecDms(fo.getDecDeg()));
 		terms[ColumnsEnum.MAG_COL.getIndex()] = String.format("%.3f", fo.getMag());
 		terms[ColumnsEnum.MAG_ERR_COL.getIndex()] = String.format("%.3f", fo.getMagErr());
 		terms[ColumnsEnum.MAG_DIFF_COL.getIndex()] = String.format("%.3f", fo.getDeltaMag());
@@ -66,10 +66,10 @@ class RaDecFileBase {
 		fo.setObjectId(objectId);
 
 		String raHms = terms[ColumnsEnum.RA2000_COL.getIndex()];
-		fo.setRaHr(AstroCoords.raHms_To_raHr(raHms));
+		fo.setRaHr(AstroCoords.raHmsToRaHr(raHms));
 
 		String decDms = terms[ColumnsEnum.DEC2000_COL.getIndex()];
-		fo.setDecDeg(AstroCoords.decDms_To_decDeg(decDms));
+		fo.setDecDeg(AstroCoords.decDmsToDecDeg(decDms));
 
 		double mag = Double.valueOf(terms[ColumnsEnum.MAG_COL.getIndex()]);
 		fo.setMag(mag);
