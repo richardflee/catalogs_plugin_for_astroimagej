@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+import org.jfree.data.time.Minute;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,6 +23,7 @@ class TimesConverterTest {
 
 	// example W site moore obsy KY
 	private static ObservationSite mooreSite;
+	private static TimesConverter mooreTimesConverter;
 
 	// example E site site Tbilisi, Georgia
 	//private static ObservationSite tbilisiSite;
@@ -36,7 +38,11 @@ class TimesConverterTest {
 		double siteLong = AstroCoords.dmsToDeg("-85:31:42.51");
 		double siteLat = AstroCoords.dmsToDeg("+38:20:41.25");
 		double siteElevation = 100.0;
-		mooreSite = new ObservationSite(siteLong, siteLat, siteElevation, 0.0);
+		double utcOffsetHr = -5.0;
+		mooreSite = new ObservationSite(siteLong, siteLat, siteElevation, utcOffsetHr);
+		mooreTimesConverter = new TimesConverter(mooreSite);
+		
+		
 
 //		// tbilisi 45N 41E
 //		siteLong = 41.71;
@@ -133,38 +139,34 @@ class TimesConverterTest {
 		assertEquals(2457986.500000, TimesConverter.convertUtcToJD(utcDateTime), TOL);
 	}
 	
-	@DisplayName("Verify conversion from site civil time to utc PA9")
+	@DisplayName("Verify conversion from site civil time to utc mooreSite PA9")
 	@Test
 	void testConvertCivilDateTimeToUtc() {
 		LocalDateTime siteCivilDateTime = LocalDateTime.of(1980, 4, 1, 1, 26, 51, (int) (0.67 * 1e9));
 		
-		double utcOffsetHr = -6.0;
-		LocalDateTime utcDateTime = TimesConverter.convertCivilDateTimeToUtc(siteCivilDateTime, utcOffsetHr);
-		assertEquals("1980-04-01T07:26:51.67", 
-				utcDateTime.toString().substring(0, "1980-04-01T07:26:51.67".length()));
-		
-		utcOffsetHr = +7.5;
-		utcDateTime = TimesConverter.convertCivilDateTimeToUtc(siteCivilDateTime, utcOffsetHr);
-		assertEquals("1980-03-31T17:56:51.67", 
-				utcDateTime.toString().substring(0, "1980-03-31T17:56:51.67".length()));
-		
+		LocalDateTime utcDateTime = mooreTimesConverter.convertCivilDateTimeToUtc(siteCivilDateTime);
+		assertEquals("1980-04-01T06:26:51.67", 
+				utcDateTime.toString().substring(0, "yyyy-mm-ddTHH:MM:SS.SS".length()));		
 	}
 	
-	@DisplayName("Verify conversion from utc to site civil time to utc PA10")
+	@DisplayName("Verify conversion from utc to site civil time to utc mooreSite PA10")
 	@Test
 	void testConvertUtcToCivilDateTime() {
 		LocalDateTime utcDateTime = LocalDateTime.of(1980, 3, 31, 17, 56, 51, (int) (0.67 * 1e9));
-		double utcOffsetHr = +7.5;
-		LocalDateTime siteCivilDateTime = TimesConverter.convertUtcToCivilDateTime(utcDateTime, utcOffsetHr);
-		assertEquals("1980-04-01T01:26:51.67", 
-				siteCivilDateTime.toString().substring(0, "1980-04-01T01:26:51.67".length()));
 		
 		utcDateTime = LocalDateTime.of(1980, 4, 1, 7, 26, 51, (int) (0.67 * 1e9));
-		utcOffsetHr = -6.0;
-		siteCivilDateTime = TimesConverter.convertUtcToCivilDateTime(utcDateTime, utcOffsetHr);
-		assertEquals("1980-04-01T01:26:51.67", 
-				siteCivilDateTime.toString().substring(0, "1980-04-01T01:26:51.67".length()));
-		
+		LocalDateTime siteCivilDateTime = mooreTimesConverter.convertUtcToCivilDateTime(utcDateTime);
+		assertEquals("1980-04-01T02:26:51.67", 
+				siteCivilDateTime.toString().substring(0, "yyyy-mm-ddTHH:MM:SS.SS".length()));
+	}
+	
+	@DisplayName("Verify forward and reverse conversion from civil date-time to JFree Minute")
+	@Test
+	void testConvertCivilTimeToMinute() {
+		LocalDateTime utcDateTime = LocalDateTime.of(2020, 2, 24, 2, 1, 0);
+		Minute current = TimesConverter.convertCivilDateTimeToMinute(utcDateTime);
+		LocalDateTime ldt = TimesConverter.convertMinuteToCivilDateTime(current, utcDateTime.toLocalDate());
+		assertEquals("2020-02-24T02:01", ldt.toString().substring(0, "yyyy-mm-ddTHH:MM".length()));
 	}
 
 }

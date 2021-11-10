@@ -22,16 +22,16 @@ import com.github.richardflee.astroimagej.visibility_plotter.CoordsConverter.Coo
 public class Solar {
 
 	// formats rise-set times hh:mm
-	public static DateTimeFormatter LDT_FOMATTER = DateTimeFormatter.ofPattern("HH:mm");
+	public static final DateTimeFormatter LDT_FOMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
 	// Sun's angular dia * 0.5
 	private static final double SUN_SEMIDIA_DEG = 0.533 / 2.0;
 
 	// poly constants to compute obliquity of the ecliptic PA27
-	static final String ECL_0 = "23:26:21.45";
-	static final double ECL_1 = -46.815;
-	static final double ECL_2 = -0.0006;
-	static final double ECL_3 = 0.00181;
+	private static final String ECL_0 = "23:26:21.45";
+	private static final double ECL_1 = -46.815;
+	private static final double ECL_2 = -0.0006;
+	private static final double ECL_3 = 0.00181;
 
 	// quadratic const to compute solar mean ecliptic longitude
 	private static final double eg0 = 279.6966778;
@@ -112,16 +112,15 @@ public class Solar {
 	 */
 	private LocalTime getCivilSunTime(LocalDate siteCivilDate, CoordsEnum en, double zenDeg) {
 		// convert local civil noon to utc date-time
-		double utcOffsetHr = site.getUtcOffsetHr();
 		LocalDateTime civilNoon = LocalDateTime.of(siteCivilDate, TimesConverter.LOCAL_TIME_NOON);
-		LocalDateTime utcNoon = TimesConverter.convertCivilDateTimeToUtc(civilNoon, utcOffsetHr);
+		LocalDateTime utcNoon = this.solarTimesConverter.convertCivilDateTimeToUtc(civilNoon);
 		
 		// get sunset/rise/twilight utc date-time
 		LocalTime utcTime = utcZenithAngleTime(zenDeg, utcNoon, en);
 		LocalDateTime utcDateTime = LocalDateTime.of(siteCivilDate, utcTime);
 		
 		// convert utc -> local civil time
-		LocalDateTime civilDateTime = TimesConverter.convertUtcToCivilDateTime(utcDateTime, utcOffsetHr);
+		LocalDateTime civilDateTime = this.solarTimesConverter.convertUtcToCivilDateTime(utcDateTime);
 		return civilDateTime.toLocalTime();
 	}
 

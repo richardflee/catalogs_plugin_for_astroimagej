@@ -1,7 +1,13 @@
 package com.github.richardflee.astroimagej.visibility_plotter;
 
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneOffset;
+import java.util.Date;
+
+import org.jfree.data.time.Minute;
 
 import com.github.richardflee.astroimagej.query_objects.ObservationSite;
 import com.github.richardflee.astroimagej.utils.AstroCoords;
@@ -23,9 +29,6 @@ public class TimesConverter {
 
 	public static final LocalDateTime EPOCH_2010 = LocalDateTime.of(2009, 12, 31, 0, 0, 0);
 	public static final double JD_2010 = TimesConverter.convertUtcToJD(EPOCH_2010); // 2455196.50000
-
-	// // constant to compute solar longitude UTC 1899-12-31T12:00:00.00
-	// public static final double JD_1900 = 2415020.0;
 
 	// solar_dya / sidereal day
 	public static final double SIDEREAL_FACTOR = 1.002737909;
@@ -58,12 +61,15 @@ public class TimesConverter {
 	private static final double T02_COEF = 0.000025862;
 
 	private ObservationSite site = null;
+	private double utcOffsetHr = 0.0;
+	
 	// epoch date times
 	public static final LocalDateTime EPOCH_1900 = LocalDateTime.of(1899, 12, 31, 12, 0, 0);
 	public static final double JD_1900 = convertUtcToJD(EPOCH_1900); // 2415020.00000
 
 	public TimesConverter(ObservationSite site) {
 		this.site = site;
+		this.utcOffsetHr = site.getUtcOffsetHr();
 	}
 
 	/**
@@ -117,6 +123,25 @@ public class TimesConverter {
 		LocalDateTime dt0 = LocalDateTime.of(utcDateTime.toLocalDate(), TimesConverter.LOCAL_TIME_0);
 		return TimesConverter.convertUtcToJD(dt0);
 	}
+	
+	/**
+	 * Converts JFreeChart Minute quantity to LocalDateTime
+	 */
+	public static LocalDateTime convertMinuteToCivilDateTime(Minute current, LocalDate civilDate ) {
+		int hour = current.getHourValue();
+		int minute = current.getMinute();
+		LocalTime currentTime = LocalTime.of(hour, minute);
+		return LocalDateTime.of(civilDate,  currentTime);
+	}
+	
+	/**
+	 * Converts LocalDateTime to JFreeChart Minute quantity
+	 */
+		public static Minute convertCivilDateTimeToMinute(LocalDateTime civilDateTime) {
+		Instant instant = civilDateTime.toInstant(ZoneOffset.UTC);
+		Date date = Date.from(instant);
+		return new Minute(date);
+	}
 
 	/**
 	 * Converts the local site time including utc offset to GMT / UTC <p> Ref: PA
@@ -127,7 +152,7 @@ public class TimesConverter {
 	 *     observation location geographic and time parameters
 	 * @return utc date-time
 	 */
-	public static LocalDateTime convertCivilDateTimeToUtc(LocalDateTime siteCivilDateTime, double utcOffsetHr) {
+	public LocalDateTime convertCivilDateTimeToUtc(LocalDateTime siteCivilDateTime) {
 		int utcOffsetMins = (int) (60.0 * utcOffsetHr);
 		LocalDateTime utcDateTime = siteCivilDateTime.minusMinutes(utcOffsetMins);
 		return utcDateTime;
@@ -142,7 +167,7 @@ public class TimesConverter {
 	 *     geographic and time parameters
 	 * @return site date-time
 	 */
-	public static LocalDateTime convertUtcToCivilDateTime(LocalDateTime utcDateTime, double utcOffsetHr) {
+	public LocalDateTime convertUtcToCivilDateTime(LocalDateTime utcDateTime) {
 		int utcOffsetMins = (int) (60.0 * utcOffsetHr);
 		LocalDateTime siteDateTime = utcDateTime.plusMinutes(utcOffsetMins);
 		return siteDateTime;
@@ -265,7 +290,7 @@ public class TimesConverter {
 		TimesConverter mooreTimesConverter = new TimesConverter(mooreSite);
 
 		// utc -> lst
-		LocalDateTime utcDateTime = LocalDateTime.of(2020, 2, 24, 2, 0, 46);
+		LocalDateTime utcDateTime = LocalDateTime.of(2020, 2, 24, 2, 0, 0);
 
 		LocalDateTime lstDateTime = mooreTimesConverter.convertUtcToLst(utcDateTime);
 
@@ -274,6 +299,14 @@ public class TimesConverter {
 
 		LocalDateTime x = mooreTimesConverter.convertLstToUtc(lstDateTime);
 		System.out.println(x.toString());
-
+		System.out.println();
+		
+		// double conversion JFree Minute <-> LocalDateTime
+		Minute current = TimesConverter.convertCivilDateTimeToMinute(utcDateTime);
+		LocalDateTime minToLDT = TimesConverter.convertMinuteToCivilDateTime(current, utcDateTime.toLocalDate());
+		
+		System.out.println(String.format("Start date-time:                  %s", utcDateTime.toString()));
+		System.out.println(String.format("Minute date conversion:           %s", current.toString()));
+		System.out.println(String.format("End date after double conversion: %s", minToLDT.toString()));
 	}
 }

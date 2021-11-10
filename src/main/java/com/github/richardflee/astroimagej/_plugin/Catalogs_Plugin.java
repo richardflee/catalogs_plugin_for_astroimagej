@@ -80,13 +80,8 @@ public class Catalogs_Plugin implements PlugIn {
 		CatalogQuery query = pf.getPropertiesQueryData();
 		catalogUi.setQueryData(query);
 		
-		// Coordinates Converter observatory & utc data; null if data error
-		ObservationSite site = pf.getObservationSiteData();
-		catalogUi.setObservationSiteData(site);
-		
-		Solar solar = new Solar(site);
-		SolarTimes solarTimes = solar.getCivilSunTimes(LocalDate.now());
-		catalogUi.setSolarTimes(solarTimes);
+		// populates civil solar times and geographic location controls
+		initVisibilityData(catalogUi, pf);
 		
 		// apply properties target mag
 		CatalogSettings settings = pf.getPropertiesSettingsData();
@@ -96,6 +91,20 @@ public class Catalogs_Plugin implements PlugIn {
 		catalogUi.setTitle(String.format("Catalogs Plugin %s", VERSION_NUMBER));
 		catalogUi.setModal(true);
 		catalogUi.setVisible(true);
+	}
+	
+	/*
+	 * Copies AIJ_Prefs.txt location data to catalog ui dialog. Computes civil solar times
+	 * for today's date at this location
+	 */
+	private static void initVisibilityData(CatalogUI catalogUi, PropertiesFileIO pf) {
+		// Coordinates Converter observatory & utc data; null if data error
+		ObservationSite site = pf.getObservationSiteData();
+		catalogUi.setObservationSiteData(site);
+
+		Solar solar = new Solar(site);
+		SolarTimes solarTimes = solar.getCivilSunTimes(LocalDate.now());
+		catalogUi.setSolarTimes(solarTimes);		
 	}
 
 }

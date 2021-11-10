@@ -28,10 +28,10 @@ public class CoordsConverter {
 	private boolean neverRises = false;
 	private boolean neverSets = false;
 
-	public CoordsConverter(BaseFieldObject fo, TimesConverter timesConverter) {
+	public CoordsConverter(BaseFieldObject fo, ObservationSite site) {
 		this.fo = fo;
-		this.timesConverter = timesConverter;
-		this.site = timesConverter.getSite();
+		this.site = site;
+		this.timesConverter = new TimesConverter(site);
 		this.nuDeg = REFRACT_NU_DEG;
 		
 		this.neverRises = (getHaTerm(site.getSiteLatitudeDeg(), fo.getDecDeg()) > 1.0);
@@ -231,8 +231,8 @@ public class CoordsConverter {
 		BaseFieldObject rsObject = new BaseFieldObject(objectId, raHr, decDeg);
 
 		// converters
-		TimesConverter rsTimes = new TimesConverter(rsSite);
-		CoordsConverter rsCoords = new CoordsConverter(rsObject, rsTimes);
+		//TimesConverter rsTimes = new TimesConverter(rsSite);
+		CoordsConverter rsCoords = new CoordsConverter(rsObject, rsSite);
 
 		// obs date
 		LocalDate rsUtcDate = LocalDate.of(2010, 8, 24);
@@ -260,8 +260,8 @@ public class CoordsConverter {
 		rsObject = new BaseFieldObject(objectId, raHr, decDeg);
 
 		// converters
-		rsTimes = new TimesConverter(rsSite);
-		rsCoords = new CoordsConverter(rsObject, rsTimes);
+		// rsTimes = new TimesConverter(rsSite);
+		rsCoords = new CoordsConverter(rsObject, rsSite);
 
 		// date & coords converter
 		rsUtcDate = LocalDate.of(2010, 8, 24);
@@ -288,8 +288,8 @@ public class CoordsConverter {
 		rsObject = new BaseFieldObject(objectId, raHr, decDeg);
 
 		// converters
-		rsTimes = new TimesConverter(rsSite);
-		rsCoords = new CoordsConverter(rsObject, rsTimes);
+		// rsTimes = new TimesConverter(rsSite);
+		rsCoords = new CoordsConverter(rsObject, rsSite);
 
 		// date & coords converter
 		rsUtcDate = LocalDate.of(2010, 8, 24);

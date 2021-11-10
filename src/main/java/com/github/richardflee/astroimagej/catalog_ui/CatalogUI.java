@@ -67,6 +67,9 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 	protected CatalogTableModel catalogTableModel = null;
 	protected ActionHandler handler = null;
 	protected CatalogSettings settings = null;
+	
+	// LGoodDatePicker component
+	private DatePicker datePicker = null;
 
 	// enable / disable catalog ui buttons flag
 	private boolean isTableData;
@@ -85,12 +88,12 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		this.catalogTableModel = catalogTableModel;
 		new CatalogTable(this, catalogTableModel);
 		
-		DatePicker datePicker = new DatePicker();
-		datePicker.setDate(LocalDate.now());
-		visDatePickerPanel.add(datePicker);
-
 		// button click event handlers
 		this.handler = handler;
+		
+		this.datePicker = new DatePicker();
+		this.datePicker.setDate(LocalDate.now());
+		visDatePickerPanel.add(this.datePicker);
 
 		// configures button click events and query text input verifiers
 		setUpActionListeners();
@@ -420,6 +423,9 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		});
 
 		closeButton.addActionListener(e -> System.exit(0));
+		
+		// date picker
+		this.datePicker.addDateChangeListener(e -> handler.doNewDate(e.getNewDate()));
 
 		// verifies user inputs in query text fields
 		CatalogInputsVerifier inputVerifier = new CatalogInputsVerifier(this);
@@ -537,7 +543,6 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		saveRaDecButton = new JButton();
 		importRaDecButton = new JButton();
 		clearButton = new JButton();
-		visPlotterButton = new JButton();
 		statusTextField = new JTextField();
 		panel9 = new JPanel();
 		label15 = new JLabel();
@@ -565,6 +570,7 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		label25 = new JLabel();
 		sunRiseField = new JTextField();
 		visDatePickerPanel = new JPanel();
+		visPlotterButton = new JButton();
 
 		//======== this ========
 		setTitle("On-line Catalog Query");
@@ -757,11 +763,11 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 					panel2.setLayout(panel2Layout);
 					panel2Layout.setHorizontalGroup(
 						panel2Layout.createParallelGroup()
-							.addComponent(tableScrollPane, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 778, Short.MAX_VALUE)
+							.addComponent(tableScrollPane, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 815, Short.MAX_VALUE)
 					);
 					panel2Layout.setVerticalGroup(
 						panel2Layout.createParallelGroup()
-							.addComponent(tableScrollPane)
+							.addComponent(tableScrollPane, GroupLayout.DEFAULT_SIZE, 916, Short.MAX_VALUE)
 					);
 				}
 
@@ -1080,10 +1086,6 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 					clearButton.setText("Clear");
 					clearButton.setToolTipText("<html>\nClears current query result data and  removes catalog table records\n</html>");
 
-					//---- visPlotterButton ----
-					visPlotterButton.setText("Plot Altitude");
-					visPlotterButton.setToolTipText("<html>\nCloses Catalog Query dialog and returns control to AstroImageJ application\n<p>WARNING: Discaards any unsaved settings</p>\n</html>");
-
 					GroupLayout panel7Layout = new GroupLayout(panel7);
 					panel7.setLayout(panel7Layout);
 					panel7Layout.setHorizontalGroup(
@@ -1104,8 +1106,7 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 											.addComponent(saveRaDecButton, GroupLayout.Alignment.TRAILING)
 											.addComponent(closeButton, GroupLayout.Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 139, GroupLayout.PREFERRED_SIZE)
 											.addComponent(updateButton, GroupLayout.Alignment.TRAILING)
-											.addComponent(clearButton, GroupLayout.Alignment.TRAILING)
-											.addComponent(visPlotterButton, GroupLayout.Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 139, GroupLayout.PREFERRED_SIZE))))
+											.addComponent(clearButton, GroupLayout.Alignment.TRAILING))))
 								.addContainerGap())
 					);
 					panel7Layout.linkSize(SwingConstants.HORIZONTAL, new Component[] {catalogQueryButton, clearButton, closeButton, importRaDecButton, saveQueryButton, saveRaDecButton, simbadButton, updateButton});
@@ -1128,8 +1129,7 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 								.addComponent(clearButton, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE)
 								.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
 								.addComponent(closeButton, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE)
-								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 87, Short.MAX_VALUE)
-								.addComponent(visPlotterButton, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE))
+								.addContainerGap(87, Short.MAX_VALUE))
 					);
 				}
 
@@ -1259,7 +1259,7 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 								.addComponent(label21)
 								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 								.addComponent(utcOffsetField, GroupLayout.PREFERRED_SIZE, 46, GroupLayout.PREFERRED_SIZE)
-								.addGap(0, 0, Short.MAX_VALUE))
+								.addGap(0, 18, Short.MAX_VALUE))
 					);
 					panel10Layout.linkSize(SwingConstants.HORIZONTAL, new Component[] {siteLatField, siteLongField});
 					panel10Layout.setVerticalGroup(
@@ -1342,7 +1342,7 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 								.addComponent(label25)
 								.addGap(5, 5, 5)
 								.addComponent(sunRiseField, GroupLayout.PREFERRED_SIZE, 47, GroupLayout.PREFERRED_SIZE)
-								.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+								.addContainerGap(44, Short.MAX_VALUE))
 					);
 					panel11Layout.linkSize(SwingConstants.HORIZONTAL, new Component[] {sunSetField, twilightEndField});
 					panel11Layout.setVerticalGroup(
@@ -1371,24 +1371,28 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 
 				//======== visDatePickerPanel ========
 				{
-					visDatePickerPanel.setBorder(null);
+					visDatePickerPanel.setBorder(new TitledBorder("Starting Night"));
 					visDatePickerPanel.setLayout(new FlowLayout());
 				}
+
+				//---- visPlotterButton ----
+				visPlotterButton.setText("Plot Altitude");
+				visPlotterButton.setToolTipText("<html>\nCloses Catalog Query dialog and returns control to AstroImageJ application\n<p>WARNING: Discaards any unsaved settings</p>\n</html>");
 
 				GroupLayout contentPanelLayout = new GroupLayout(contentPanel);
 				contentPanel.setLayout(contentPanelLayout);
 				contentPanelLayout.setHorizontalGroup(
 					contentPanelLayout.createParallelGroup()
-						.addGroup(GroupLayout.Alignment.TRAILING, contentPanelLayout.createSequentialGroup()
-							.addContainerGap()
-							.addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-								.addComponent(statusTextField, GroupLayout.DEFAULT_SIZE, 1300, Short.MAX_VALUE)
+						.addGroup(contentPanelLayout.createSequentialGroup()
+							.addGroup(contentPanelLayout.createParallelGroup()
 								.addGroup(contentPanelLayout.createSequentialGroup()
-									.addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING, false)
-										.addComponent(panel10, GroupLayout.DEFAULT_SIZE, 508, Short.MAX_VALUE)
-										.addComponent(panel11, GroupLayout.DEFAULT_SIZE, 508, Short.MAX_VALUE)
+									.addGroup(contentPanelLayout.createParallelGroup()
 										.addGroup(contentPanelLayout.createSequentialGroup()
-											.addComponent(panel7, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+											.addGroup(contentPanelLayout.createParallelGroup()
+												.addComponent(panel7, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+												.addGroup(contentPanelLayout.createSequentialGroup()
+													.addGap(10, 10, 10)
+													.addComponent(visPlotterButton, GroupLayout.PREFERRED_SIZE, 139, GroupLayout.PREFERRED_SIZE)))
 											.addGap(18, 18, 18)
 											.addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
 												.addComponent(panel9, GroupLayout.DEFAULT_SIZE, 327, Short.MAX_VALUE)
@@ -1401,9 +1405,14 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 													.addComponent(panel5, GroupLayout.PREFERRED_SIZE, 203, GroupLayout.PREFERRED_SIZE)
 													.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 													.addComponent(panel6, GroupLayout.PREFERRED_SIZE, 117, GroupLayout.PREFERRED_SIZE))
-												.addComponent(visDatePickerPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+												.addComponent(visDatePickerPanel, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+										.addComponent(panel11, GroupLayout.PREFERRED_SIZE, 508, GroupLayout.PREFERRED_SIZE)
+										.addComponent(panel10, GroupLayout.Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 508, GroupLayout.PREFERRED_SIZE))
 									.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-									.addComponent(panel2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+									.addComponent(panel2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+								.addGroup(contentPanelLayout.createSequentialGroup()
+									.addContainerGap()
+									.addComponent(statusTextField, GroupLayout.DEFAULT_SIZE, 1325, Short.MAX_VALUE)))
 							.addContainerGap())
 				);
 				contentPanelLayout.setVerticalGroup(
@@ -1412,8 +1421,8 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 							.addGroup(contentPanelLayout.createParallelGroup()
 								.addGroup(contentPanelLayout.createSequentialGroup()
 									.addContainerGap()
-									.addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-										.addGroup(contentPanelLayout.createSequentialGroup()
+									.addGroup(contentPanelLayout.createParallelGroup()
+										.addGroup(GroupLayout.Alignment.TRAILING, contentPanelLayout.createSequentialGroup()
 											.addComponent(panel1, GroupLayout.PREFERRED_SIZE, 279, GroupLayout.PREFERRED_SIZE)
 											.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 											.addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
@@ -1425,16 +1434,23 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 												.addComponent(panel6, GroupLayout.PREFERRED_SIZE, 159, GroupLayout.PREFERRED_SIZE))
 											.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 											.addComponent(panel9, GroupLayout.PREFERRED_SIZE, 73, GroupLayout.PREFERRED_SIZE)
-											.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-											.addComponent(visDatePickerPanel, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE))
-										.addComponent(panel7, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+											.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED))
+										.addGroup(contentPanelLayout.createSequentialGroup()
+											.addComponent(panel7, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+											.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 57, Short.MAX_VALUE)))
+									.addGroup(contentPanelLayout.createParallelGroup()
+										.addComponent(visDatePickerPanel, GroupLayout.PREFERRED_SIZE, 56, GroupLayout.PREFERRED_SIZE)
+										.addComponent(visPlotterButton, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE))
 									.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 									.addComponent(panel11, GroupLayout.PREFERRED_SIZE, 73, GroupLayout.PREFERRED_SIZE)
 									.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-									.addComponent(panel10, GroupLayout.PREFERRED_SIZE, 73, GroupLayout.PREFERRED_SIZE))
-								.addComponent(panel2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-							.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-							.addComponent(statusTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+									.addComponent(panel10, GroupLayout.PREFERRED_SIZE, 73, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 16, Short.MAX_VALUE))
+								.addGroup(contentPanelLayout.createSequentialGroup()
+									.addComponent(panel2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+									.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)))
+							.addComponent(statusTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addContainerGap())
 				);
 			}
 			dialogPane.add(contentPanel, BorderLayout.CENTER);
@@ -1512,7 +1528,6 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 	protected JButton saveRaDecButton;
 	protected JButton importRaDecButton;
 	protected JButton clearButton;
-	protected JButton visPlotterButton;
 	private JTextField statusTextField;
 	private JPanel panel9;
 	private JLabel label15;
@@ -1540,5 +1555,6 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 	private JLabel label25;
 	protected JTextField sunRiseField;
 	private JPanel visDatePickerPanel;
+	protected JButton visPlotterButton;
 	// JFormDesigner - End of variables declaration //GEN-END:variables
 }

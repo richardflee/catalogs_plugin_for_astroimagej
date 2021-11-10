@@ -77,8 +77,7 @@ class CoordsConverterTest {
 		BaseFieldObject fo = new BaseFieldObject(objectId, raHr, decDeg);
 
 		// converter objects
-		TimesConverter tc = new TimesConverter(site);
-		CoordsConverter cc = new CoordsConverter(fo, tc);
+		CoordsConverter cc = new CoordsConverter(fo, site);
 
 		// utc
 		LocalDateTime utcDateTime = LocalDateTime.of(1980, 4, 22, 18, 36, 51, (int) 0.67e9);
@@ -99,8 +98,7 @@ class CoordsConverterTest {
 		BaseFieldObject fo = new BaseFieldObject(objectId, raHr, decDeg);
 
 		// converter objects
-		TimesConverter tc = new TimesConverter(site);
-		CoordsConverter cc = new CoordsConverter(fo, tc);
+		CoordsConverter cc = new CoordsConverter(fo, site);
 
 		// utc
 		LocalDateTime utcDateTime = LocalDateTime.of(1995, 10, 22, 7, 36, 51);
@@ -125,8 +123,7 @@ class CoordsConverterTest {
 		ObservationSite site = new ObservationSite(-64.0, siteLatDeg, 0, 0.0);
 
 		// converters
-		TimesConverter tc = new TimesConverter(site);
-		CoordsConverter cc = new CoordsConverter(fo, tc);
+		CoordsConverter cc = new CoordsConverter(fo, site);
 
 		// hour angle
 		LocalTime haLocalTime = LocalTime.of(5, 51, 44);
@@ -153,7 +150,7 @@ class CoordsConverterTest {
 
 		// coordsConverter & AltAz map
 		// TimesConverter tc = new TimesConverter(mooreSite);
-		CoordsConverter coords = new CoordsConverter(fo, new TimesConverter(mooreSite));
+		CoordsConverter coords = new CoordsConverter(fo, mooreSite);
 		Map<CoordsConverter.CoordsEnum, Double> map = coords.getAltAzm(haHr);
 
 		assertEquals(35.032333, map.get(CoordsConverter.CoordsEnum.ALT_DEG), 0.005);
@@ -175,7 +172,7 @@ class CoordsConverterTest {
 		double haHr = -1.0 * TimesConverter.convertLocalTimeToHours(haLocaltime);
 
 		// coordsConverter & AltAz map
-		CoordsConverter coords = new CoordsConverter(fo, new TimesConverter(sidingSite));
+		CoordsConverter coords = new CoordsConverter(fo, sidingSite);
 		Map<CoordsConverter.CoordsEnum, Double> map = coords.getAltAzm(haHr);
 
 		assertEquals(28.017361, map.get(CoordsConverter.CoordsEnum.ALT_DEG), 0.005);
@@ -192,8 +189,7 @@ class CoordsConverterTest {
 		BaseFieldObject rsObject = new BaseFieldObject(objectId, raHr, decDeg);
 
 		// converters
-		TimesConverter rsTimes = new TimesConverter(rsSite);
-		CoordsConverter rsCoords = new CoordsConverter(rsObject, rsTimes);
+		CoordsConverter rsCoords = new CoordsConverter(rsObject, rsSite);
 
 		// date
 		LocalDate rsLocalDate = LocalDate.of(2010, 8, 24);
@@ -210,8 +206,7 @@ class CoordsConverterTest {
 		BaseFieldObject rsObject = new BaseFieldObject(objectId, raHr, decDeg);
 
 		// converters
-		TimesConverter rsTimes = new TimesConverter(rsSite);
-		CoordsConverter rsCoords = new CoordsConverter(rsObject, rsTimes);
+		CoordsConverter rsCoords = new CoordsConverter(rsObject, rsSite);
 
 		// date & coords converter
 		LocalDate rsLocalDate = LocalDate.of(2010, 8, 24);
@@ -229,8 +224,7 @@ class CoordsConverterTest {
 		BaseFieldObject rsObject = new BaseFieldObject(objectId, raHr, decDeg);
 
 		// converters
-		TimesConverter rsTimes = new TimesConverter(rsSite);
-		CoordsConverter rsCoords = new CoordsConverter(rsObject, rsTimes);
+		CoordsConverter rsCoords = new CoordsConverter(rsObject, rsSite);
 
 		// date
 		LocalDate rsUtcDate = LocalDate.of(2010, 8, 24);
@@ -247,8 +241,8 @@ class CoordsConverterTest {
 		BaseFieldObject rsObject = new BaseFieldObject(objectId, raHr, decDeg);
 		
 		//converters
-		TimesConverter rsTimes = new TimesConverter(rsSite);
-		CoordsConverter rsCoords = new CoordsConverter(rsObject, rsTimes);
+		// TimesConverter rsTimes = new TimesConverter(rsSite);
+		CoordsConverter rsCoords = new CoordsConverter(rsObject, rsSite);
 		
 		// date & coords converter 
 		LocalDate rsUtcDate = LocalDate.of(2010, 8, 24);
@@ -271,8 +265,7 @@ class CoordsConverterTest {
 		BaseFieldObject rsObject = new BaseFieldObject(objectId, raHr, decDeg);
 
 		// converters
-		TimesConverter rsTimes = new TimesConverter(rsSite);
-		CoordsConverter rsCoords = new CoordsConverter(rsObject, rsTimes);
+		CoordsConverter rsCoords = new CoordsConverter(rsObject, rsSite);
 
 		// date
 		LocalDate rsUtcDate = LocalDate.of(2010, 8, 24);
@@ -298,8 +291,7 @@ class CoordsConverterTest {
 		BaseFieldObject rsObject = new BaseFieldObject(objectId, raHr, decDeg);
 
 		// converters
-		TimesConverter rsTimes = new TimesConverter(rsSite);
-		CoordsConverter rsCoords = new CoordsConverter(rsObject, rsTimes);
+		CoordsConverter rsCoords = new CoordsConverter(rsObject, rsSite);
 
 		// date
 		LocalDate rsUtcDate = LocalDate.of(2010, 8, 24);

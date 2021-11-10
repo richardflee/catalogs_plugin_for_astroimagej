@@ -1,6 +1,7 @@
 package com.github.richardflee.astroimagej.catalog_ui;
 
 import java.io.File;
+import java.time.LocalDate;
 import java.util.List;
 
 import com.github.richardflee.astroimagej.catalogs.AstroCatalog;
@@ -17,9 +18,12 @@ import com.github.richardflee.astroimagej.listeners.CatalogTableListener;
 import com.github.richardflee.astroimagej.query_objects.CatalogQuery;
 import com.github.richardflee.astroimagej.query_objects.CatalogSettings;
 import com.github.richardflee.astroimagej.query_objects.FieldObject;
+import com.github.richardflee.astroimagej.query_objects.ObservationSite;
 import com.github.richardflee.astroimagej.query_objects.QueryResult;
 import com.github.richardflee.astroimagej.query_objects.SimbadResult;
+import com.github.richardflee.astroimagej.query_objects.SolarTimes;
 import com.github.richardflee.astroimagej.utils.AstroCoords;
+import com.github.richardflee.astroimagej.visibility_plotter.Solar;
 
 /**
  * This class handles catalog_ui button click events to run on-lines database queries,
@@ -30,6 +34,12 @@ public class ActionHandler {
 	private CatalogTableListener catalogTableListener;
 	private CatalogDataListener catalogDataListener;
 
+	/*
+	 * result field: object compiled from database query parameters and query response data
+	 *  or imported from radec file
+	 */
+	private QueryResult result = null;
+	
 	// references to catalog database query and result objects
 	private PropertiesFileIO propertiesFile = null;
 	private RaDecFileReader radecFileReader = null;
@@ -37,12 +47,11 @@ public class ActionHandler {
 
 	// star chart with selected aperture overlay
 	private VspChart chart = null;
+	
+	// visibility plot
+	private ObservationSite site = null;
+	private Solar solar = null;
 
-	/*
-	 * result field: object compiled from database query parameters and query response data
-	 *  or imported from radec file
-	 */
-	private QueryResult result = null;
 
 	private final String QUERY_SETTINGS_ERROR = "ERROR: Invalid input in Catalog Query settings text field";
 
@@ -57,6 +66,9 @@ public class ActionHandler {
 		// file reader and writer objects
 		this.fileWriter = new RaDecFileWriter();
 		this.radecFileReader = new RaDecFileReader();
+		
+		this.site = propertiesFile.getObservationSiteData();
+		this.solar = new Solar(site);
 		
 		// creates vsp star chart with aperture overlay
 		this.chart = new VspChart();
@@ -285,6 +297,13 @@ public class ActionHandler {
 	
 	public void doPlotVisibility() {
 		System.out.println("visible");
+	}
+	
+	public void doNewDate(LocalDate currentDate) {
+		if (currentDate != null) {
+			SolarTimes solarTimes = solar.getCivilSunTimes(currentDate);
+			catalogDataListener.setSolarTimes(solarTimes);	
+		}
 	}
 
 	/*
