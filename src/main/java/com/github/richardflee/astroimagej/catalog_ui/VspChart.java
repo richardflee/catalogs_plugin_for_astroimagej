@@ -71,7 +71,7 @@ public class VspChart {
 	 * @param fieldObjects
 	 *     list of target and reference objects
 	 */
-	public void drawChart(QueryResult result) {
+	public void showChart(QueryResult result) {
 		
 		String chartUri = result.getChartUri();
 		if (chartUri == null) {
@@ -79,7 +79,8 @@ public class VspChart {
 		}
 		
 		// sets field attribute values
-		initChart(result);
+		this.fovAmin = result.getQuery().getFovAmin();
+		this.target = result.getTargetObject();
 
 		// downloads and scales vsp chart as buffered image; null if download fails
 		this.downloadImage = loadImage(chartUri);
@@ -106,7 +107,7 @@ public class VspChart {
 			drawAperture(fieldObjects.get(i));
 		}
 		// displays chart dialog
-		showVspChart(scaledImage);
+		createChartDialog(scaledImage);
 	}
 
 	/**
@@ -118,24 +119,13 @@ public class VspChart {
 		}
 	}
 	
-	/*
-	 * Initialises attributes
-	 * @param result
-	 *     current chart data set
-	 */
-	private void initChart(QueryResult result) {
-		// initialises fields with query result data
-		this.fovAmin = result.getQuery().getFovAmin();
-		this.target = result.getTargetObject();
-	}
-	
 	
 	/*
 	 * Shows vsp chart scaled to fit a set size non-modal dialog.
 	 * 
 	 * @param scaledImage buffered image scale to SCALED_WIDTH retaining aspect ratio
 	 */
-	private void showVspChart(BufferedImage scaledImage) {
+	private void createChartDialog(BufferedImage scaledImage) {
 		this.dialog = new JDialog();
 		this.dialog.getContentPane().add(new JLabel(new ImageIcon(scaledImage)));
 		this.dialog.setSize(new Dimension(scaledImage.getWidth(), scaledImage.getHeight()));

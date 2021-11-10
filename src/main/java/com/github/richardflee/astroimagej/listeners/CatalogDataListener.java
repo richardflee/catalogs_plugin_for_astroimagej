@@ -21,7 +21,7 @@ public interface CatalogDataListener {
 	public void setSettingsData(CatalogSettings settings);
 	public CatalogSettings getSettingsData();
 	
-	// Coordinates Converter observatory and utc data
+	// Coordinates Converter observatory and starting night data
 	public void setObservationSiteData(ObservationSite site);
 	public void setSolarTimes(SolarTimes solarTimes);
 	

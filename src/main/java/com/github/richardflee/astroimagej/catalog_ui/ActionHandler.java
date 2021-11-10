@@ -15,6 +15,7 @@ import com.github.richardflee.astroimagej.fileio.RaDecFileReader;
 import com.github.richardflee.astroimagej.fileio.RaDecFileWriter;
 import com.github.richardflee.astroimagej.listeners.CatalogDataListener;
 import com.github.richardflee.astroimagej.listeners.CatalogTableListener;
+import com.github.richardflee.astroimagej.query_objects.BaseFieldObject;
 import com.github.richardflee.astroimagej.query_objects.CatalogQuery;
 import com.github.richardflee.astroimagej.query_objects.CatalogSettings;
 import com.github.richardflee.astroimagej.query_objects.FieldObject;
@@ -24,6 +25,7 @@ import com.github.richardflee.astroimagej.query_objects.SimbadResult;
 import com.github.richardflee.astroimagej.query_objects.SolarTimes;
 import com.github.richardflee.astroimagej.utils.AstroCoords;
 import com.github.richardflee.astroimagej.visibility_plotter.Solar;
+import com.github.richardflee.astroimagej.visibility_plotter.VisPlotter;
 
 /**
  * This class handles catalog_ui button click events to run on-lines database queries,
@@ -46,11 +48,17 @@ public class ActionHandler {
 	private RaDecFileWriter fileWriter = null;
 
 	// star chart with selected aperture overlay
-	private VspChart chart = null;
+	private VspChart vspChart = null;
+	
+	// altitude-time plot
+	private VisPlotter visplot = null;
 	
 	// visibility plot
 	private ObservationSite site = null;
 	private Solar solar = null;
+	
+	// observation date
+	private LocalDate startingNight = null;
 
 
 	private final String QUERY_SETTINGS_ERROR = "ERROR: Invalid input in Catalog Query settings text field";
@@ -71,7 +79,13 @@ public class ActionHandler {
 		this.solar = new Solar(site);
 		
 		// creates vsp star chart with aperture overlay
-		this.chart = new VspChart();
+		this.vspChart = new VspChart();
+		
+		// creates altitude-time plot with sun time markers
+		this.visplot = new VisPlotter(site);
+		
+		// initialise starting night to today
+		this.startingNight = LocalDate.now();
 	}
 
 	/**
@@ -181,7 +195,7 @@ public class ActionHandler {
 			catalogDataListener.setSettingsData(result.getSettings());
 	
 			// draws new chart, closing any chart that is already open
-			this.chart.drawChart(result);
+			this.vspChart.showChart(result);
 		}
 
 		// status message
@@ -240,9 +254,7 @@ public class ActionHandler {
 		catalogDataListener.setSettingsData(this.result.getSettings());
 
 		// closes vsp chart if necessary and draws new chart
-		this.chart.drawChart(result);
-		
-		
+		this.vspChart.showChart(result);
 
 		// status line
 		String statusMessage = radecFileReader.getStatusMessage();
@@ -264,7 +276,7 @@ public class ActionHandler {
 		catalogDataListener.setSettingsData(this.result.getSettings());
 
 		// closes any open chart and draws current chart
-		this.chart.drawChart(result);
+		this.vspChart.showChart(result);
 
 		// status message
 		String statusMessage = "Catalog table updated with current sort and filter settings";
@@ -288,23 +300,38 @@ public class ActionHandler {
 		catalogDataListener.setSettingsData(new CatalogSettings(targetMag));
 
 		// close & dispose current vsp chart
-		this.chart.closeChart();
+		this.vspChart.closeChart();
 
 		// status line
 		String statusMessage = "Cleared catalog result table, reset sort and filter settings";
 		catalogDataListener.updateStatus(statusMessage);
 	}
 	
+	
 	public void doPlotVisibility() {
-		System.out.println("visible");
+		CatalogQuery query = catalogDataListener.getQueryData();
+		if (query == null) {
+			catalogDataListener.updateStatus(QUERY_SETTINGS_ERROR);
+			return;
+		}
+		QueryResult res = new QueryResult(query, null);		
+		BaseFieldObject targetObject = res.getTargetObject();
+		
+		this.visplot.showChart(targetObject, startingNight);
+		
+		System.out.println(this.startingNight.toString());
 	}
+	
 	
 	public void doNewDate(LocalDate currentDate) {
 		if (currentDate != null) {
+			this.startingNight = currentDate;
 			SolarTimes solarTimes = solar.getCivilSunTimes(currentDate);
 			catalogDataListener.setSolarTimes(solarTimes);	
 		}
 	}
+	
+	
 
 	/*
 	 * Sorts QueryResult result object records relative to target object. <p>Sort
