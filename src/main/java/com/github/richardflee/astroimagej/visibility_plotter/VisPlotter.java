@@ -1,5 +1,7 @@
 package com.github.richardflee.astroimagej.visibility_plotter;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.time.LocalDate;
@@ -11,6 +13,8 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.plot.Marker;
+import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.general.SeriesException;
 import org.jfree.data.time.Minute;
@@ -20,6 +24,7 @@ import org.jfree.data.xy.XYDataset;
 
 import com.github.richardflee.astroimagej.query_objects.BaseFieldObject;
 import com.github.richardflee.astroimagej.query_objects.ObservationSite;
+import com.github.richardflee.astroimagej.query_objects.SolarTimes;
 import com.github.richardflee.astroimagej.utils.AstroCoords;
 
 public class VisPlotter {
@@ -28,35 +33,51 @@ public class VisPlotter {
 	private ObservationSite site = null;
 	private TimesConverter timesConverter = null;
 	private CoordsConverter coords = null;
+	private Solar solar = null;
 
 	private JDialog dialog;
-	
+
 	private String chartTitle = null;
 
 	public VisPlotter(ObservationSite site) {
 		this.site = site;
 		this.timesConverter = new TimesConverter(site);
+		this.solar = new Solar(site);
 	}
 
 	public void showChart(BaseFieldObject fo, LocalDate civilDate) {
 
 		this.coords = new CoordsConverter(fo, site);
-		this.chartTitle = String.format("Visibility Plot\n %s %s", fo.getObjectId(), civilDate.toString());
+
+		this.chartTitle = String.format("%s %s", fo.getObjectId(), civilDate.toString());
 
 		// altitude-time dataset
 		XYDataset dataset = createDataset(civilDate);
 
+		// solar times
+		SolarTimes solarTimes = solar.getCivilSunTimes(civilDate);
+
 		// alt-time JFree chart panel
-		JFreeChart chart = createChart(dataset);
+		JFreeChart chart = createChart(dataset, solarTimes);
 		ChartPanel chartPanel = new ChartPanel(chart);
+
 		createChartDialog(chartPanel);
+	}
+
+	/**
+	 * Closes visPlot chart
+	 */
+	public void closeChart() {
+		if (this.dialog != null) {
+			this.dialog.dispose();
+		}
 	}
 
 	private void createChartDialog(ChartPanel chartPanel) {
 
 		// clears open chart dialog
 		closeChart();
-		
+
 		// create dialog
 		this.dialog = new JDialog();
 		this.dialog.setContentPane(chartPanel);
@@ -71,28 +92,39 @@ public class VisPlotter {
 		dialog.setVisible(true);
 	}
 
-	/**
-	 * Closes vsiplot chart
-	 */
-	public void closeChart() {
-		if (this.dialog != null) {
-			this.dialog.dispose();
-		}
-	}
-
-
-	private JFreeChart createChart(XYDataset dataset) {
-		JFreeChart chart = ChartFactory.createTimeSeriesChart(
-				this.chartTitle, "Civil Time (Hr)", "Altitude (Deg)",
-				dataset, false, false, false);
+	private JFreeChart createChart(XYDataset dataset, SolarTimes solarTimes) {
+		boolean toolTips = true;
+		JFreeChart chart = ChartFactory.createTimeSeriesChart(this.chartTitle, "Civil Time (Hr)", "Altitude (Deg)",
+				dataset, false, toolTips, false);
 
 		XYPlot plot = chart.getXYPlot();
 		ValueAxis yAxis = plot.getRangeAxis();
 		yAxis.setRange(0.0, 90.0);
 
+		plot.addDomainMarker(riseSetMarker(solarTimes.getCivilSunSet()));
+		plot.addDomainMarker(twilightMarker(solarTimes.getCivilTwilightEnds()));
+		plot.addDomainMarker(twilightMarker(solarTimes.getCivilTwilightStarts()));
+		plot.addDomainMarker(riseSetMarker(solarTimes.getCivilSunRise()));
+
 		return chart;
 	}
-	
+
+	private Marker riseSetMarker(LocalDateTime civilDateTime) {
+		long millis = TimesConverter.convertCivilDateTimeToMillis(civilDateTime);
+		Marker marker = new ValueMarker(millis);
+		marker.setPaint(Color.DARK_GRAY);
+		marker.setStroke(new BasicStroke(1.0f));
+		return marker;
+	}
+
+	private Marker twilightMarker(LocalDateTime civilDateTime) {
+		long millis = TimesConverter.convertCivilDateTimeToMillis(civilDateTime);
+		Marker marker = new ValueMarker(millis);
+		marker.setPaint(Color.DARK_GRAY);
+		marker.setStroke(new BasicStroke(0.5f));
+		return marker;
+	}
+
 	private XYDataset createDataset(LocalDate civilDate) {
 		TimeSeries series = new TimeSeries("Visibility Plot");
 
@@ -118,8 +150,6 @@ public class VisPlotter {
 		return (alt >= 0.0) ? alt : 0.0;
 	}
 
-
-
 	public static void main(String[] args) {
 
 		// site
@@ -136,7 +166,7 @@ public class VisPlotter {
 		BaseFieldObject fo = new BaseFieldObject(objectId, raHr, decDeg);
 
 		// starting night
-		LocalDate civilDate = LocalDate.of(2019, 1, 1);
+		LocalDate civilDate = LocalDate.of(2019, 3, 1);
 
 		VisPlotter visPlot = new VisPlotter(site);
 		visPlot.showChart(fo, civilDate);

@@ -1,8 +1,6 @@
 package com.github.richardflee.astroimagej.visibility_plotter;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -255,54 +253,54 @@ class CoordsConverterTest {
 		assertEquals(4.166987, setUtcHr,  TOL);	
 	}
 	
-	@DisplayName("Verify object rise-set times are 12 hr if object never sets (circumpolar)")
-	@Test
-	void testNeverSetsRiseSetTimes() {
-		// circumpolar object
-		String objectId = "NeverSetter";
-		double raHr = AstroCoords.raHmsToRaHr("23:39:20");
-		double decDeg = AstroCoords.decDmsToDecDeg("+85:42:00");
-		BaseFieldObject rsObject = new BaseFieldObject(objectId, raHr, decDeg);
-
-		// converters
-		CoordsConverter rsCoords = new CoordsConverter(rsObject, rsSite);
-
-		// date
-		LocalDate rsUtcDate = LocalDate.of(2010, 8, 24);
-		
-		Map<CoordsEnum, Double> rsUtcTime = rsCoords.getRiseSetHr(rsUtcDate);
-		double riseUtcHr = rsUtcTime.get(CoordsEnum.RISE_TIME);
-		double setUtcHr = rsUtcTime.get(CoordsEnum.SET_TIME);
-
-		assertEquals(12.0, riseUtcHr, TOL);
-		assertEquals(12.0, setUtcHr, TOL);
-		assertTrue(rsCoords.isNeverSets());
-		assertFalse(rsCoords.isNeverRises());
-		
-	}
+//	@DisplayName("Verify object rise-set times are 12 hr if object never sets (circumpolar)")
+//	@Test
+//	void testNeverSetsRiseSetTimes() {
+//		// circumpolar object
+//		String objectId = "NeverSetter";
+//		double raHr = AstroCoords.raHmsToRaHr("23:39:20");
+//		double decDeg = AstroCoords.decDmsToDecDeg("+85:42:00");
+//		BaseFieldObject rsObject = new BaseFieldObject(objectId, raHr, decDeg);
+//
+//		// converters
+//		CoordsConverter rsCoords = new CoordsConverter(rsObject, rsSite);
+//
+//		// date
+//		LocalDate rsUtcDate = LocalDate.of(2010, 8, 24);
+//		
+//		Map<CoordsEnum, Double> rsUtcTime = rsCoords.getRiseSetHr(rsUtcDate);
+//		double riseUtcHr = rsUtcTime.get(CoordsEnum.RISE_TIME);
+//		double setUtcHr = rsUtcTime.get(CoordsEnum.SET_TIME);
+//
+//		assertEquals(12.0, riseUtcHr, TOL);
+//		assertEquals(12.0, setUtcHr, TOL);
+//		assertTrue(rsCoords.isNeverSets());
+//		assertFalse(rsCoords.isNeverRises());
+//		
+//	}
 	
-	@DisplayName("Verify object rise-set times are 0 hr if object never rises")
-	@Test
-	void testNeverRisesRiseSetTimes() {
-		// object never rises
-		String objectId = "NeverRiser";
-		double raHr = AstroCoords.raHmsToRaHr("23:39:20");
-		double decDeg = AstroCoords.decDmsToDecDeg("-85:42:00");
-		BaseFieldObject rsObject = new BaseFieldObject(objectId, raHr, decDeg);
-
-		// converters
-		CoordsConverter rsCoords = new CoordsConverter(rsObject, rsSite);
-
-		// date
-		LocalDate rsUtcDate = LocalDate.of(2010, 8, 24);
-		
-		Map<CoordsEnum, Double> rsUtcTime = rsCoords.getRiseSetHr(rsUtcDate);
-		double riseUtcHr = rsUtcTime.get(CoordsEnum.RISE_TIME);
-		double setUtcHr = rsUtcTime.get(CoordsEnum.SET_TIME);
-
-		assertEquals(0.0, riseUtcHr, TOL);
-		assertEquals(0.0, setUtcHr, TOL);
-		assertFalse(rsCoords.isNeverSets());
-		assertTrue(rsCoords.isNeverRises());
-	}
+//	@DisplayName("Verify object rise-set times are 0 hr if object never rises")
+//	@Test
+//	void testNeverRisesRiseSetTimes() {
+//		// object never rises
+//		String objectId = "NeverRiser";
+//		double raHr = AstroCoords.raHmsToRaHr("23:39:20");
+//		double decDeg = AstroCoords.decDmsToDecDeg("-85:42:00");
+//		BaseFieldObject rsObject = new BaseFieldObject(objectId, raHr, decDeg);
+//
+//		// converters
+//		CoordsConverter rsCoords = new CoordsConverter(rsObject, rsSite);
+//
+//		// date
+//		LocalDate rsUtcDate = LocalDate.of(2010, 8, 24);
+//		
+//		Map<CoordsEnum, Double> rsUtcTime = rsCoords.getRiseSetHr(rsUtcDate);
+//		double riseUtcHr = rsUtcTime.get(CoordsEnum.RISE_TIME);
+//		double setUtcHr = rsUtcTime.get(CoordsEnum.SET_TIME);
+//
+//		assertEquals(0.0, riseUtcHr, TOL);
+//		assertEquals(0.0, setUtcHr, TOL);
+//		assertFalse(rsCoords.isNeverSets());
+//		assertTrue(rsCoords.isNeverRises());
+//	}
 }

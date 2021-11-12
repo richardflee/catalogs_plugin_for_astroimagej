@@ -14,7 +14,10 @@ import com.github.richardflee.astroimagej.utils.MathUtils;
 public class CoordsConverter {
 
 	protected enum CoordsEnum {
-		ALT_DEG, AZM_DEG, RA_HR, DEC_DEG, RISE_TIME, SET_TIME, SUN_RISING, SUN_SETTING;
+		ALT_DEG, AZM_DEG, 
+		RA_HR, DEC_DEG, 
+		RISE_TIME, SET_TIME,
+		SUN_RISING, SUN_SETTING;
 	}
 
 	// horizon refraction and object size angles PA49
@@ -118,16 +121,16 @@ public class CoordsConverter {
 	 */
 	public Map<CoordsEnum, Double> getRiseSetHr(LocalDate utcDate) {
 		Map<CoordsEnum, Double> map = new HashMap<>();
-		if (this.neverRises) {
-			map.put(CoordsEnum.RISE_TIME, TimesConverter.NEVER_RISES_HR);
-			map.put(CoordsEnum.SET_TIME, TimesConverter.NEVER_RISES_HR);
-			return map;
-		}
-		if (this.neverSets) {
-			map.put(CoordsEnum.RISE_TIME, TimesConverter.NEVER_SETS_HR);
-			map.put(CoordsEnum.SET_TIME, TimesConverter.NEVER_SETS_HR);
-			return map;
-		}
+//		if (this.neverRises) {
+//			map.put(CoordsEnum.RISE_TIME, TimesConverter.NEVER_RISES_HR);
+//			map.put(CoordsEnum.SET_TIME, TimesConverter.NEVER_RISES_HR);
+//			return map;
+//		}
+//		if (this.neverSets) {
+//			map.put(CoordsEnum.RISE_TIME, TimesConverter.NEVER_SETS_HR);
+//			map.put(CoordsEnum.SET_TIME, TimesConverter.NEVER_SETS_HR);
+//			return map;
+//		}
 
 		//double latDeg = this.site.getSiteLatitudeDeg();
 		double raHr = this.fo.getRaHr();
@@ -207,13 +210,13 @@ public class CoordsConverter {
 		return term1 / term2;
 	}
 
-	public boolean isNeverRises() {
-		return neverRises;
-	}
-
-	public boolean isNeverSets() {
-		return neverSets;
-	}
+//	public boolean isNeverRises() {
+//		return neverRises;
+//	}
+//
+//	public boolean isNeverSets() {
+//		return neverSets;
+//	}
 
 	public static void main(String[] args) {
 

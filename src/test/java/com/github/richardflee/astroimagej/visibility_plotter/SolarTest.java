@@ -1,6 +1,6 @@
 package com.github.richardflee.astroimagej.visibility_plotter;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -27,7 +27,7 @@ class SolarTest {
 
 	private static ObservationSite bostonSite = null;
 	private static ObservationSite gwchSite = null;
-	//private static ObservationSite polarSite = null;
+	private static ObservationSite polarSite = null;
 	private static ObservationSite sidingSite = null;
 	
 	double t2010 = 0.0;
@@ -45,10 +45,10 @@ class SolarTest {
 		utcOffsetHr = 0.0;
 		gwchSite = new ObservationSite(siteLongDeg, siteLatDeg, siteElevation, utcOffsetHr);
 		
-//		siteLongDeg = 0.0;
-//		siteLatDeg = 82.0; // 82N
-//		utcOffsetHr = 0.0;
-//		polarSite = new ObservationSite(siteLongDeg, siteLatDeg, siteElevation, utcOffsetHr);
+		siteLongDeg = -71.05;
+		siteLatDeg = 82.0; // 82N
+		utcOffsetHr = -5.0;
+		polarSite = new ObservationSite(siteLongDeg, siteLatDeg, siteElevation, utcOffsetHr);
 		
 		siteLongDeg = AstroCoords.dmsToDeg("149:03:42");
 		siteLatDeg = -1.0 * AstroCoords.dmsToDeg("31:16:24");   // 31S
@@ -196,35 +196,35 @@ class SolarTest {
 		assertEquals(safariHr, TimesConverter.convertLocalTimeToHours(localTime), 6.0 * MINUTE_TOL);
 	}
 	
-//	@DisplayName("Verify Sun never sets summer polar site PA50")
-//	@Test
-//	void testSunNeverSets() {
-//		LocalDate siteCivilDate = LocalDate.of(1979, 6, 22);
-//		SolarTimes solarTimes = new SolarTimes(polarSite, siteCivilDate);
-//		
-//		assertTrue(solarTimes.isSunNeverSets());
-//		assertFalse(solarTimes.isSunNeverRises());
-//	}
+	@DisplayName("Verify Sun never rises winter polar site PA50")
+	@Test
+	void testSunNeverRises() {
+		LocalDate civilDate = LocalDate.of(2019, 12, 23);
+		LocalDateTime ldtStart = LocalDateTime.of(civilDate, LocalTime.of(12,  1));
+		LocalDateTime ldtEnd = LocalDateTime.of(civilDate, LocalTime.of(11,  59));
+		
+		Solar solar = new Solar(polarSite);		
+		SolarTimes st = solar.getCivilSunTimes(civilDate);
+		assertTrue(ldtStart.isEqual(st.getCivilSunSet()));
+		assertTrue(ldtStart.isEqual(st.getCivilTwilightEnds()));
+		assertTrue(ldtEnd.isEqual(st.getCivilTwilightStarts()));
+		assertTrue(ldtEnd.isEqual(st.getCivilSunRise()));	
+	}
 	
-//	@DisplayName("Verify Sun never rises winter polar site PA50")
-//	@Test
-//	void testSunNeverRises() {
-//		LocalDate siteCivilDate = LocalDate.of(1979, 12, 22);
-//		SolarTimes solarTimes = new SolarTimes(polarSite, siteCivilDate);
-//		
-//		assertFalse(solarTimes.isSunNeverSets());
-//		assertTrue(solarTimes.isSunNeverRises());
-//	}
 	
-//	@DisplayName("Verify twilight not defined gwch site PA50")
-//	@Test
-//	void testTwilightNotDefined() {
-//		LocalDate siteCivilDate = LocalDate.of(1979, 6, 22);
-//		SolarTimes solarTimes = new SolarTimes(gwchSite, siteCivilDate);
-//		
-//		assertTrue(solarTimes.isTwilightNotDefined());
-//		assertFalse(solarTimes.isSunNeverSets());
-//		assertFalse(solarTimes.isSunNeverRises());
-//	}
+	@DisplayName("Verify Sun never sets summer polar site PA50")
+	@Test
+	void testSunNeverSets() {
+		LocalDate civilDate = LocalDate.of(2019, 6, 23);
+		LocalDateTime ldtStart = LocalDateTime.of(civilDate, LocalTime.of(0,  0));
+		LocalDateTime ldtEnd = LocalDateTime.of(civilDate, LocalTime.of(0,  0));
+		
+		Solar solar = new Solar(polarSite);		
+		SolarTimes st = solar.getCivilSunTimes(civilDate);
+		assertTrue(ldtStart.isEqual(st.getCivilSunSet()));
+		assertTrue(ldtStart.isEqual(st.getCivilTwilightEnds()));
+		assertTrue(ldtEnd.isEqual(st.getCivilTwilightStarts()));
+		assertTrue(ldtEnd.isEqual(st.getCivilSunRise()));	
+	}
 }
 
