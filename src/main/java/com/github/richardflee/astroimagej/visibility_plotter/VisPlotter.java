@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -27,6 +28,12 @@ import com.github.richardflee.astroimagej.query_objects.ObservationSite;
 import com.github.richardflee.astroimagej.query_objects.SolarTimes;
 import com.github.richardflee.astroimagej.utils.AstroCoords;
 
+/**
+ * Plots single object altitude over 24 hour period with sunset, sunrise and
+ * twilight time markers. The geographic location is specified in AstroImageJ
+ * Coordinate Converter. 
+ * <p>JFreeChart: https://www.jfree.org/jfreechart/</p>
+ */
 public class VisPlotter {
 
 	// field variables
@@ -45,22 +52,26 @@ public class VisPlotter {
 		this.solar = new Solar(site);
 	}
 
+	/**
+	 * Creates and shows altitude chart
+	 * 
+	 * @param fo object of interest
+	 * @param civilDate starting night
+	 */
 	public void showChart(BaseFieldObject fo, LocalDate civilDate) {
 
 		this.coords = new CoordsConverter(fo, site);
-
 		this.chartTitle = String.format("%s %s", fo.getObjectId(), civilDate.toString());
 
 		// altitude-time dataset
 		XYDataset dataset = createDataset(civilDate);
 
-		// solar times
+		// solar times sunset, sunrise & twilight
 		SolarTimes solarTimes = solar.getCivilSunTimes(civilDate);
 
 		// alt-time JFree chart panel
 		JFreeChart chart = createChart(dataset, solarTimes);
 		ChartPanel chartPanel = new ChartPanel(chart);
-
 		createChartDialog(chartPanel);
 	}
 
@@ -73,8 +84,12 @@ public class VisPlotter {
 		}
 	}
 
+	/*
+	 * Creates non-modal chart dialog Altitude-Time plot 
+	 * 
+	 * @param chartPanel JFreeChart panel
+	 */
 	private void createChartDialog(ChartPanel chartPanel) {
-
 		// clears open chart dialog
 		closeChart();
 
@@ -85,22 +100,27 @@ public class VisPlotter {
 		this.dialog.setTitle("Visibility Plot");
 		this.dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
-		// prevents blocking by modal chatUi dialog ...
+		// prevents blocking by modal chartUi dialog ...
 		dialog.setModalExclusionType(Dialog.ModalExclusionType.APPLICATION_EXCLUDE);
 
-		// shoe dialog
+		// show dialog
 		dialog.setVisible(true);
 	}
 
+	/*
+	 * Creates altitude time chart
+	 */
 	private JFreeChart createChart(XYDataset dataset, SolarTimes solarTimes) {
 		boolean toolTips = true;
 		JFreeChart chart = ChartFactory.createTimeSeriesChart(this.chartTitle, "Civil Time (Hr)", "Altitude (Deg)",
 				dataset, false, toolTips, false);
 
+		// initialise plot ans set y-axis scale 0-90deg
 		XYPlot plot = chart.getXYPlot();
 		ValueAxis yAxis = plot.getRangeAxis();
 		yAxis.setRange(0.0, 90.0);
 
+		// draw vertical sunset, sunrise & twilight markers
 		plot.addDomainMarker(riseSetMarker(solarTimes.getCivilSunSet()));
 		plot.addDomainMarker(twilightMarker(solarTimes.getCivilTwilightEnds()));
 		plot.addDomainMarker(twilightMarker(solarTimes.getCivilTwilightStarts()));
@@ -109,6 +129,9 @@ public class VisPlotter {
 		return chart;
 	}
 
+	/*
+	 * Creates a marker object to indicate sunset or sunrise times
+	 */
 	private Marker riseSetMarker(LocalDateTime civilDateTime) {
 		long millis = TimesConverter.convertCivilDateTimeToMillis(civilDateTime);
 		Marker marker = new ValueMarker(millis);
@@ -117,6 +140,9 @@ public class VisPlotter {
 		return marker;
 	}
 
+	/*
+	 * Creates a marker object ot indicate twilight end or start times
+	 */
 	private Marker twilightMarker(LocalDateTime civilDateTime) {
 		long millis = TimesConverter.convertCivilDateTimeToMillis(civilDateTime);
 		Marker marker = new ValueMarker(millis);
@@ -125,24 +151,37 @@ public class VisPlotter {
 		return marker;
 	}
 
+	/*
+	 * Compiles altitude -time results into a time series collection 
+	 */
 	private XYDataset createDataset(LocalDate civilDate) {
 		TimeSeries series = new TimeSeries("Visibility Plot");
 
+		// noon on starting night
 		LocalDateTime civilDateTime = LocalDateTime.of(civilDate, TimesConverter.LOCAL_TIME_NOON);
 		Minute current = TimesConverter.convertCivilDateTimeToMinute(civilDateTime);
-
+		
+		// 24 hr in 1 minute steps
 		for (int i = 0; i < 24 * 60; i++) {
 			try {
+				// computes altitude at this instant and adds to series
 				double altValue = getCurrentAlt(current, civilDate);
 				series.add(current, new Double(altValue));
+				// increments curent time by 1 minute
 				current = (Minute) current.next();
 			} catch (SeriesException e) {
 				System.err.println("Error adding to series");
+				// info new properties file
+				String message = "Error adding altitude data to JFreeChart series";
+				JOptionPane.showMessageDialog(null, message);
 			}
 		}
 		return new TimeSeriesCollection(series);
 	}
 
+	/*
+	 * Computes current object altitude; 0 if altitude is below horizon
+	 */
 	private double getCurrentAlt(Minute current, LocalDate civilDate) {
 		LocalDateTime civilDateTime = TimesConverter.convertMinuteToCivilDateTime(current, civilDate);
 		LocalDateTime utcDateTime = this.timesConverter.convertCivilDateTimeToUtc(civilDateTime);

@@ -30,7 +30,7 @@ import ij.plugin.PlugIn;
 
 public class Catalogs_Plugin implements PlugIn {
 	
-	private final static String VERSION_NUMBER = "ONEJAR-1.00c";
+	private final static String VERSION_NUMBER = "ONEJAR-1.00d";
 
 	/**
 	 * ImageJ plug-in interface

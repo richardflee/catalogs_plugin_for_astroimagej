@@ -372,19 +372,6 @@ public class Solar {
 		// utcOffsetHr);
 
 		LocalDate siteCivilDate = LocalDate.of(1986, 3, 10);
-		// Solar solar = new Solar(bostonSite);
-
-		// System.out.println(String.format("\nBoston Date: %s",
-		// siteCivilDate.toString()));
-		//
-		// // sunset and twilight end times end of observation day
-		// SolarTimes st = solar.getCivilSunTimes(siteCivilDate);
-		// System.out.println(st.toString());
-		// System.out.println();
-		//
-		// // sunrise and twilight start times start of observation dat
-		// st = solar.getCivilSunTimes(siteCivilDate.minusDays(1));
-		// System.out.println(st.toString());
 
 		// *** never rise / set
 		// *************************************************************
