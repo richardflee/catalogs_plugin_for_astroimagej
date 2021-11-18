@@ -1,12 +1,12 @@
 package com.github.richardflee.astroimagej.visibility_plotter;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.util.Date;
 
+import org.jfree.data.general.SeriesException;
 import org.jfree.data.time.Minute;
 
 import com.github.richardflee.astroimagej.query_objects.ObservationSite;
@@ -127,20 +127,21 @@ public class TimesConverter {
 	/**
 	 * Converts JFreeChart Minute quantity to LocalDateTime
 	 */
-	public static LocalDateTime convertMinuteToCivilDateTime(Minute current, LocalDate civilDate) {
-		int hour = current.getHourValue();
-		int minute = current.getMinute();
-		LocalTime currentTime = LocalTime.of(hour, minute);
-		return LocalDateTime.of(civilDate, currentTime);
+	public static LocalDateTime convertMinuteToCivilDateTime(Minute current) {
+		Date date = current.getStart();
+		return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 	}
 
 	/**
 	 * Converts LocalDateTime to JFreeChart Minute quantity
 	 */
 	public static Minute convertCivilDateTimeToMinute(LocalDateTime civilDateTime) {
-		Instant instant = civilDateTime.toInstant(ZoneOffset.UTC);
-		Date date = Date.from(instant);
-		return new Minute(date);
+		int minute = civilDateTime.getMinute();
+		int hour = civilDateTime.getHour();
+		int day = civilDateTime.getDayOfMonth();
+		int month = civilDateTime.getMonthValue();
+		int year = civilDateTime.getYear();
+		return new Minute(minute, hour, day, month, year);
 	}
 
 	public static Long convertCivilDateTimeToMillis(LocalDateTime civilDateTime) {
@@ -308,10 +309,30 @@ public class TimesConverter {
 
 		// double conversion JFree Minute <-> LocalDateTime
 		Minute current = TimesConverter.convertCivilDateTimeToMinute(utcDateTime);
-		LocalDateTime minToLDT = TimesConverter.convertMinuteToCivilDateTime(current, utcDateTime.toLocalDate());
+		LocalDateTime minToLDT = TimesConverter.convertMinuteToCivilDateTime(current);
 
 		System.out.println(String.format("Start date-time:                  %s", utcDateTime.toString()));
 		System.out.println(String.format("Minute date conversion:           %s", current.toString()));
 		System.out.println(String.format("End date after double conversion: %s", minToLDT.toString()));
+		System.out.println();
+		
+		// noon on starting night
+		LocalDate civilDate = LocalDate.of(2019,  1,  1);
+		LocalDateTime civilDateTime = LocalDateTime.of(civilDate, TimesConverter.LOCAL_TIME_NOON);
+		current = TimesConverter.convertCivilDateTimeToMinute(civilDateTime);
+		for (int i = 0; i < 24*60; i++) {
+			try {
+				LocalDateTime ldt = TimesConverter.convertMinuteToCivilDateTime(current);
+				// Date date = current.getStart();
+				// LocalDateTime ldt2 = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+				current = (Minute) current.next();
+				System.out.println(ldt.toString() + "  " + current.getStart().toString());
+				
+				
+			} catch (SeriesException e) {
+				System.out.println("error");
+			}
+			
+		}
 	}
 }

@@ -165,7 +165,7 @@ class TimesConverterTest {
 	void testConvertCivilTimeToMinute() {
 		LocalDateTime utcDateTime = LocalDateTime.of(2020, 2, 24, 2, 1, 0);
 		Minute current = TimesConverter.convertCivilDateTimeToMinute(utcDateTime);
-		LocalDateTime ldt = TimesConverter.convertMinuteToCivilDateTime(current, utcDateTime.toLocalDate());
+		LocalDateTime ldt = TimesConverter.convertMinuteToCivilDateTime(current);
 		assertEquals("2020-02-24T02:01", ldt.toString().substring(0, "yyyy-mm-ddTHH:MM".length()));
 	}
 

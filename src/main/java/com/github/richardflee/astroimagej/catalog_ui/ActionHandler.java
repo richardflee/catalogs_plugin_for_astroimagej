@@ -25,7 +25,7 @@ import com.github.richardflee.astroimagej.query_objects.SimbadResult;
 import com.github.richardflee.astroimagej.query_objects.SolarTimes;
 import com.github.richardflee.astroimagej.utils.AstroCoords;
 import com.github.richardflee.astroimagej.visibility_plotter.Solar;
-import com.github.richardflee.astroimagej.visibility_plotter.VisPlotter;
+import com.github.richardflee.astroimagej.visibility_plotter.VisibilityPlotter;
 
 /**
  * This class handles catalog_ui button click events to run on-lines database queries,
@@ -50,9 +50,7 @@ public class ActionHandler {
 	// star chart with selected aperture overlay
 	private VspChart vspChart = null;
 	
-	// altitude-time plot
-	private VisPlotter visplot = null;
-	
+		
 	// visibility plot
 	private ObservationSite site = null;
 	private Solar solar = null;
@@ -80,9 +78,6 @@ public class ActionHandler {
 		
 		// creates vsp star chart with aperture overlay
 		this.vspChart = new VspChart();
-		
-		// creates altitude-time plot with sun time markers
-		this.visplot = new VisPlotter(site);
 		
 		// initialise starting night to today
 		this.startingNight = LocalDate.now();
@@ -317,9 +312,15 @@ public class ActionHandler {
 		QueryResult res = new QueryResult(query, null);		
 		BaseFieldObject targetObject = res.getTargetObject();
 		
-		this.visplot.showChart(targetObject, startingNight);
+//		this.visplot.showChart(targetObject, startingNight);
+//		
+		VisibilityPlotter visPlotter = new VisibilityPlotter(this.site);
+		visPlotter.plotVisiblityCharts(targetObject, startingNight);
 		
-		System.out.println(this.startingNight.toString());
+
+//		VisibilityPlotter visPlotter = new VisibilityPlotter(site);
+//		visPlotter.plotVisiblityCharts(fo, startingNight);
+		
 	}
 	
 	

@@ -210,13 +210,11 @@ public class CoordsConverter {
 		return term1 / term2;
 	}
 
-//	public boolean isNeverRises() {
-//		return neverRises;
-//	}
-//
-//	public boolean isNeverSets() {
-//		return neverSets;
-//	}
+
+	public TimesConverter getTimesConverter() {
+		return timesConverter;
+	}
+
 
 	public static void main(String[] args) {
 

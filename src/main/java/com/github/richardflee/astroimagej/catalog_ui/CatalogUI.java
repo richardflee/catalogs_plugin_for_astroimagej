@@ -767,7 +767,7 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 					);
 					panel2Layout.setVerticalGroup(
 						panel2Layout.createParallelGroup()
-							.addComponent(tableScrollPane, GroupLayout.DEFAULT_SIZE, 916, Short.MAX_VALUE)
+							.addComponent(tableScrollPane, GroupLayout.DEFAULT_SIZE, 919, Short.MAX_VALUE)
 					);
 				}
 
@@ -1376,7 +1376,7 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 				}
 
 				//---- visPlotterButton ----
-				visPlotterButton.setText("Plot Altitude");
+				visPlotterButton.setText("Visibility Plots");
 				visPlotterButton.setToolTipText("<html>\nCloses Catalog Query dialog and returns control to AstroImageJ application\n<p>WARNING: Discaards any unsaved settings</p>\n</html>");
 
 				GroupLayout contentPanelLayout = new GroupLayout(contentPanel);

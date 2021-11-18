@@ -134,7 +134,7 @@ new FormModel {
 					} )
 					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
 						"$horizontalGroup": "par l {comp tableScrollPane::t::815:x}"
-						"$verticalGroup": "par l {comp tableScrollPane::l::916:x}"
+						"$verticalGroup": "par l {comp tableScrollPane::l::919:x}"
 					} ) {
 						name: "panel2"
 						"border": new javax.swing.border.LineBorder( sfield java.awt.Color black, 1, false )
@@ -574,7 +574,7 @@ new FormModel {
 					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
 						name: "visPlotterButton"
-						"text": "Plot Altitude"
+						"text": "Visibility Plots"
 						"toolTipText": "<html>\nCloses Catalog Query dialog and returns control to AstroImageJ application\n<p>WARNING: Discaards any unsaved settings</p>\n</html>"
 						auxiliary() {
 							"JavaCodeGenerator.variableModifiers": 4
