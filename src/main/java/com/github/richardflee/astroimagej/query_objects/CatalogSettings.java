@@ -23,7 +23,7 @@ public class CatalogSettings {
 	private int totalRecordsValue;
 	private int filteredRecordsValue;
 	private int selectedRecordsValue;
-	
+
 	// DSS fits flag
 	private boolean isSaveDssCheckBoxValue;
 
@@ -31,30 +31,33 @@ public class CatalogSettings {
 	private boolean isTableData;
 
 	// Constructors ..
-	// Default constructor 
-	
+	// Default constructor
+
 	/**
-	 * Default constructor resets filter and sort controls to default values; 
+	 * Default constructor resets filter and sort controls to default values;
 	 * current target spinner value is unchanged
 	 */
 	public CatalogSettings() {
 		resetDefaultSettings(null);
+		this.targetMagSpinnerValue = 10.0;
+		this.distanceRadioButtonValue = true;
+		this.deltaMagRadioButtonValue = false;
 	}
 
 	/**
-	 * One parameter constructor specifies new target spinner value;
-	 * resets filter and sort controls to default values; 
-	 * 
-	 * @param targetMag target spinner setting
+	 * One parameter constructor specifies new target spinner value; resets filter
+	 * and sort controls to default values;
+	 * @param targetMag
+	 *     target spinner setting
 	 */
-	public CatalogSettings(double targetMag) {
+	public CatalogSettings(Double targetMag) {
 		resetDefaultSettings(targetMag);
 	}
 
 	/**
 	 * Copy constructor
-	 * 
-	 * @param settings source object to copy
+	 * @param settings
+	 *     source object to copy
 	 */
 	public CatalogSettings(CatalogSettings settings) {
 		// target mag value
@@ -76,39 +79,18 @@ public class CatalogSettings {
 		this.totalRecordsValue = Integer.valueOf(settings.getTotalRecordsValue());
 		this.filteredRecordsValue = Integer.valueOf(settings.getFilteredRecordsValue());
 		this.selectedRecordsValue = Integer.valueOf(settings.getSelectedRecordsValue());
-		
+
 		// DSS flag
 		this.isSaveDssCheckBoxValue = settings.isSaveDssCheckBoxValue();
 
 		// no table data
 		this.isTableData = false;
 	}
-	
-	/**
-	 * sets distance sort option selected
-	 */
-	public void resetSortSeting() {
-		distanceRadioButtonValue = true;
-		deltaMagRadioButtonValue = false;
-	}
 
-	/**
-	 * resets nobs and mag limit settings to default values
-	 */
-	public void resetFilterSettings() {
-		// number observations / APASS
-		nObsSpinnerValue = 1;
-		
-		// mag limtis and flag
-		upperLimitSpinnerValue = 0.0;
-		lowerLimitSpinnerValue = 0.0;
-		isMagLimitsCheckBoxValue = true;
-	}
-	
+
 	/**
 	 * Upper limit magnitude band; upper limit < 0.01 disables this limit <p> Note:
 	 * upper limit value is positive </p>
-	 * 
 	 * @return limit > 0.01 => sum of target and upper limit values, N/A otherwise
 	 */
 	public String getUpperLabelValue() {
@@ -121,7 +103,6 @@ public class CatalogSettings {
 	/**
 	 * Lower limit magnitude band; lower limit < 0.01 disables this limit <p> Note:
 	 * lower limit value is negative </p>
-	 * 
 	 * @return |limit| > 0.01 => sum of target and lower limit values, N/A otherwise
 	 */
 	public String getLowerLabelValue() {
@@ -132,18 +113,19 @@ public class CatalogSettings {
 	}
 
 	// resets sort & filter defaults; optional update target mag data
+	// target mag, dss and sort order controls excluded
 	private void resetDefaultSettings(Double targetMag) {
-		this.resetSortSeting();
-		this.resetFilterSettings();
-		
+		// number observations / APASS
+		nObsSpinnerValue = 1;
+
+		// mag limtis and flag
+		upperLimitSpinnerValue = 0.0;
+		lowerLimitSpinnerValue = 0.0;
+		isMagLimitsCheckBoxValue = true;
+
 		// record totals
 		totalRecordsValue = 0;
 		filteredRecordsValue = 0;
-
-		// update target ma gspinner setting if targetMag not null
-		if (targetMag != null) {
-			targetMagSpinnerValue = targetMag;
-		}
 	}
 
 
@@ -219,8 +201,6 @@ public class CatalogSettings {
 	public void setFilteredRecordsValue(int nFilteredRecords) {
 		this.filteredRecordsValue = (nFilteredRecords >= 0) ? nFilteredRecords : 0;
 	}
-	
-	
 
 	public int getSelectedRecordsValue() {
 		return selectedRecordsValue;
@@ -238,7 +218,6 @@ public class CatalogSettings {
 		this.isTableData = isTableData;
 	}
 
-	
 	public boolean isSaveDssCheckBoxValue() {
 		return isSaveDssCheckBoxValue;
 	}

@@ -191,6 +191,8 @@ public class ActionHandler {
 	
 			// draws new chart, closing any chart that is already open
 			this.vspChart.showChart(result);
+			
+			// saves query & c
 		}
 
 		// status message

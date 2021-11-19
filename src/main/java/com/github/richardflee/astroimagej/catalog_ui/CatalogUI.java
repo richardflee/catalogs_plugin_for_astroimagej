@@ -13,6 +13,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ItemEvent;
 import java.time.LocalDate;
+import javax.swing.*;
 
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
@@ -103,8 +104,8 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		catalogCombo.addItem(CatalogsEnum.VSP.toString());
 		
 		// start with Distance sort option selected
-		distanceRadioButton.setSelected(true);
-		deltaMagRadioButton.setSelected(false);
+		//distanceRadioButton.setSelected(true);
+		//deltaMagRadioButton.setSelected(false);
 
 		// start in "no data" state
 		this.isTableData = false;
@@ -237,6 +238,9 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 	@Override
 	public void setSettingsData(CatalogSettings settings) {
 		
+		// dss flaf
+		isSaveDssCheckBox.setSelected(settings.isSaveDssCheckBoxValue());
+		
 		// user input nominal target magnitude
 		targetMagSpinner.setValue(settings.getTargetMagSpinnerValue());
 
@@ -322,24 +326,6 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		twilightStartField.setText(solarTimes.getCivilTwilightStartsValue());
 		sunRiseField.setText(solarTimes.getCivilSunRiseValue());
 	}
-
-//	@Override
-//	public ObservationSite getObservationSiteData() {
-//		ObservationSite site = new ObservationSite();
-//		
-//		double data = AstroCoords.dmsToDeg(siteLongField.getText());
-//		site.setSiteLongitudeDeg(data);
-//		
-//		data = AstroCoords.dmsToDeg(siteLatField.getText());
-//		site.setSiteLatitudeDeg(data);
-//		
-//		data = Double.valueOf(siteAltField.getText());
-//		site.setSiteAlt(data);
-//		
-//		data = Double.valueOf(utcOffsetField.getText());
-//		site.setUtcOffsetHr(data);		
-//		return site;
-//	}
 	
 	/*
 	 * Handles change in catalogCombo selection. Clears existing filterCombo list
@@ -471,7 +457,7 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		clearButton.setEnabled(isTableData);
 		
 		// save dss checkbox in sync with save radec
-		isSaveDssCheckBox.setEnabled(isTableData);
+		//isSaveDssCheckBox.setEnabled(isTableData);
 	}
 
 	private void initComponents() {
@@ -1458,6 +1444,11 @@ public class CatalogUI extends JDialog implements CatalogDataListener {
 		contentPane.add(dialogPane, BorderLayout.CENTER);
 		pack();
 		setLocationRelativeTo(getOwner());
+
+		//---- buttonGroup1 ----
+		ButtonGroup buttonGroup1 = new ButtonGroup();
+		buttonGroup1.add(distanceRadioButton);
+		buttonGroup1.add(deltaMagRadioButton);
 		// JFormDesigner - End of component initialization //GEN-END:initComponents
 	}
 

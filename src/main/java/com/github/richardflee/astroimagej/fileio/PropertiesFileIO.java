@@ -19,25 +19,23 @@ import com.github.richardflee.astroimagej.query_objects.ObservationSite;
 import com.github.richardflee.astroimagej.utils.AstroCoords;
 
 /**
- * This class handles property file read and write requests.
- * 
- * <p>Path to prperties file: C:/Users/[user]/.astroimagej/catalogs_plugin.properties</p>
- *
+ * This class handles property file read and write requests. <p>Path to
+ * prperties file: C:/Users/[user]/.astroimagej/catalogs_plugin.properties</p>
  */
 public class PropertiesFileIO {
-	
+
 	private static final String CATALOG_PROPERTIES_FILE = "catalogs_plugin.properties";
 	private static final String AIJ_PREFS_FILE = "AIJ_Prefs.txt";
-	
+	private static final double DEFAULT_TGT_MAG = 10.0;
+
 	private String propertiesFilePath = null;
 	private String aijPrefsFilePath = null;
 
-	
 	public PropertiesFileIO() {
 		// set properties path
 		String homePath = Paths.get(System.getProperty("user.home")).toAbsolutePath().toString();
 		this.propertiesFilePath = Paths.get(homePath, ".astroimagej", CATALOG_PROPERTIES_FILE).toString();
-		
+
 		// AIJ_Prefs.txt
 		this.aijPrefsFilePath = Paths.get(homePath, ".astroimagej", AIJ_PREFS_FILE).toString();
 
@@ -53,10 +51,8 @@ public class PropertiesFileIO {
 	}
 
 	/**
-	 * Creates a CatalogQuery object from property file.
-	 * 
-	 * <p>CatalogQuery items identified: "Query." + CatalogsEnum identifier</p>
-	 * 
+	 * Creates a CatalogQuery object from property file. <p>CatalogQuery items
+	 * identified: "Query." + CatalogsEnum identifier</p>
 	 * @return CatalogQuery object encapsulating catalog dialog field values
 	 */
 	public CatalogQuery getPropertiesQueryData() {
@@ -102,10 +98,8 @@ public class PropertiesFileIO {
 
 	/**
 	 * Creates a CatalogSettings object from property file; target mag is the only
-	 * non-default field.
-	 * 
-	 * <p>CatalogSettings target mag: "Settings.TARGETMAG=" + [value]</p>
-	 * 
+	 * non-default field. <p>CatalogSettings target mag: "Settings.TARGETMAG=" +
+	 * [value]</p>
 	 * @return CatalogSetings object encapsulating catalog dialog field values
 	 */
 	public CatalogSettings getPropertiesSettingsData() {
@@ -115,9 +109,21 @@ public class PropertiesFileIO {
 			Properties prop = new Properties();
 			prop.load(input);
 
-			// target mag is the only input property
-			String targetStr = prop.getProperty(settingsStr());
-			settings.setTargetMagSpinnerValue(Double.parseDouble(targetStr));
+			// target mag
+			String settingsProp = prop.getProperty(settingsStr("TARGET"));
+			double data = Double.parseDouble(settingsProp);
+			settings.setTargetMagSpinnerValue(data);
+
+			// distance sort flag
+			settingsProp = prop.getProperty(settingsStr("DISTANCE"));
+			boolean flag = Boolean.parseBoolean(settingsProp);
+			settings.setDistanceRadioButtonValue(flag);
+			settings.setDeltaMagRadioButtonValue(!flag);
+			
+			// DSS settings flag
+			settingsProp = prop.getProperty(settingsStr("DSS"));
+			flag = Boolean.parseBoolean(settingsProp);
+			settings.setSaveDssCheckBoxValue(flag);
 		} catch (IOException ex) {
 			// error dialog
 			String message = String.format("Failed to read properties file settings data: \n%s\n", propertiesFilePath);
@@ -132,29 +138,32 @@ public class PropertiesFileIO {
 
 	/**
 	 * Writes query and selected settings fields to catalogs_plugin.properties file.
-	 * <p>
-	 * Query items are identified by CatalalogsEnum values
-	 * </p>
-	 * <p>
-	 * Example data format Query.DEC_DMS=+29\:40\:20.27
-	 * </p>
-	 * 
-	 * @param query    current query parameters imported from catalog UI; default
-	 *                 query parameters if null
-	 * @param settings current settings parameters imported from catalog UI; default
-	 *                 settings parameters if null
+	 * <p> Query items are identified by CatalalogsEnum values </p> <p> Example data
+	 * format Query.DEC_DMS=+29\:40\:20.27 </p>
+	 * @param query
+	 *     current query parameters imported from catalog UI; default query
+	 *     parameters if null
+	 * @param settings
+	 *     current settings parameters imported from catalog UI; default settings
+	 *     parameters if null
 	 */
 	public String setPropertiesFileData(CatalogQuery query, CatalogSettings settings) {
-		// if necessary, sets default query & settings objects
-		if (query == null) {
+		// double null => creating new properties file
+		if ((query == null) && (settings == null)) {
+			// default query
 			query = new CatalogQuery();
-		}
-		if (settings == null) {
+			
+			// default settings
 			settings = new CatalogSettings();
+			
+			// initialise targetMag, sort and dss options
+			settings.setTargetMagSpinnerValue(DEFAULT_TGT_MAG);
+			settings.setDistanceRadioButtonValue(true);
+			settings.setDeltaMagRadioButtonValue(false);
+			settings.setSaveDssCheckBoxValue(true);
 		}
 
 		String message = String.format("Saved query data in properties file: \n%s", propertiesFilePath);
-		;
 		try (OutputStream output = new FileOutputStream(propertiesFilePath)) {
 			Properties prop = new Properties();
 
@@ -180,8 +189,15 @@ public class PropertiesFileIO {
 			String filterStr = query.getMagBand();
 			prop.setProperty(queryStr(QueryEnum.FILTER_DROPDOWN), filterStr);
 
-			// subset settings field
-			prop.setProperty(settingsStr(), String.format("%.3f", settings.getTargetMagSpinnerValue()));
+			// settings fields
+			String strVal = String.format("%.3f", settings.getTargetMagSpinnerValue());
+			prop.setProperty(settingsStr("TARGET"), strVal);
+
+			strVal = String.format("%b", settings.isDistanceRadioButtonValue());
+			prop.setProperty(settingsStr("DISTANCE"), strVal);
+			
+			strVal = String.format("%b", settings.isSaveDssCheckBoxValue());
+			prop.setProperty(settingsStr("DSS"), strVal);
 
 			prop.store(output, null);
 		} catch (IOException io) {
@@ -189,7 +205,7 @@ public class PropertiesFileIO {
 		}
 		return message;
 	}
-	
+
 	public ObservationSite getObservationSiteData() {
 		ObservationSite site = null;
 		try (InputStream input = new FileInputStream(this.aijPrefsFilePath)) {
@@ -202,7 +218,7 @@ public class PropertiesFileIO {
 			double siteLatDeg = Double.parseDouble(prop.getProperty(".coords.lat").toString());
 			double siteElevation = Double.parseDouble(prop.getProperty(".coords.alt").toString());
 			double utcOffsetHr = Double.parseDouble(prop.getProperty(".coords.nowTimeZoneOffset").toString());
-						
+
 			site = new ObservationSite(siteLongDeg, siteLatDeg, siteElevation, utcOffsetHr);
 		} catch (NullPointerException | IOException ex) {
 			String message = "Failed to read Observation Site data: \n" + this.aijPrefsFilePath;
@@ -211,15 +227,29 @@ public class PropertiesFileIO {
 		return site;
 	}
 
-
 	// returns formatted query properties item
 	private String queryStr(QueryEnum en) {
 		return "Query." + en.toString();
 	}
 
 	// returns formatted settings properties item
-	private String settingsStr() {
-		return "Settings.TARGETMAG";
+	private String settingsStr(String propType) {
+		String strSettings = "Settings.";
+		try {
+			if (propType == "TARGET") {
+				strSettings += "TARGET_MAG";
+			} else if (propType == "DISTANCE") {
+				strSettings += "DISTANCE_FLAG";
+			} else if (propType == "DSS") {
+				strSettings += "DSS_FLAG";
+			} else {
+				throw new IllegalArgumentException();
+			}
+		} catch (IllegalArgumentException e) {
+			String message = String.format("Invlaid properties ref: \n%s\n", propType);
+			JOptionPane.showMessageDialog(null, message);
+		}
+		return strSettings;
 	}
 
 	// properties filepath gett
@@ -228,9 +258,9 @@ public class PropertiesFileIO {
 	}
 
 	public static void main(String[] args) {
-		
+
 		PropertiesFileIO pf = new PropertiesFileIO();
-		
+
 		ObservationSite site = pf.getObservationSiteData();
 		System.out.println(site.toString());
 
@@ -250,7 +280,7 @@ public class PropertiesFileIO {
 
 		System.out.println(String.format("Set target mag=9.99,   read settings properties= %.3f",
 				settings.getTargetMagSpinnerValue()));
-		//settings.resetDefaultSettings(8.88);
+		// settings.resetDefaultSettings(8.88);
 		System.out.println(String.format("Reset target mag=8.88, read settings properties= %.3f",
 				settings.getTargetMagSpinnerValue()));
 

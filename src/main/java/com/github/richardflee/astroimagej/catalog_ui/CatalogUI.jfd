@@ -300,6 +300,7 @@ new FormModel {
 							"text": "Distance"
 							"selected": true
 							"toolTipText": "<html>\nSort table records in ascending order of\n<p>radial separation to objectId coordinates</p>\n<p>Separation: arcmin</p>\n</html>"
+							"$buttonGroup": new FormReference( "buttonGroup1" )
 							auxiliary() {
 								"JavaCodeGenerator.variableModifiers": 4
 							}
@@ -308,6 +309,7 @@ new FormModel {
 							name: "deltaMagRadioButton"
 							"text": "|Delta Mag|"
 							"toolTipText": "<html>\nSort table records in ascending order of\n<p>absolute difference in magnitude</p>\n<p>|Delta Mag| = |reference_mag - target_mag|</p>\n</html>\n"
+							"$buttonGroup": new FormReference( "buttonGroup1" )
 							auxiliary() {
 								"JavaCodeGenerator.variableModifiers": 4
 							}
@@ -589,6 +591,11 @@ new FormModel {
 		}, new FormLayoutConstraints( null ) {
 			"location": new java.awt.Point( 26, 20 )
 			"size": new java.awt.Dimension( 1100, 826 )
+		} )
+		add( new FormNonVisual( "javax.swing.ButtonGroup" ) {
+			name: "buttonGroup1"
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 855 )
 		} )
 	}
 }
