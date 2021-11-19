@@ -27,11 +27,12 @@ public class CatalogSettings {
 	// DSS fits flag
 	private boolean isSaveDssCheckBoxValue;
 
+	// default target magnitude value
+	public static final double DEFAULT_TGT_MAG = 10.0;
+	
 	// flag enable / disable catalog ui buttons
 	private boolean isTableData;
 
-	// Constructors ..
-	// Default constructor
 
 	/**
 	 * Default constructor resets filter and sort controls to default values;
@@ -39,7 +40,7 @@ public class CatalogSettings {
 	 */
 	public CatalogSettings() {
 		resetDefaultSettings(null);
-		this.targetMagSpinnerValue = 10.0;
+		this.targetMagSpinnerValue = CatalogSettings.DEFAULT_TGT_MAG;
 		this.distanceRadioButtonValue = true;
 		this.deltaMagRadioButtonValue = false;
 	}

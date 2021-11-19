@@ -30,7 +30,7 @@ import ij.plugin.PlugIn;
 
 public class Catalogs_Plugin implements PlugIn {
 	
-	private final static String VERSION_NUMBER = "ONEJAR-1.00d";
+	private final static String VERSION_NUMBER = "ONEJAR-1.00e";
 
 	/**
 	 * ImageJ plug-in interface
@@ -81,7 +81,7 @@ public class Catalogs_Plugin implements PlugIn {
 		catalogUi.setQueryData(query);
 		
 		// populates civil solar times and geographic location controls
-		initVisibilityData(catalogUi, pf);
+		Catalogs_Plugin.initVisibilityData(catalogUi, pf);
 		
 		// apply properties target mag
 		CatalogSettings settings = pf.getPropertiesSettingsData();

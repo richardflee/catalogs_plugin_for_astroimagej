@@ -26,8 +26,6 @@ public class PropertiesFileIO {
 
 	private static final String CATALOG_PROPERTIES_FILE = "catalogs_plugin.properties";
 	private static final String AIJ_PREFS_FILE = "AIJ_Prefs.txt";
-	private static final double DEFAULT_TGT_MAG = 10.0;
-
 	private String propertiesFilePath = null;
 	private String aijPrefsFilePath = null;
 
@@ -138,8 +136,7 @@ public class PropertiesFileIO {
 
 	/**
 	 * Writes query and selected settings fields to catalogs_plugin.properties file.
-	 * <p> Query items are identified by CatalalogsEnum values </p> <p> Example data
-	 * format Query.DEC_DMS=+29\:40\:20.27 </p>
+	 * Creates a new properties file if both parameters are null; 
 	 * @param query
 	 *     current query parameters imported from catalog UI; default query
 	 *     parameters if null
@@ -148,7 +145,7 @@ public class PropertiesFileIO {
 	 *     parameters if null
 	 */
 	public String setPropertiesFileData(CatalogQuery query, CatalogSettings settings) {
-		// double null => creating new properties file
+		// double null => create a new properties file
 		if ((query == null) && (settings == null)) {
 			// default query
 			query = new CatalogQuery();
@@ -157,7 +154,7 @@ public class PropertiesFileIO {
 			settings = new CatalogSettings();
 			
 			// initialise targetMag, sort and dss options
-			settings.setTargetMagSpinnerValue(DEFAULT_TGT_MAG);
+			settings.setTargetMagSpinnerValue(CatalogSettings.DEFAULT_TGT_MAG);
 			settings.setDistanceRadioButtonValue(true);
 			settings.setDeltaMagRadioButtonValue(false);
 			settings.setSaveDssCheckBoxValue(true);

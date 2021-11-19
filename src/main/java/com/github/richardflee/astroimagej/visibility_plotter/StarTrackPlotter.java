@@ -196,8 +196,10 @@ public class StarTrackPlotter {
 		annotate.setFont(StarTrackPlotter.font);
 		xyPlot.addAnnotation(annotate);
 
-		// finish time annotation
-		annotate = new XYTextAnnotation(strFinish, finish.getPolarX(), finish.getPolarY() + ANNOTATE_OFFSET);
+		// finish time annotation, y-offset if overlaps with start
+		boolean overlap = Math.abs(finish.getPolarX() - start.getPolarX()) < 2 * ANNOTATE_OFFSET; 
+		int offsetY = (overlap) ?  - ANNOTATE_OFFSET : ANNOTATE_OFFSET;
+		annotate = new XYTextAnnotation(strFinish, finish.getPolarX(), finish.getPolarY() + offsetY);
 		annotate.setFont(StarTrackPlotter.font);
 		xyPlot.addAnnotation(annotate);
 

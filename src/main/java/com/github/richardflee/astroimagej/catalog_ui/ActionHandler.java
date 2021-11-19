@@ -134,7 +134,7 @@ public class ActionHandler {
 
 	/**
 	 * Imports and writes to properties file current catalog Ui query parameters,
-	 * plus a subset of settings parameters
+	 * plus a subset of settings parameters. Saves current table sort and DSS selection options.
 	 */
 	public void doSaveQuerySettingsData() {
 		CatalogQuery query = catalogDataListener.getQueryData();
